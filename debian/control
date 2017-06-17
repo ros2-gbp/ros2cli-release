@@ -1,0 +1,12 @@
+Source: ros-r2b2-ros2run
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-r2b2-ament-copyright, ros-r2b2-ament-flake8, ros-r2b2-ament-pep257, ros-r2b2-ros2cli, ros-r2b2-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-r2b2-ros2run
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-r2b2-ros2cli, ros-r2b2-ros2pkg, ros-r2b2-ros-workspace
+Description: The run command for ROS 2 command line tools.
