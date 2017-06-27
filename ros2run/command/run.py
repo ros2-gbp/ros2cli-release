@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from ros2cli.command import CommandExtension
-from ros2cli.node.strategy import NodeStrategy
 from ros2pkg.api import package_name_completer
 from ros2run.api import ExecutableNameCompleter
 from ros2run.api import get_executable_path
@@ -23,7 +22,7 @@ from ros2run.api import run_executable
 
 
 class RunCommand(CommandExtension):
-    """Various run related sub-commands."""
+    """Run a package specific executable."""
 
     def add_arguments(self, parser, cli_name):
         arg = parser.add_argument(
@@ -42,20 +41,19 @@ class RunCommand(CommandExtension):
                  "command)")
 
     def main(self, *, parser, args):
-        with NodeStrategy(args) as node:
-            try:
-                path = get_executable_path(
-                    node=node, package_name=args.package_name,
-                    executable_name=args.executable_name)
-            except PackageNotFound:
-                raise RuntimeError(
-                    "Package '{args.package_name}' not found"
-                    .format_map(locals()))
-            except MultipleExecutables as e:
-                msg = 'Multiple executables found:'
-                for p in e.paths:
-                    msg += '\n- {p}'.format_map(locals())
-                raise RuntimeError(msg)
+        try:
+            path = get_executable_path(
+                package_name=args.package_name,
+                executable_name=args.executable_name)
+        except PackageNotFound:
+            raise RuntimeError(
+                "Package '{args.package_name}' not found"
+                .format_map(locals()))
+        except MultipleExecutables as e:
+            msg = 'Multiple executables found:'
+            for p in e.paths:
+                msg += '\n- {p}'.format_map(locals())
+            raise RuntimeError(msg)
         if path is None:
             return 'No executable found'
         return run_executable(path=path, argv=args.argv)
