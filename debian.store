@@ -1,1 +1,1 @@
-{"trim": "", "parent": "release/r2b2/ros2node", "base": "bb030fb", "previous": "1ae5401", "trimbase": ""}
+{"parent": "release/r2b2/ros2node", "trim": "", "trimbase": "", "base": "8ec3409", "previous": "dfe391b"}
