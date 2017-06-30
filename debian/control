@@ -1,0 +1,12 @@
+Source: ros-r2b2-ros2cli
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), python3-setuptools, ros-r2b2-ament-copyright, ros-r2b2-ament-pep257, python3-all (>= 3.5), dh-python, ros-r2b2-ament-flake8, ros-r2b2-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-r2b2-ros2cli
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-pkg-resources, ros-r2b2-rclpy, ros-r2b2-ros-workspace
+Description: Framework for ROS 2 command line tools.
