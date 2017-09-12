@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import shlex
+
 from ros2cli.command import CommandExtension
 from ros2pkg.api import package_name_completer
 from ros2pkg.api import PackageNotFound
@@ -26,19 +28,30 @@ class RunCommand(CommandExtension):
 
     def add_arguments(self, parser, cli_name):
         arg = parser.add_argument(
+            '--prefix',
+            help='Prefix command, which should go before the executable. '
+                 'Command must be wrapped in quotes if it contains spaces '
+                 "(e.g. --prefix 'gdb -ex run --args').")
+        try:
+            from argcomplete.completers import SuppressCompleter
+        except ImportError:
+            pass
+        else:
+            arg.completer = SuppressCompleter()
+        arg = parser.add_argument(
             'package_name',
-            help="Name of the ROS package")
+            help='Name of the ROS package')
         arg.completer = package_name_completer
         arg = parser.add_argument(
             'executable_name',
-            help="Name of the executable")
+            help='Name of the executable')
         arg.completer = ExecutableNameCompleter(
             package_name_key='package_name')
         parser.add_argument(
             'argv', nargs='*',
             help="Pass arbitrary arguments to the executable (use '--' before "
-                 "these arguments to ensure they are not handle by this "
-                 "command)")
+                 'these arguments to ensure they are not handled by this '
+                 'command)')
 
     def main(self, *, parser, args):
         try:
@@ -56,4 +69,5 @@ class RunCommand(CommandExtension):
             raise RuntimeError(msg)
         if path is None:
             return 'No executable found'
-        return run_executable(path=path, argv=args.argv)
+        prefix = shlex.split(args.prefix) if args.prefix is not None else None
+        return run_executable(path=path, argv=args.argv, prefix=prefix)
