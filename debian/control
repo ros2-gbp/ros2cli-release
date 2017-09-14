@@ -1,0 +1,12 @@
+Source: ros-r2b3-ros2service
+Section: misc
+Priority: extra
+Maintainer: William Woodall <william@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-r2b3-ament-copyright, ros-r2b3-ament-flake8, ros-r2b3-ament-pep257, ros-r2b3-rclpy, ros-r2b3-ros2cli, ros-r2b3-ros-workspace, python3-all, python3-setuptools
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-r2b3-ros2service
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-yaml, ros-r2b3-rclpy, ros-r2b3-ros2cli, ros-r2b3-ros2topic, ros-r2b3-ros-workspace
+Description: The service command for ROS 2 command line tools.
