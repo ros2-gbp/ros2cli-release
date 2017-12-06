@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import importlib
 import time
 
 import rclpy
 from ros2service.api import ServiceNameCompleter
+from ros2service.api import ServiceTypeCompleter
 from ros2service.verb import VerbExtension
 from ros2topic.api import set_msg_fields
 from ros2topic.api import SetFieldError
@@ -33,31 +33,30 @@ class CallVerb(VerbExtension):
             help="Name of the ROS service to call to (e.g. '/add_two_ints')")
         arg.completer = ServiceNameCompleter(
             include_hidden_services_key='include_hidden_services')
-        parser.add_argument(
+        arg = parser.add_argument(
             'service_type',
             help="Type of the ROS service (e.g. 'std_srvs/Empty')")
+        arg.completer = ServiceTypeCompleter(
+            service_name_key='service_name')
         parser.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the service request with in YAML format ' +
                  '(e.g. "{a: 1, b: 2}"), ' +
                  'otherwise the service request will be published with default values')
-
-        def float_or_int(input_string):
-            try:
-                value = float(input_string)
-            except ValueError:
-                raise argparse.ArgumentTypeError("'%s' is not an integer or float" % input_string)
-            return value
-
         parser.add_argument(
-            '-r', '--repeat', metavar='N', type=float_or_int,
-            help='Repeat the call every N seconds')
+            '-r', '--rate', metavar='N', type=float,
+            help='Repeat the call at a specific rate in Hz')
 
     def main(self, *, args):
-        return requester(args.service_type, args.service_name, args.values, args.repeat)
+        if args.rate is not None and args.rate <= 0:
+            raise RuntimeError('rate must be greater than zero')
+        period = 1. / args.rate if args.rate else None
+
+        return requester(
+            args.service_type, args.service_name, args.values, period)
 
 
-def requester(service_type, service_name, values, repeat):
+def requester(service_type, service_name, values, period):
     # TODO(wjwwood) this logic should come from a rosidl related package
     try:
         package_name, srv_name = service_type.split('/', 2)
@@ -83,6 +82,10 @@ def requester(service_type, service_name, values, repeat):
         return "Failed to populate field '{e.field_name}': {e.exception}" \
             .format_map(locals())
 
+    if not cli.service_is_ready():
+        print('waiting for service to become available...')
+        cli.wait_for_service()
+
     while True:
         print('requester: making request: %r\n' % request)
         last_call = time.time()
@@ -90,9 +93,9 @@ def requester(service_type, service_name, values, repeat):
         cli.wait_for_future()
         if cli.response is not None:
             print('response:\n%r\n' % cli.response)
-        if repeat is None or not rclpy.ok():
+        if period is None or not rclpy.ok():
             break
-        time_until_next_period = (last_call + repeat) - time.time()
+        time_until_next_period = (last_call + period) - time.time()
         if time_until_next_period > 0:
             time.sleep(time_until_next_period)
 

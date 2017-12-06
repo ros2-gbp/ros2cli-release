@@ -19,6 +19,7 @@ import rclpy
 from ros2topic.api import set_msg_fields
 from ros2topic.api import SetFieldError
 from ros2topic.api import TopicNameCompleter
+from ros2topic.api import TopicTypeCompleter
 from ros2topic.verb import VerbExtension
 import yaml
 
@@ -32,24 +33,35 @@ class PubVerb(VerbExtension):
             help="Name of the ROS topic to publish to (e.g. '/chatter')")
         arg.completer = TopicNameCompleter(
             include_hidden_topics_key='include_hidden_topics')
-        parser.add_argument(
+        arg = parser.add_argument(
             'message_type',
             help="Type of the ROS message (e.g. 'std_msgs/String')")
+        arg.completer = TopicTypeCompleter(
+            topic_name_key='topic_name')
         parser.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the message with in YAML format ' +
                  '(e.g. "data: Hello World"), ' +
                  'otherwise the message will be published with default values')
+        parser.add_argument(
+            '-r', '--rate', metavar='N', type=float, default=1.0,
+            help='Publishing rate in Hz (default: 1)')
+        parser.add_argument(
+            '-1', '--once', action='store_true',
+            help='Publish one message and exit')
 
     def main(self, *, args):
+        if args.rate <= 0:
+            raise RuntimeError('rate must be greater than zero')
+
         return main(args)
 
 
 def main(args):
-    return publisher(args.message_type, args.topic_name, args.values)
+    return publisher(args.message_type, args.topic_name, args.values, 1. / args.rate, args.once)
 
 
-def publisher(message_type, topic_name, values):
+def publisher(message_type, topic_name, values, period, once):
     # TODO(dirk-thomas) this logic should come from a rosidl related package
     try:
         package_name, message_name = message_type.split('/', 2)
@@ -80,5 +92,9 @@ def publisher(message_type, topic_name, values):
     while rclpy.ok():
         pub.publish(msg)
         print('publishing %r\n' % msg)
-        time.sleep(1)
+        if once:
+            time.sleep(0.1)  # make sure the message reaches the wire before exiting
+            break
+        time.sleep(period)
+    node.destroy_node()
     rclpy.shutdown()
