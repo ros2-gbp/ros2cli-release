@@ -1,0 +1,12 @@
+Source: ros-ardent-ros2service
+Section: misc
+Priority: extra
+Maintainer: William Woodall <william@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-ardent-ament-copyright, ros-ardent-ament-flake8, ros-ardent-ament-pep257, ros-ardent-rclpy, ros-ardent-ros2cli, ros-ardent-ros-workspace, python3-all, python3-setuptools
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-ardent-ros2service
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-yaml, ros-ardent-rclpy, ros-ardent-ros2cli, ros-ardent-ros2srv, ros-ardent-ros2topic, ros-ardent-ros-workspace
+Description: The service command for ROS 2 command line tools.
