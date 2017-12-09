@@ -1,0 +1,12 @@
+Source: ros-ardent-ros2msg
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-ardent-ament-copyright, ros-ardent-ament-flake8, ros-ardent-ament-pep257, ros-ardent-ros2cli, ros-ardent-std-msgs, ros-ardent-ros-workspace, python3-all, python3-setuptools
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-ardent-ros2msg
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, ros-ardent-ament-index-python, ros-ardent-ros2cli, ros-ardent-ros-workspace
+Description: The msg command for ROS 2 command line tools.
