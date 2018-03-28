@@ -3,12 +3,19 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.4.0',
+    version='0.4.1',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],
     },
     data_files=[
+        ('share/ament_index/resource_index/packages', [
+            'resource/ros2cli',
+        ]),
+        ('share/ros2cli', [
+            'resource/local_setup.bash',
+            'resource/local_setup.zsh',
+        ]),
         ('share/ros2cli/environment', [
             'completion/ros2-argcomplete.bash',
             'completion/ros2-argcomplete.zsh'
