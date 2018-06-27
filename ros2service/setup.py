@@ -3,9 +3,10 @@ from setuptools import setup
 
 setup(
     name='ros2service',
-    version='0.4.1',
+    version='0.4.0',
     packages=find_packages(exclude=['test']),
     install_requires=['ros2cli'],
+    zip_safe=True,
     author='William Woodall',
     author_email='william@osrfoundation.org',
     maintainer='William Woodall',

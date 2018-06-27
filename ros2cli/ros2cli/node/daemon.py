@@ -19,13 +19,12 @@ import socket
 import subprocess
 import sys
 import time
+from xmlrpc.client import ProtocolError
+from xmlrpc.client import ServerProxy
 
 import rclpy
 from ros2cli.daemon import get_daemon_port
 from ros2cli.node.direct import DirectNode
-
-from xmlrpc.client import ProtocolError
-from xmlrpc.client import ServerProxy
 
 
 def is_daemon_running(args):
@@ -59,6 +58,11 @@ def spawn_daemon(args, wait_until_spawned=None):
         # Process Creation Flag documented in the MSDN
         DETACHED_PROCESS = 0x00000008  # noqa: N806
         kwargs.update(creationflags=DETACHED_PROCESS)
+        # avoid showing cmd windows for subprocess
+        si = subprocess.STARTUPINFO()
+        si.dwFlags = subprocess.STARTF_USESHOWWINDOW
+        si.wShowWindow = subprocess.SW_HIDE
+        kwargs['startupinfo'] = si
         # don't keep handle of current working directory in daemon process
         kwargs.update(cwd=os.environ.get('SYSTEMROOT', None))
     subprocess.Popen(cmd + [
@@ -87,8 +91,7 @@ class DaemonNode:
     def __init__(self, args):
         self._args = args
         self._proxy = ServerProxy(
-            'http://localhost:%d/%s/' %
-            (get_daemon_port(), rclpy.get_rmw_implementation_identifier()),
+            'http://localhost:%d/ros2cli/' % get_daemon_port(),
             allow_none=True)
         self._methods = []
 

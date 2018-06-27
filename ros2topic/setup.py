@@ -3,9 +3,10 @@ from setuptools import setup
 
 setup(
     name='ros2topic',
-    version='0.4.1',
+    version='0.4.0',
     packages=find_packages(exclude=['test']),
     install_requires=['ros2cli'],
+    zip_safe=True,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
     maintainer='Dirk Thomas',
@@ -33,6 +34,7 @@ The package provides the topic command for the ROS 2 command line tools.""",
         ],
         'ros2topic.verb': [
             'echo = ros2topic.verb.echo:EchoVerb',
+            'info = ros2topic.verb.info:InfoVerb',
             'list = ros2topic.verb.list:ListVerb',
             'pub = ros2topic.verb.pub:PubVerb',
         ],

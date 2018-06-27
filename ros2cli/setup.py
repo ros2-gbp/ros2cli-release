@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.4.1',
+    version='0.4.0',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],
@@ -21,6 +21,7 @@ setup(
             'completion/ros2-argcomplete.zsh'
         ]),
     ],
+    zip_safe=False,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
     maintainer='Dirk Thomas',
