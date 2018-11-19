@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2lifecycle',
-    version='0.5.4',
+    version='0.6.0',
     packages=find_packages(exclude=['test']),
     install_requires=['ros2cli'],
     zip_safe=True,
@@ -35,6 +35,7 @@ The package provides the lifecycle command for the ROS 2 command line tools.""",
         'ros2lifecycle.verb': [
             'get = ros2lifecycle.verb.get:GetVerb',
             'list = ros2lifecycle.verb.list:ListVerb',
+            'nodes = ros2lifecycle.verb.nodes:NodesVerb',
             'set = ros2lifecycle.verb.set:SetVerb',
         ],
     }

@@ -19,6 +19,7 @@ from lifecycle_msgs.srv import GetState
 import rclpy
 
 from ros2node.api import get_node_names as get_all_node_names
+
 from ros2service.api import get_service_names_and_types
 
 
@@ -28,13 +29,13 @@ def get_node_names(*, node, include_hidden_nodes=False):
     service_names_and_types = get_service_names_and_types(node=node)
     return [
         n for n in node_names
-        if _has_lifecycle(n, service_names_and_types)]
+        if _has_lifecycle(n.full_name, service_names_and_types)]
 
 
 def _has_lifecycle(node_name, service_names_and_types):
     for (service_name, service_types) in service_names_and_types:
         if (
-            service_name == '/{node_name}/get_state'.format_map(locals()) and
+            service_name == '{node_name}/get_state'.format_map(locals()) and
             'lifecycle_msgs/GetState' in service_types
         ):
             return True
@@ -48,7 +49,7 @@ def call_get_states(*, node, node_names):
     for node_name in node_names:
         client = node.create_client(
             GetState,
-            '/{node_name}/get_state'.format_map(locals()))
+            '{node_name}/get_state'.format_map(locals()))
         clients[node_name] = client
 
     # wait until all clients have been called
@@ -58,7 +59,6 @@ def call_get_states(*, node, node_names):
             client = clients[node_name]
             if client.service_is_ready():
                 request = GetState.Request()
-                request.node_name = node_name
                 future = client.call_async(request)
                 futures[node_name] = future
 
@@ -82,13 +82,21 @@ def call_get_states(*, node, node_names):
 
 
 def call_get_available_transitions(*, node, states):
+    return _call_get_transitions(node, states, 'get_available_transitions')
+
+
+def call_get_transition_graph(*, node, states):
+    return _call_get_transitions(node, states, 'get_transition_graph')
+
+
+def _call_get_transitions(node, states, service_name):
     clients = {}
     futures = {}
     # create clients
     for node_name in states.keys():
         client = node.create_client(
             GetAvailableTransitions,
-            '/{node_name}/get_available_transitions'.format_map(locals()))
+            '{node_name}/{service_name}'.format_map(locals()))
         clients[node_name] = client
 
     # wait until all clients have been called
@@ -98,7 +106,6 @@ def call_get_available_transitions(*, node, states):
             client = clients[node_name]
             if client.service_is_ready():
                 request = GetAvailableTransitions.Request()
-                request.node_name = node_name
                 future = client.call_async(request)
                 futures[node_name] = future
 
@@ -122,7 +129,7 @@ def call_get_available_transitions(*, node, states):
                     transition_description.start_state == states[node_name]
                 ):
                     transitions[node_name].append(
-                        transition_description.transition)
+                        transition_description)
         else:
             transitions[node_name] = future.exception()
     return transitions
@@ -135,7 +142,7 @@ def call_change_states(*, node, transitions):
     for node_name in transitions.keys():
         client = node.create_client(
             ChangeState,
-            '/{node_name}/change_state'.format_map(locals()))
+            '{node_name}/change_state'.format_map(locals()))
         clients[node_name] = client
 
     # wait until all clients have been called
@@ -145,7 +152,6 @@ def call_change_states(*, node, transitions):
             client = clients[node_name]
             if client.service_is_ready():
                 request = ChangeState.Request()
-                request.node_name = node_name
                 request.transition = transitions[node_name]
                 future = client.call_async(request)
                 futures[node_name] = future

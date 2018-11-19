@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2topic',
-    version='0.5.4',
+    version='0.6.0',
     packages=find_packages(exclude=['test']),
     install_requires=['ros2cli'],
     zip_safe=True,
@@ -33,7 +33,9 @@ The package provides the topic command for the ROS 2 command line tools.""",
             'ros2topic.verb = ros2topic.verb:VerbExtension',
         ],
         'ros2topic.verb': [
+            'delay = ros2topic.verb.delay:DelayVerb',
             'echo = ros2topic.verb.echo:EchoVerb',
+            'hz = ros2topic.verb.hz:HzVerb',
             'info = ros2topic.verb.info:InfoVerb',
             'list = ros2topic.verb.list:ListVerb',
             'pub = ros2topic.verb.pub:PubVerb',
