@@ -54,6 +54,24 @@ class TopicNameCompleter:
                     parsed_args, self.include_hidden_topics_key))
 
 
+def import_message_type(topic_name, message_type):
+    # TODO(dirk-thomas) this logic should come from a rosidl related package
+    try:
+        package_name, message_name = message_type.split('/', 2)
+        if not package_name or not message_name:
+            raise ValueError()
+    except ValueError:
+        raise RuntimeError('The passed message type is invalid')
+
+    # TODO(sloretz) node API to get topic types should indicate if action or msg
+    middle_module = 'msg'
+    if topic_name.endswith('/_action/feedback'):
+        middle_module = 'action'
+
+    module = importlib.import_module(package_name + '.' + middle_module)
+    return getattr(module, message_name)
+
+
 class TopicTypeCompleter:
     """Callable returning an existing topic type or all message types."""
 
@@ -101,14 +119,14 @@ def set_msg_fields(msg, values):
             raise SetFieldError(field_name, e)
 
 
-def get_msg_class(node, topic, blocking=False):
-    msg_class = _get_msg_class(node, topic)
+def get_msg_class(node, topic, blocking=False, include_hidden_topics=False):
+    msg_class = _get_msg_class(node, topic, include_hidden_topics)
     if msg_class:
         return msg_class
     elif blocking:
         print('WARNING: topic [%s] does not appear to be published yet' % topic)
         while rclpy.ok():
-            msg_class = _get_msg_class(node, topic)
+            msg_class = _get_msg_class(node, topic, include_hidden_topics)
             if msg_class:
                 return msg_class
             else:
@@ -118,13 +136,14 @@ def get_msg_class(node, topic, blocking=False):
     return None
 
 
-def _get_msg_class(node, topic):
+def _get_msg_class(node, topic, include_hidden_topics):
     """
     Get message module based on topic name.
 
     :param topic: topic name, ``list`` of ``str``
     """
-    topic_names_and_types = get_topic_names_and_types(node=node)
+    topic_names_and_types = get_topic_names_and_types(
+        node=node, include_hidden_topics=include_hidden_topics)
     try:
         expanded_name = expand_topic_name(topic, node.get_name(), node.get_namespace())
     except ValueError as e:
@@ -146,12 +165,4 @@ def _get_msg_class(node, topic):
         # Could not determine the type for the passed topic
         return None
 
-    # TODO(dirk-thomas) this logic should come from a rosidl related package
-    try:
-        package_name, message_name = message_type.split('/', 2)
-        if not package_name or not message_name:
-            raise ValueError()
-    except ValueError:
-        raise RuntimeError('The passed message type is invalid')
-    module = importlib.import_module(package_name + '.msg')
-    return getattr(module, message_name)
+    return import_message_type(topic, message_type)
