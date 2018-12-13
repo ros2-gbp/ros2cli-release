@@ -1,3 +1,37 @@
+## ros2cli (crystal) - 0.6.2-0
+
+The packages in the `ros2cli` repository were released into the `crystal` distro by running `/usr/bin/bloom-release -r crystal ros2cli --override-release-repository-push-url git@github.com:ros2-gbp/ros2cli-release` on `Thu, 13 Dec 2018 06:28:56 -0000`
+
+These packages were released:
+- `ros2cli`
+- `ros2lifecycle`
+- `ros2msg`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2srv`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli.git
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.6.1-0`
+- old version: `0.6.1-0`
+- new version: `0.6.2-0`
+
+Versions of tools used:
+
+- bloom version: `0.6.9`
+- catkin_pkg version: `0.4.9`
+- rosdep version: `0.13.0`
+- rosdistro version: `0.7.0`
+- vcstools version: `0.1.40`
+
+
 ## ros2cli (crystal) - 0.6.1-0
 
 The packages in the `ros2cli` repository were released into the `crystal` distro by running `/usr/bin/bloom-release --rosdistro crystal --track crystal ros2cli --override-release-repository-push-url git@github.com:ros2-gbp/ros2cli-release.git` on `Fri, 07 Dec 2018 04:27:51 -0000`
