@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2node',
-    version='0.6.2',
+    version='0.6.3',
     packages=find_packages(exclude=['test']),
     install_requires=['ros2cli'],
     zip_safe=True,
@@ -33,8 +33,8 @@ The package provides the node command for the ROS 2 command line tools.""",
             'ros2node.verb = ros2node.verb:VerbExtension',
         ],
         'ros2node.verb': [
-            'list = ros2node.verb.list:ListVerb',
             'info = ros2node.verb.info:InfoVerb',
+            'list = ros2node.verb.list:ListVerb',
         ],
     }
 )
