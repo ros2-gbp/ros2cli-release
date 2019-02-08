@@ -14,10 +14,8 @@
 
 from collections import namedtuple
 
+from rclpy.node import HIDDEN_NODE_PREFIX
 from ros2cli.node.strategy import NodeStrategy
-
-# TODO(mikaelarguedas) revisit this once it's specified
-HIDDEN_NODE_PREFIX = '_'
 
 NodeName = namedtuple('NodeName', ('name', 'namespace', 'full_name'))
 TopicInfo = namedtuple('Topic', ('name', 'types'))
@@ -87,9 +85,10 @@ class NodeNameCompleter:
         self.include_hidden_nodes_key = include_hidden_nodes_key
 
     def __call__(self, prefix, parsed_args, **kwargs):
+        include_hidden_nodes = getattr(
+            parsed_args, self.include_hidden_nodes_key) \
+            if self.include_hidden_nodes_key else False
         with NodeStrategy(parsed_args) as node:
             return [
                 n.full_name for n in get_node_names(
-                    node=node,
-                    include_hidden_nodes=getattr(
-                        parsed_args, self.include_hidden_nodes_key))]
+                    node=node, include_hidden_nodes=include_hidden_nodes)]
