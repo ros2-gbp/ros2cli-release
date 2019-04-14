@@ -1,3 +1,38 @@
+## ros2cli (dashing) - 0.7.0-1
+
+The packages in the `ros2cli` repository were released into the `dashing` distro by running `/usr/bin/bloom-release -n -r dashing ros2cli --override-release-repository-push-url git@github.com:ros2-gbp/ros2cli-release` on `Sun, 14 Apr 2019 22:06:04 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2lifecycle`
+- `ros2msg`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2srv`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `0.7.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.8.0`
+- catkin_pkg version: `0.4.11`
+- rosdep version: `0.15.1`
+- rosdistro version: `0.7.3`
+- vcstools version: `0.1.40`
+
+
 ## ros2cli (crystal) - 0.6.3-0
 
 The packages in the `ros2cli` repository were released into the `crystal` distro by running `/usr/bin/bloom-release -r crystal ros2cli --override-release-repository-push-url git@github.com:ros2-gbp/ros2cli-release` on `Fri, 08 Feb 2019 19:13:22 -0000`
