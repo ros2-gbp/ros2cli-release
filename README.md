@@ -1,3 +1,39 @@
+## ros2cli (dashing) - 0.7.2-1
+
+The packages in the `ros2cli` repository were released into the `dashing` distro by running `/home/jacob/.local/bin/bloom-release -r dashing ros2cli` on `Thu, 09 May 2019 00:24:43 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2component`
+- `ros2lifecycle`
+- `ros2msg`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2srv`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.7.1-1`
+- old version: `0.7.1-1`
+- new version: `0.7.2-1`
+
+Versions of tools used:
+
+- bloom version: `0.8.0`
+- catkin_pkg version: `0.4.12`
+- rosdep version: `0.15.1`
+- rosdistro version: `0.7.4`
+- vcstools version: `0.1.40`
+
+
 ## ros2cli (dashing) - 0.7.1-1
 
 The packages in the `ros2cli` repository were released into the `dashing` distro by running `/usr/bin/bloom-release --rosdistro dashing --track dashing ros2cli --override-release-repository-push-url git@github.com:ros2-gbp/ros2cli-release.git` on `Wed, 17 Apr 2019 22:17:43 -0000`
