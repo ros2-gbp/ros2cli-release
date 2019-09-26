@@ -1,10 +1,17 @@
 from setuptools import find_packages
 from setuptools import setup
 
+package_name = 'ros2topic'
+
 setup(
-    name='ros2topic',
-    version='0.7.0',
+    name=package_name,
+    version='0.8.0',
     packages=find_packages(exclude=['test']),
+    data_files=[
+        ('share/' + package_name, ['package.xml']),
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+    ],
     install_requires=['ros2cli'],
     zip_safe=True,
     author='Dirk Thomas',
@@ -36,10 +43,12 @@ The package provides the topic command for the ROS 2 command line tools.""",
             'bw = ros2topic.verb.bw:BwVerb',
             'delay = ros2topic.verb.delay:DelayVerb',
             'echo = ros2topic.verb.echo:EchoVerb',
+            'find = ros2topic.verb.find:FindVerb',
             'hz = ros2topic.verb.hz:HzVerb',
             'info = ros2topic.verb.info:InfoVerb',
             'list = ros2topic.verb.list:ListVerb',
             'pub = ros2topic.verb.pub:PubVerb',
+            'type = ros2topic.verb.type:TypeVerb',
         ],
     }
 )

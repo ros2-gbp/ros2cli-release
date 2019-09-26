@@ -1,10 +1,17 @@
 from setuptools import find_packages
 from setuptools import setup
 
+package_name = 'ros2param'
+
 setup(
-    name='ros2param',
-    version='0.7.0',
+    name=package_name,
+    version='0.8.0',
     packages=find_packages(exclude=['test']),
+    data_files=[
+        ('share/' + package_name, ['package.xml']),
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+    ],
     install_requires=['ros2cli'],
     zip_safe=True,
     author='Dirk Thomas',
@@ -34,6 +41,7 @@ The package provides the param command for the ROS 2 command line tools.""",
         ],
         'ros2param.verb': [
             'delete = ros2param.verb.delete:DeleteVerb',
+            'dump = ros2param.verb.dump:DumpVerb',
             'get = ros2param.verb.get:GetVerb',
             'list = ros2param.verb.list:ListVerb',
             'set = ros2param.verb.set:SetVerb',

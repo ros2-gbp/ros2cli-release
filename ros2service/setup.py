@@ -1,10 +1,17 @@
 from setuptools import find_packages
 from setuptools import setup
 
+package_name = 'ros2service'
+
 setup(
-    name='ros2service',
-    version='0.7.0',
+    name=package_name,
+    version='0.8.0',
     packages=find_packages(exclude=['test']),
+    data_files=[
+        ('share/' + package_name, ['package.xml']),
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+    ],
     install_requires=['ros2cli'],
     zip_safe=True,
     author='William Woodall',
@@ -34,7 +41,9 @@ The package provides the service command for the ROS 2 command line tools.""",
         ],
         'ros2service.verb': [
             'call = ros2service.verb.call:CallVerb',
+            'find = ros2service.verb.find:FindVerb',
             'list = ros2service.verb.list:ListVerb',
+            'type = ros2service.verb.type:TypeVerb',
         ],
     }
 )
