@@ -5,7 +5,7 @@ package_name = 'ros2doctor'
 
 setup(
     name=package_name,
-    version='0.8.0',
+    version='0.8.1',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -40,12 +40,14 @@ setup(
         'ros2doctor.checks': [
             'PlatformCheck = ros2doctor.api.platform:PlatformCheck',
             'NetworkCheck = ros2doctor.api.network:NetworkCheck',
+            'TopicCheck = ros2doctor.api.topic:TopicCheck',
         ],
         'ros2doctor.report': [
             'PlatformReport = ros2doctor.api.platform:PlatformReport',
             'RosdistroReport = ros2doctor.api.platform:RosdistroReport',
             'NetworkReport = ros2doctor.api.network:NetworkReport',
             'RMWReport = ros2doctor.api.rmw:RMWReport',
+            'TopicReport = ros2doctor.api.topic:TopicReport',
         ],
     }
 )
