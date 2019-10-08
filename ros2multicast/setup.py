@@ -5,7 +5,7 @@ package_name = 'ros2multicast'
 
 setup(
     name=package_name,
-    version='0.8.1',
+    version='0.8.2',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -34,10 +34,10 @@ The package provides the multicast command for the ROS 2 command line tools.""",
     tests_require=['pytest'],
     entry_points={
         'ros2cli.command': [
-            'multicast = ros2node.command.multicast:MulticastCommand',
+            'multicast = ros2multicast.command.multicast:MulticastCommand',
         ],
         'ros2cli.extension_point': [
-            'ros2node.verb = ros2node.verb:VerbExtension',
+            'ros2multicast.verb = ros2multicast.verb:VerbExtension',
         ],
         'ros2multicast.verb': [
             'receive = ros2multicast.verb.receive:ReceiveVerb',
