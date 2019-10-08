@@ -1,3 +1,44 @@
+## ros2cli (eloquent) - 0.8.2-1
+
+The packages in the `ros2cli` repository were released into the `eloquent` distro by running `/usr/bin/bloom-release -r eloquent -t eloquent ros2cli` on `Tue, 08 Oct 2019 15:44:15 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2component`
+- `ros2doctor`
+- `ros2interface`
+- `ros2lifecycle`
+- `ros2msg`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2srv`
+- `ros2topic`
+
+These packages were explicitly ignored:
+- `test_ros2cli`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli.git
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.8.1-1`
+- old version: `0.8.1-1`
+- new version: `0.8.2-1`
+
+Versions of tools used:
+
+- bloom version: `0.8.0`
+- catkin_pkg version: `0.4.13`
+- rosdep version: `0.16.1`
+- rosdistro version: `0.7.5`
+- vcstools version: `0.1.42`
+
+
 ## ros2cli (eloquent) - 0.8.1-1
 
 The packages in the `ros2cli` repository were released into the `eloquent` distro by running `/usr/bin/bloom-release --rosdistro eloquent ros2cli` on `Fri, 04 Oct 2019 23:21:32 -0000`
