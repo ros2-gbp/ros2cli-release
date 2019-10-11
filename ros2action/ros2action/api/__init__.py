@@ -22,8 +22,6 @@ import rclpy.action
 from rclpy.expand_topic_name import expand_topic_name
 from rclpy.validate_full_topic_name import validate_full_topic_name
 from ros2cli.node.direct import DirectNode
-from rosidl_runtime_py.convert import message_to_yaml
-from rosidl_runtime_py.utilities import get_action
 
 
 def _is_action_status_topic(topic_name, action_name):
@@ -141,14 +139,3 @@ class ActionTypeCompleter:
                 if n == action_name:
                     return t
         return []
-
-
-class ActionGoalPrototypeCompleter:
-    """Callable returning an action goal prototype."""
-
-    def __init__(self, *, action_type_key=None):
-        self.action_type_key = action_type_key
-
-    def __call__(self, prefix, parsed_args, **kwargs):
-        action = get_action(getattr(parsed_args, self.action_type_key))
-        return [message_to_yaml(action.Goal())]

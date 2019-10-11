@@ -64,10 +64,6 @@ class EchoVerb(VerbExtension):
             '--truncate-length', '-l', type=unsigned_int, default=DEFAULT_TRUNCATE_LENGTH,
             help='The length to truncate arrays, bytes, and string to '
                  '(default: %d)' % DEFAULT_TRUNCATE_LENGTH)
-        parser.add_argument(
-            '--no-arr', action='store_true', help="Don't print array fields of messages")
-        parser.add_argument(
-            '--no-str', action='store_true', help="Don't print string fields of messages")
 
     def main(self, *, args):
         return main(args)
@@ -75,11 +71,9 @@ class EchoVerb(VerbExtension):
 
 def main(args):
     if not args.csv:
-        truncate_length = args.truncate_length if not args.full_length else None
-        callback = subscriber_cb(truncate_length, args.no_arr, args.no_str)
+        callback = subscriber_cb(args.truncate_length if not args.full_length else None)
     else:
-        truncate_length = args.truncate_length if not args.full_length else None
-        callback = subscriber_cb_csv(truncate_length, args.no_arr, args.no_str)
+        callback = subscriber_cb_csv(args.truncate_length if not args.full_length else None)
     with DirectNode(args) as node:
         subscriber(
             node.node, args.topic_name, args.message_type, callback)
@@ -118,18 +112,15 @@ def subscriber(node, topic_name, message_type, callback):
         rclpy.spin_once(node)
 
 
-def subscriber_cb(truncate_length, noarr, nostr):
+def subscriber_cb(truncate_length):
     def cb(msg):
-        nonlocal truncate_length, noarr, nostr
-        print(
-            message_to_yaml(
-                msg, truncate_length=truncate_length, no_arr=noarr, no_str=nostr),
-            end='---\n')
+        nonlocal truncate_length
+        print(message_to_yaml(msg, truncate_length), end='---\n')
     return cb
 
 
-def subscriber_cb_csv(truncate_length, noarr, nostr):
+def subscriber_cb_csv(truncate_length):
     def cb(msg):
-        nonlocal truncate_length, noarr, nostr
-        print(message_to_csv(msg, truncate_length=truncate_length, no_arr=noarr, no_str=nostr))
+        nonlocal truncate_length
+        print(message_to_csv(msg, truncate_length))
     return cb
