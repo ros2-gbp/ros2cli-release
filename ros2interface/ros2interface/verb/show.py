@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ros2interface.api import get_interface_path
 from ros2interface.api import type_completer
 from ros2interface.verb import VerbExtension
+from rosidl_runtime_py import get_interface_path
 
 
 class ShowVerb(VerbExtension):
@@ -27,17 +27,9 @@ class ShowVerb(VerbExtension):
         arg.completer = type_completer
 
     def main(self, *, args):
-        # TODO(kucheria) this logic should come from a rosidl related package
         try:
-            parts = args.type.split('/')
-            if len(parts) < 2:
-                raise ValueError()
-            if not all(parts):
-                raise ValueError()
-            file_path = get_interface_path(parts)
-        except ValueError:
-            raise RuntimeError('The passed interface type is invalid')
+            file_path = get_interface_path(args.type)
         except LookupError as e:
             return str(e)
         with open(file_path, 'r', encoding='utf-8') as h:
-            print(h.read(), end='')
+            print(h.read().rstrip())
