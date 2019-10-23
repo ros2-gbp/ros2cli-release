@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.7.7',
+    version='0.8.3',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],
@@ -14,8 +14,7 @@ setup(
         ]),
         ('share/ros2cli', [
             'package.xml',
-            'resource/local_setup.bash',
-            'resource/local_setup.zsh',
+            'resource/package.dsv',
         ]),
         ('share/ros2cli/environment', [
             'completion/ros2-argcomplete.bash',

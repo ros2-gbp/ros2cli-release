@@ -202,8 +202,9 @@ def find_container_node_names(*, node, node_names):
     container_node_names = []
     for n in node_names:
         try:
-            services = get_service_info(node=node, remote_node_name=n.full_name)
-        except RuntimeError:
+            services = get_service_info(
+                node=node, remote_node_name=n.full_name, include_hidden=True)
+        except rclpy.node.NodeNameNonExistentError:
             continue
         if not any(s.name.endswith('_container/load_node') and
                    'composition_interfaces/srv/LoadNode' in s.types
@@ -287,4 +288,6 @@ def run_standalone_container(*, container_node_name):
     if executable_path is None:
         raise RuntimeError('No component container node found!')
 
-    return subprocess.Popen([executable_path, '__node:=' + container_node_name])
+    return subprocess.Popen([
+        executable_path, '--ros-args', '-r', '__node:=' + container_node_name
+    ])
