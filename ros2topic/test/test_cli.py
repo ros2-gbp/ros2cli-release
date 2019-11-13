@@ -262,7 +262,7 @@ class TestROS2TopicCLI(unittest.TestCase):
         assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                'Topic: /chatter',
+                'Type: std_msgs/msg/String',
                 'Publisher count: 1',
                 'Subscriber count: 0'
             ],
@@ -273,12 +273,9 @@ class TestROS2TopicCLI(unittest.TestCase):
     def test_info_on_unknown_topic(self):
         with self.launch_topic_command(arguments=['info', '/unknown_topic']) as topic_command:
             assert topic_command.wait_for_shutdown(timeout=10)
-        assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                'Topic: /unknown_topic',
-                'Publisher count: 0',
-                'Subscriber count: 0'
+                "Unknown topic '/unknown_topic'",
             ],
             text=topic_command.output,
             strict=True
@@ -518,10 +515,10 @@ class TestROS2TopicCLI(unittest.TestCase):
                     ''
                 ], strict=True
             ), timeout=10)
-            self.listener_node.wait_for_output(functools.partial(
+            assert self.listener_node.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
                     '[INFO] [listener]: I heard: [foo]'
-                ] * 3, strict=True
+                ] * 3, strict=False
             ), timeout=10)
         assert topic_command.wait_for_shutdown(timeout=10)
 
@@ -542,10 +539,10 @@ class TestROS2TopicCLI(unittest.TestCase):
                 ], strict=True
             ), timeout=10)
             assert topic_command.wait_for_shutdown(timeout=10)
-            self.listener_node.wait_for_output(functools.partial(
+            assert self.listener_node.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
                     '[INFO] [listener]: I heard: [bar]'
-                ], strict=True
+                ], strict=False
             ), timeout=10)
         assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
 
@@ -568,10 +565,10 @@ class TestROS2TopicCLI(unittest.TestCase):
                     ''
                 ], strict=True
             ), timeout=10), 'Output does not match: ' + topic_command.output
-            self.listener_node.wait_for_output(functools.partial(
+            assert self.listener_node.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
                     '[INFO] [listener]: I heard: [fizz]'
-                ], strict=True
+                ], strict=False
             ), timeout=10)
         assert topic_command.wait_for_shutdown(timeout=10)
 
