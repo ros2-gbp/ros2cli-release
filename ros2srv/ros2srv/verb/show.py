@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import warnings
-
 from ros2srv.api import get_service_path
 from ros2srv.api import service_type_completer
 from ros2srv.verb import VerbExtension
@@ -43,16 +41,9 @@ class ShowVerb(VerbExtension):
                 raise ValueError()
         except ValueError:
             raise RuntimeError('The passed service type is invalid')
-
-        fqn = '/'.join(parts)
-        warnings.warn(
-            "'ros2 srv' is deprecated and will be removed in a future ROS release. "
-            f"Instead use: 'ros2 interface show {fqn}.srv'"
-        )
-
         try:
             path = get_service_path(package_name, service_name)
         except LookupError as e:
             return str(e)
         with open(path, 'r') as h:
-            print(h.read().rstrip())
+            print(h.read(), end='')

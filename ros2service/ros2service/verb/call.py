@@ -18,7 +18,6 @@ import time
 import rclpy
 from ros2cli.node import NODE_NAME_PREFIX
 from ros2service.api import ServiceNameCompleter
-from ros2service.api import ServicePrototypeCompleter
 from ros2service.api import ServiceTypeCompleter
 from ros2service.verb import VerbExtension
 from rosidl_runtime_py import set_message_fields
@@ -39,13 +38,11 @@ class CallVerb(VerbExtension):
             help="Type of the ROS service (e.g. 'std_srvs/srv/Empty')")
         arg.completer = ServiceTypeCompleter(
             service_name_key='service_name')
-        arg = parser.add_argument(
+        parser.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the service request with in YAML format ' +
                  '(e.g. "{a: 1, b: 2}"), ' +
                  'otherwise the service request will be published with default values')
-        arg.completer = ServicePrototypeCompleter(
-            service_type_key='service_type')
         parser.add_argument(
             '-r', '--rate', metavar='N', type=float,
             help='Repeat the call at a specific rate in Hz')

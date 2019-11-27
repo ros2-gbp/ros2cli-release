@@ -43,7 +43,6 @@ class CreateVerb(VerbExtension):
             'package_name',
             help='The package name')
         parser.add_argument(
-            '--package-format',
             '--package_format',
             type=int,
             default=3,
@@ -78,10 +77,10 @@ class CreateVerb(VerbExtension):
             '--maintainer-name', default=getpass.getuser(),
             help='name of the maintainer of this package'),
         parser.add_argument(
-            '--node-name',
+            '--node-name', '--cpp-node-name',
             help='name of the empty executable')
         parser.add_argument(
-            '--library-name',
+            '--library-name', '--cpp-library-name',
             help='name of the empty library')
 
     def main(self, *, args):
@@ -157,7 +156,7 @@ class CreateVerb(VerbExtension):
         print('version:', package.version)
         print('description:', package.description)
         print('maintainer:', [str(maintainer) for maintainer in package.maintainers])
-        print('licenses:', package.licenses)
+        print('licenses:', [license_ for license_ in package.licenses])
         print('build type:', package.get_build_type())
         print('dependencies:', [str(dependency) for dependency in package.build_depends])
         if node_name:

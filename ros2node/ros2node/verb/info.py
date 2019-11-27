@@ -15,8 +15,6 @@
 from ros2cli.node.direct import DirectNode
 from ros2cli.node.strategy import add_arguments
 from ros2cli.node.strategy import NodeStrategy
-from ros2node.api import get_action_client_info
-from ros2node.api import get_action_server_info
 from ros2node.api import get_node_names
 from ros2node.api import get_publisher_info
 from ros2node.api import get_service_client_info
@@ -39,22 +37,17 @@ class InfoVerb(VerbExtension):
             'node_name',
             help='Node name to request information')
         argument.completer = NodeNameCompleter()
-        parser.add_argument(
-            '--include-hidden', action='store_true',
-            help='Display hidden topics, services, and actions as well')
 
     def main(self, *, args):
         with NodeStrategy(args) as node:
             node_names = get_node_names(node=node, include_hidden_nodes=True)
-        if args.node_name in (n.full_name for n in node_names):
+        if args.node_name in [n.full_name for n in node_names]:
             with DirectNode(args) as node:
                 print(args.node_name)
-                subscribers = get_subscriber_info(
-                    node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
+                subscribers = get_subscriber_info(node=node, remote_node_name=args.node_name)
                 print('  Subscribers:')
                 print_names_and_types(subscribers)
-                publishers = get_publisher_info(
-                    node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
+                publishers = get_publisher_info(node=node, remote_node_name=args.node_name)
                 print('  Publishers:')
                 print_names_and_types(publishers)
                 service_servers = get_service_server_info(
@@ -65,13 +58,5 @@ class InfoVerb(VerbExtension):
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
                 print('  Service Clients:')
                 print_names_and_types(service_clients)
-                actions_servers = get_action_server_info(
-                    node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Action Servers:')
-                print_names_and_types(actions_servers)
-                actions_clients = get_action_client_info(
-                    node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Action Clients:')
-                print_names_and_types(actions_clients)
         else:
             return "Unable to find node '" + args.node_name + "'"

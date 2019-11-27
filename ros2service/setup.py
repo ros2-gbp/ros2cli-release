@@ -5,7 +5,7 @@ package_name = 'ros2service'
 
 setup(
     name=package_name,
-    version='0.8.6',
+    version='0.7.8',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -41,9 +41,7 @@ The package provides the service command for the ROS 2 command line tools.""",
         ],
         'ros2service.verb': [
             'call = ros2service.verb.call:CallVerb',
-            'find = ros2service.verb.find:FindVerb',
             'list = ros2service.verb.list:ListVerb',
-            'type = ros2service.verb.type:TypeVerb',
         ],
     }
 )

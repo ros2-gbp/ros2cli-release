@@ -22,7 +22,7 @@ DEFAULT_TIMEOUT = 0.5
 
 class DirectNode:
 
-    def __init__(self, args, *, node_name=None):
+    def __init__(self, args):
         timeout_reached = False
 
         def timer_callback():
@@ -35,12 +35,8 @@ class DirectNode:
             args, 'node_name_suffix', '_%d' % os.getpid())
         start_parameter_services = getattr(
             args, 'start_parameter_services', False)
-
-        if node_name is None:
-            node_name = NODE_NAME_PREFIX + node_name_suffix
-
         self.node = rclpy.create_node(
-            node_name,
+            NODE_NAME_PREFIX + node_name_suffix,
             start_parameter_services=start_parameter_services)
         timeout = getattr(args, 'spin_time', DEFAULT_TIMEOUT)
         timer = self.node.create_timer(timeout, timer_callback)
