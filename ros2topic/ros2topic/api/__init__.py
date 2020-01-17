@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import importlib
 
 from time import sleep
@@ -22,7 +23,9 @@ from rclpy.expand_topic_name import expand_topic_name
 from rclpy.topic_or_service_is_hidden import topic_or_service_is_hidden
 from rclpy.validate_full_topic_name import validate_full_topic_name
 from ros2cli.node.strategy import NodeStrategy
-from ros2msg.api import message_type_completer
+from rosidl_runtime_py import get_message_interfaces
+from rosidl_runtime_py import message_to_yaml
+from rosidl_runtime_py.utilities import get_message
 
 
 def get_topic_names_and_types(*, node, include_hidden_topics=False):
@@ -70,6 +73,16 @@ def import_message_type(topic_name, message_type):
 
     module = importlib.import_module(package_name + '.' + middle_module)
     return getattr(module, message_name[-1])
+
+
+def message_type_completer(**kwargs):
+    """Callable returning a list of message types."""
+    message_types = []
+    message_types_dict = get_message_interfaces()
+    for package_name in sorted(message_types_dict.keys()):
+        for message_name in sorted(message_types_dict[package_name]):
+            message_types.append(f'{package_name}/{message_name}')
+    return message_types
 
 
 class TopicTypeCompleter:
@@ -137,3 +150,55 @@ def _get_msg_class(node, topic, include_hidden_topics):
         return None
 
     return import_message_type(topic, message_type)
+
+
+class TopicMessagePrototypeCompleter:
+    """Callable returning a message prototype."""
+
+    def __init__(self, *, topic_type_key=None):
+        self.topic_type_key = topic_type_key
+
+    def __call__(self, prefix, parsed_args, **kwargs):
+        message = get_message(getattr(parsed_args, self.topic_type_key))
+        return [message_to_yaml(message())]
+
+
+def qos_profile_from_short_keys(
+    preset_profile: str, reliability: str = None, durability: str = None,
+) -> rclpy.qos.QoSProfile:
+    """Construct a QoSProfile given the name of a preset, and optional overrides."""
+    # Build a QoS profile based on user-supplied arguments
+    profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(preset_profile)
+    if durability:
+        profile.durability = rclpy.qos.QoSDurabilityPolicy.get_from_short_key(durability)
+    if reliability:
+        profile.reliability = rclpy.qos.QoSReliabilityPolicy.get_from_short_key(reliability)
+
+    return profile
+
+
+def add_qos_arguments_to_argument_parser(
+    parser: argparse.ArgumentParser, is_publisher: bool = True, default_preset: str = 'sensor_data'
+) -> None:
+    """Extend an existing ArgumentParser to allow input of QoS policy overrides."""
+    verb = 'publish' if is_publisher else 'subscribe'
+    parser.add_argument(
+        '--qos-profile',
+        choices=rclpy.qos.QoSPresetProfiles.short_keys(),
+        default=default_preset,
+        help='Quality of service preset profile to {} with (default: {})'
+             .format(verb, default_preset))
+    default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(
+        default_preset)
+    parser.add_argument(
+        '--qos-reliability',
+        choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
+        help='Quality of service reliability setting to {} with '
+             '(overrides reliability value of --qos-profile option, default: {})'
+             .format(verb, default_profile.reliability.short_key))
+    parser.add_argument(
+        '--qos-durability',
+        choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
+        help='Quality of service durability setting to {} with '
+             '(overrides durability value of --qos-profile option, default: {})'
+             .format(verb, default_profile.durability.short_key))

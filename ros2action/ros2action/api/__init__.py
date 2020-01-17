@@ -22,6 +22,8 @@ import rclpy.action
 from rclpy.expand_topic_name import expand_topic_name
 from rclpy.validate_full_topic_name import validate_full_topic_name
 from ros2cli.node.direct import DirectNode
+from rosidl_runtime_py.convert import message_to_yaml
+from rosidl_runtime_py.utilities import get_action
 
 
 def _is_action_status_topic(topic_name, action_name):
@@ -82,10 +84,10 @@ def get_action_types(package_name):
     interface_names = content.splitlines()
     # TODO(jacobperron) this logic should come from a rosidl related package
     # Only return actions in action folder
-    return list(sorted({
+    return {
         n[7:-7]
         for n in interface_names
-        if n.startswith('action/') and n[-7:] in ('.idl', '.action')}))
+        if n.startswith('action/') and n[-7:] in ('.idl', '.action')}
 
 
 def get_all_action_types():
@@ -115,8 +117,9 @@ def action_name_completer(prefix, parsed_args, **kwargs):
 def action_type_completer(**kwargs):
     """Callable returning a list of action types."""
     action_types = []
-    for package_name, action_names in get_all_action_types().items():
-        for action_name in action_names:
+    action_types_dict = get_all_action_types()
+    for package_name in sorted(action_types_dict.keys()):
+        for action_name in sorted(action_types_dict[package_name]):
             action_types.append(
                 '{package_name}/action/{action_name}'.format_map(locals()))
     return action_types
@@ -139,3 +142,14 @@ class ActionTypeCompleter:
                 if n == action_name:
                     return t
         return []
+
+
+class ActionGoalPrototypeCompleter:
+    """Callable returning an action goal prototype."""
+
+    def __init__(self, *, action_type_key=None):
+        self.action_type_key = action_type_key
+
+    def __call__(self, prefix, parsed_args, **kwargs):
+        action = get_action(getattr(parsed_args, self.action_type_key))
+        return [message_to_yaml(action.Goal())]

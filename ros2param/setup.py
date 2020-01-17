@@ -5,7 +5,7 @@ package_name = 'ros2param'
 
 setup(
     name=package_name,
-    version='0.7.9',
+    version='0.8.7',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -41,6 +41,8 @@ The package provides the param command for the ROS 2 command line tools.""",
         ],
         'ros2param.verb': [
             'delete = ros2param.verb.delete:DeleteVerb',
+            'describe = ros2param.verb.describe:DescribeVerb',
+            'dump = ros2param.verb.dump:DumpVerb',
             'get = ros2param.verb.get:GetVerb',
             'list = ros2param.verb.list:ListVerb',
             'set = ros2param.verb.set:SetVerb',
