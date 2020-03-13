@@ -1,0 +1,12 @@
+Source: ros-dashing-ros2cli
+Section: misc
+Priority: optional
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest, ros-dashing-ament-copyright, ros-dashing-ament-flake8, ros-dashing-ament-pep257, ros-dashing-ament-xmllint, ros-dashing-ros-workspace, python3-all, python3-setuptools
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-dashing-ros2cli
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-pkg-resources, ros-dashing-rclpy, ros-dashing-ros-workspace
+Description: Framework for ROS 2 command line tools.
