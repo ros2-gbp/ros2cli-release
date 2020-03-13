@@ -5,7 +5,7 @@ package_name = 'ros2pkg'
 
 setup(
     name=package_name,
-    version='0.8.7',
+    version='0.7.10',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -44,7 +44,6 @@ The package provides the pkg command for the ROS 2 command line tools.""",
             'executables = ros2pkg.verb.executables:ExecutablesVerb',
             'list = ros2pkg.verb.list:ListVerb',
             'prefix = ros2pkg.verb.prefix:PrefixVerb',
-            'xml = ros2pkg.verb.xml:XmlVerb',
         ],
     },
     package_data={

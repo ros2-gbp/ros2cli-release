@@ -43,7 +43,6 @@ class CreateVerb(VerbExtension):
             'package_name',
             help='The package name')
         parser.add_argument(
-            '--package-format',
             '--package_format',
             type=int,
             default=3,
@@ -78,10 +77,10 @@ class CreateVerb(VerbExtension):
             '--maintainer-name', default=getpass.getuser(),
             help='name of the maintainer of this package'),
         parser.add_argument(
-            '--node-name',
+            '--node-name', '--cpp-node-name',
             help='name of the empty executable')
         parser.add_argument(
-            '--library-name',
+            '--library-name', '--cpp-library-name',
             help='name of the empty library')
 
     def main(self, *, args):
@@ -114,9 +113,12 @@ class CreateVerb(VerbExtension):
                 print('[WARNING] node name can not be equal to the library name', file=sys.stderr)
                 print('[WARNING] renaming node to %s' % node_name, file=sys.stderr)
 
-        buildtool_depends = args.build_type
-        if args.build_type == 'ament_cmake' and args.library_name:
-            buildtool_depends = 'ament_cmake_ros'
+        buildtool_depends = []
+        if args.build_type == 'ament_cmake':
+            if args.library_name:
+                buildtool_depends = ['ament_cmake_ros']
+            else:
+                buildtool_depends = ['ament_cmake']
 
         test_dependencies = []
         if args.build_type == 'ament_cmake':
@@ -139,7 +141,7 @@ class CreateVerb(VerbExtension):
             description=args.description,
             maintainers=[maintainer],
             licenses=[args.license],
-            buildtool_depends=[Dependency(buildtool_depends)],
+            buildtool_depends=[Dependency(dep) for dep in buildtool_depends],
             build_depends=[Dependency(dep) for dep in args.dependencies],
             test_depends=[Dependency(dep) for dep in test_dependencies],
             exports=[Export('build_type', content=args.build_type)]
@@ -157,7 +159,7 @@ class CreateVerb(VerbExtension):
         print('version:', package.version)
         print('description:', package.description)
         print('maintainer:', [str(maintainer) for maintainer in package.maintainers])
-        print('licenses:', package.licenses)
+        print('licenses:', [license_ for license_ in package.licenses])
         print('build type:', package.get_build_type())
         print('dependencies:', [str(dependency) for dependency in package.build_depends])
         if node_name:

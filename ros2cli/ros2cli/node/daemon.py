@@ -42,7 +42,7 @@ def is_daemon_running(args):
     return False
 
 
-def spawn_daemon(args, wait_until_spawned=None, debug=False):
+def spawn_daemon(args, wait_until_spawned=None):
     ros_domain_id = int(os.environ.get('ROS_DOMAIN_ID', 0))
     kwargs = {}
     if platform.system() != 'Windows':
@@ -72,14 +72,11 @@ def spawn_daemon(args, wait_until_spawned=None, debug=False):
             'Unable to get rmw_implementation_identifier, '
             'try specifying the implementation to use via the '
             "'RMW_IMPLEMENTATION' environment variable")
-    cmd.extend([
+    subprocess.Popen(cmd + [
         # the arguments are only passed for visibility in e.g. the process list
         '--rmw-implementation', rmw_implementation_identifier,
-        '--ros-domain-id', str(ros_domain_id)])
-    if not debug:
-        kwargs['stdout'] = subprocess.DEVNULL
-        kwargs['stderr'] = subprocess.DEVNULL
-    subprocess.Popen(cmd, **kwargs)
+        '--ros-domain-id', str(ros_domain_id)],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kwargs)
 
     if wait_until_spawned is None:
         return True
