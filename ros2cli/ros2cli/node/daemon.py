@@ -19,12 +19,13 @@ import socket
 import subprocess
 import sys
 import time
-from xmlrpc.client import ProtocolError
-from xmlrpc.client import ServerProxy
 
 import rclpy
 from ros2cli.daemon import get_daemon_port
 from ros2cli.node.direct import DirectNode
+
+from ros2cli.xmlrpc.client import ProtocolError
+from ros2cli.xmlrpc.client import ServerProxy
 
 
 def is_daemon_running(args):
@@ -42,7 +43,7 @@ def is_daemon_running(args):
     return False
 
 
-def spawn_daemon(args, wait_until_spawned=None):
+def spawn_daemon(args, wait_until_spawned=None, debug=False):
     ros_domain_id = int(os.environ.get('ROS_DOMAIN_ID', 0))
     kwargs = {}
     if platform.system() != 'Windows':
@@ -72,11 +73,14 @@ def spawn_daemon(args, wait_until_spawned=None):
             'Unable to get rmw_implementation_identifier, '
             'try specifying the implementation to use via the '
             "'RMW_IMPLEMENTATION' environment variable")
-    subprocess.Popen(cmd + [
+    cmd.extend([
         # the arguments are only passed for visibility in e.g. the process list
         '--rmw-implementation', rmw_implementation_identifier,
-        '--ros-domain-id', str(ros_domain_id)],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kwargs)
+        '--ros-domain-id', str(ros_domain_id)])
+    if not debug:
+        kwargs['stdout'] = subprocess.DEVNULL
+        kwargs['stderr'] = subprocess.DEVNULL
+    subprocess.Popen(cmd, **kwargs)
 
     if wait_until_spawned is None:
         return True

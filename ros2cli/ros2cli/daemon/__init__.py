@@ -1,4 +1,4 @@
-# Copyright 2017 Open Source Robotics Foundation, Inc.
+# Copyright 2017-2019 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +14,19 @@
 
 import argparse
 from collections import namedtuple
+import functools
+import inspect
 import os
-from xmlrpc.server import SimpleXMLRPCRequestHandler
-from xmlrpc.server import SimpleXMLRPCServer
+
+import netifaces
 
 import rclpy
+import rclpy.action
+
 from ros2cli.node.direct import DirectNode
+
+from ros2cli.xmlrpc.local_server import LocalXMLRPCServer
+from ros2cli.xmlrpc.local_server import RequestHandler
 
 
 def main(*, script_name='_ros2_daemon', argv=None):
@@ -48,9 +55,10 @@ def main(*, script_name='_ros2_daemon', argv=None):
     node_args = NodeArgs(
         node_name_suffix='_daemon_%d' % args.ros_domain_id,
         start_parameter_services=False)
-    with DirectNode(node_args) as node:
+    with NetworkAwareNode(node_args) as node:
         server = LocalXMLRPCServer(
-            addr, logRequests=False, requestHandler=RequestHandler,
+            addr, logRequests=False,
+            requestHandler=RequestHandler,
             allow_none=True)
 
         try:
@@ -58,12 +66,40 @@ def main(*, script_name='_ros2_daemon', argv=None):
 
             # expose getter functions of node
             server.register_function(
-                _print_invoked_function_name(
-                    node.get_node_names_and_namespaces))
+                _print_invoked_function_name(node.get_name))
+            server.register_function(
+                _print_invoked_function_name(node.get_namespace))
+            server.register_function(
+                _print_invoked_function_name(node.get_node_names_and_namespaces))
             server.register_function(
                 _print_invoked_function_name(node.get_topic_names_and_types))
             server.register_function(
                 _print_invoked_function_name(node.get_service_names_and_types))
+            server.register_function(
+                _print_invoked_function_name(_bind_function(
+                    rclpy.action.get_action_names_and_types, node)))
+            server.register_function(
+                _print_invoked_function_name(node.get_publisher_names_and_types_by_node))
+            server.register_function(
+                _print_invoked_function_name(node.get_publishers_info_by_topic))
+            server.register_function(
+                _print_invoked_function_name(node.get_subscriber_names_and_types_by_node))
+            server.register_function(
+                _print_invoked_function_name(node.get_subscriptions_info_by_topic))
+            server.register_function(
+                _print_invoked_function_name(node.get_service_names_and_types_by_node))
+            server.register_function(
+                _print_invoked_function_name(node.get_client_names_and_types_by_node))
+            server.register_function(
+                _print_invoked_function_name(_bind_function(
+                    rclpy.action.get_action_server_names_and_types_by_node, node)))
+            server.register_function(
+                _print_invoked_function_name(_bind_function(
+                    rclpy.action.get_action_client_names_and_types_by_node, node)))
+            server.register_function(
+                _print_invoked_function_name(node.count_publishers))
+            server.register_function(
+                _print_invoked_function_name(node.count_subscribers))
 
             shutdown = False
 
@@ -92,12 +128,61 @@ def main(*, script_name='_ros2_daemon', argv=None):
             server.server_close()
 
 
-class LocalXMLRPCServer(SimpleXMLRPCServer):
+def get_interfaces_ip_addresses():
+    addresses_by_interfaces = {}
+    for (kind, info_list) in netifaces.gateways().items():
+        if kind not in (netifaces.AF_INET, netifaces.AF_INET6):
+            continue
+        print('Interface kind: {}, info: {}'.format(kind, info_list))
+        addresses_by_interfaces[kind] = {}
+        for info in info_list:
+            interface_name = info[1]
+            addresses_by_interfaces[kind][interface_name] = (
+                netifaces.ifaddresses(interface_name)[kind][0]['addr']
+            )
+    print('Addresses by interfaces: {}'.format(addresses_by_interfaces))
+    return addresses_by_interfaces
 
-    def verify_request(self, request, client_address):
-        if client_address[0] != '127.0.0.1':
-            return False
-        return super(LocalXMLRPCServer, self).verify_request(request, client_address)
+
+class NetworkAwareNode:
+    """A direct node, that resets itself when a network interface changes."""
+
+    def __init__(self, args):
+        self.args = args
+        # TODO(ivanpauno): A race condition is possible here, since it isn't possible to know
+        # exactly which interfaces were available at node creation.
+        self.node = DirectNode(args)
+        self.addresses_at_start = get_interfaces_ip_addresses()
+
+    def __enter__(self):
+        self.node.__enter__()
+        return self
+
+    def __getattr__(self, name):
+        attr = getattr(self.node, name)
+
+        if inspect.ismethod(attr):
+            @functools.wraps(attr)
+            def wrapper(*args, **kwargs):
+                self.reset_if_addresses_changed()
+                return getattr(self.node, name)(*args, **kwargs)
+            wrapper.__signature__ = inspect.signature(attr)
+            return wrapper
+        self.reset_if_addresses_changed()
+        return attr
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.node.__exit__(exc_type, exc_value, traceback)
+
+    def reset_if_addresses_changed(self):
+        new_addresses = get_interfaces_ip_addresses()
+        if new_addresses != self.addresses_at_start:
+            self.addresses_at_start = new_addresses
+            self.node.destroy_node()
+            rclpy.shutdown()
+            self.node = DirectNode(self.args)
+            self.node.__enter__()
+            print('Daemon node was reset')
 
 
 def get_daemon_port():
@@ -106,16 +191,31 @@ def get_daemon_port():
     return base_port
 
 
-class RequestHandler(SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/ros2cli/',)
+def _bind_function(func, *args, **kwargs):
+    """
+    Bind a function with a set of arguments.
+
+    A functools.partial equivalent that is actually a function.
+    """
+    partial = functools.partial(func, *args, **kwargs)
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return partial(*args, **kwargs)
+    wrapper.__signature__ = inspect.signature(func)
+    return wrapper
 
 
 def _print_invoked_function_name(func):
-    def wrapper():
-        nonlocal func
-        print('{func.__name__}()'.format_map(locals()))
-        return func()
-    wrapper.__name__ = func.__name__
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        name = func.__name__
+        arguments = ', '.join(
+            [f'{v!r}' for v in args] +
+            [f'{k}={v!r}' for k, v in kwargs.items()]
+        )
+        print(f'{name}({arguments})')
+        return func(*args, **kwargs)
+    wrapper.__signature__ = inspect.signature(func)
     return wrapper
 
 

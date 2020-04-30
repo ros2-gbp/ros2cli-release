@@ -13,15 +13,43 @@
 # limitations under the License.
 
 import time
+from typing import Optional
+from typing import TypeVar
 
 import rclpy
-from ros2cli.node import NODE_NAME_PREFIX
-from ros2topic.api import import_message_type
+from rclpy.node import Node
+from rclpy.qos import qos_policy_name_from_kind
+from rclpy.qos import QoSProfile
+from rclpy.qos_event import PublisherEventCallbacks
+from rclpy.qos_event import UnsupportedEventTypeError
+from ros2cli.node.direct import DirectNode
+from ros2topic.api import add_qos_arguments_to_argument_parser
+from ros2topic.api import qos_profile_from_short_keys
+from ros2topic.api import TopicMessagePrototypeCompleter
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import TopicTypeCompleter
 from ros2topic.verb import VerbExtension
 from rosidl_runtime_py import set_message_fields
+from rosidl_runtime_py.utilities import get_message
 import yaml
+
+MsgType = TypeVar('MsgType')
+
+
+def nonnegative_int(inval):
+    ret = int(inval)
+    if ret < 0:
+        # The error message here gets completely swallowed by argparse
+        raise ValueError('Value must be positive or zero')
+    return ret
+
+
+def positive_float(inval):
+    ret = float(inval)
+    if ret <= 0.0:
+        # The error message here gets completely swallowed by argparse
+        raise ValueError('Value must be positive')
+    return ret
 
 
 class PubVerb(VerbExtension):
@@ -38,75 +66,82 @@ class PubVerb(VerbExtension):
             help="Type of the ROS message (e.g. 'std_msgs/String')")
         arg.completer = TopicTypeCompleter(
             topic_name_key='topic_name')
-        parser.add_argument(
+        arg = parser.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the message with in YAML format '
                  '(e.g. "data: Hello World"), '
                  'otherwise the message will be published with default values')
+        arg.completer = TopicMessagePrototypeCompleter(
+            topic_type_key='message_type')
         parser.add_argument(
-            '-r', '--rate', metavar='N', type=float, default=1.0,
+            '-r', '--rate', metavar='N', type=positive_float, default=1.0,
             help='Publishing rate in Hz (default: 1)')
         parser.add_argument(
             '-p', '--print', metavar='N', type=int, default=1,
             help='Only print every N-th published message (default: 1)')
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
             '-1', '--once', action='store_true',
             help='Publish one message and exit')
+        group.add_argument(
+            '-t', '--times', type=nonnegative_int, default=0,
+            help='Publish this number of times and then exit')
         parser.add_argument(
             '-n', '--node-name',
             help='Name of the created publishing node')
-        parser.add_argument(
-            '--qos-profile',
-            choices=rclpy.qos.QoSPresetProfiles.short_keys(),
-            default='system_default',
-            help='Quality of service profile to publish with')
-        parser.add_argument(
-            '--qos-reliability',
-            choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
-            help='Quality of service reliability setting to publish with. '
-                 '(Will override reliability value of --qos-profile option)')
-        parser.add_argument(
-            '--qos-durability',
-            choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
-            help='Quality of service durability setting to publish with. '
-                 '(Will override durability value of --qos-profile option)')
+        add_qos_arguments_to_argument_parser(
+            parser, is_publisher=True, default_preset='system_default')
 
     def main(self, *, args):
-        if args.rate <= 0:
-            raise RuntimeError('rate must be greater than zero')
-
         return main(args)
 
 
 def main(args):
-    return publisher(
-        args.message_type, args.topic_name, args.values,
-        args.node_name, 1. / args.rate, args.print, args.once,
-        args.qos_profile, args.qos_reliability, args.qos_durability)
+    qos_profile = qos_profile_from_short_keys(
+        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability)
+    times = args.times
+    if args.once:
+        times = 1
+    with DirectNode(args, node_name=args.node_name) as node:
+        return publisher(
+            node.node,
+            args.message_type,
+            args.topic_name,
+            args.values,
+            1. / args.rate,
+            args.print,
+            times,
+            qos_profile)
+
+
+def handle_incompatible_qos_event(event):
+    incompatible_qos_name = qos_policy_name_from_kind(event.last_policy_kind)
+    print(f'Incompatible QoS Policy detected: {incompatible_qos_name}')
 
 
 def publisher(
-    message_type, topic_name, values, node_name, period, print_nth, once,
-    qos_profile, qos_reliability, qos_durability
-):
-    msg_module = import_message_type(topic_name, message_type)
+    node: Node,
+    message_type: MsgType,
+    topic_name: str,
+    values: dict,
+    period: float,
+    print_nth: int,
+    times: int,
+    qos_profile: QoSProfile,
+) -> Optional[str]:
+    """Initialize a node with a single publisher and run its publish loop (maybe only once)."""
+    msg_module = get_message(message_type)
     values_dictionary = yaml.safe_load(values)
     if not isinstance(values_dictionary, dict):
         return 'The passed value needs to be a dictionary in YAML format'
-    if not node_name:
-        node_name = NODE_NAME_PREFIX + '_publisher_%s' % (message_type.replace('/', '_'), )
-    rclpy.init()
 
-    # Build a QoS profile based on user-supplied arguments
-    profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(qos_profile)
-    if qos_durability:
-        profile.durability = rclpy.qos.QoSDurabilityPolicy.get_from_short_key(qos_durability)
-    if qos_reliability:
-        profile.reliability = rclpy.qos.QoSReliabilityPolicy.get_from_short_key(qos_reliability)
-
-    node = rclpy.create_node(node_name)
-
-    pub = node.create_publisher(msg_module, topic_name, profile)
+    publisher_callbacks = PublisherEventCallbacks(
+        incompatible_qos=handle_incompatible_qos_event)
+    try:
+        pub = node.create_publisher(
+            msg_module, topic_name, qos_profile, event_callbacks=publisher_callbacks)
+    except UnsupportedEventTypeError:
+        pub = node.create_publisher(msg_module, topic_name, qos_profile)
 
     msg = msg_module()
     try:
@@ -125,12 +160,10 @@ def publisher(
         pub.publish(msg)
 
     timer = node.create_timer(period, timer_callback)
-    if once:
+    while times == 0 or count < times:
         rclpy.spin_once(node)
+
+    if times == 1:
         time.sleep(0.1)  # make sure the message reaches the wire before exiting
-    else:
-        rclpy.spin(node)
 
     node.destroy_timer(timer)
-    node.destroy_node()
-    rclpy.shutdown()

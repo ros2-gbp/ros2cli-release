@@ -23,10 +23,12 @@ from ros2cli.node.direct import DirectNode
 class NodeStrategy:
 
     def __init__(self, args):
-        if is_daemon_running(args):
+        use_daemon = not getattr(args, 'no_daemon', False)
+        if use_daemon and is_daemon_running(args):
             self.node = DaemonNode(args)
         else:
-            spawn_daemon(args)
+            if use_daemon:
+                spawn_daemon(args)
             self.node = DirectNode(args)
 
     def __enter__(self):
@@ -34,7 +36,7 @@ class NodeStrategy:
         return self
 
     def __getattr__(self, name):
-        return self.node.__getattr__(name)
+        return getattr(self.node, name)
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.node.__exit__(exc_type, exc_value, traceback)
@@ -43,3 +45,7 @@ class NodeStrategy:
 def add_arguments(parser):
     add_daemon_node_arguments(parser)
     add_direct_node_arguments(parser)
+    parser.add_argument(
+        '--no-daemon', action='store_true',
+        help='Do not spawn nor use an already running daemon'
+    )

@@ -21,6 +21,7 @@ from ros2lifecycle.api import call_get_transition_graph
 from ros2lifecycle.api import get_node_names
 from ros2lifecycle.verb import VerbExtension
 
+from ros2node.api import get_absolute_node_name
 from ros2node.api import NodeNameCompleter
 
 
@@ -45,20 +46,23 @@ class ListVerb(VerbExtension):
             node_names = get_node_names(
                 node=node, include_hidden_nodes=args.include_hidden_nodes)
 
+        node_name = get_absolute_node_name(args.node_name)
+        if node_name not in {n.full_name for n in node_names}:
+            return 'Node not found'
+
         with DirectNode(args) as node:
             if args.all:
                 transitions = call_get_transition_graph(
-                    node=node, states={args.node_name: None})
+                    node=node, states={node_name: None})
             else:
                 transitions = call_get_available_transitions(
-                    node=node, states={args.node_name: None})
-            transitions = transitions[args.node_name]
+                    node=node, states={node_name: None})
+            transitions = transitions[node_name]
             if isinstance(transitions, Exception):
                 return 'Exception while calling service of node ' \
-                    "'{args.node_name}': {transitions}" \
-                    .format_map(locals())
+                    f"'{args.node_name}': {transitions}"
             for t in transitions:
                 print(
-                    '- {t.transition.label} [{t.transition.id}]\n'
-                    '\tStart: {t.start_state.label}\n'
-                    '\tGoal: {t.goal_state.label}'.format_map(locals()))
+                    f'- {t.transition.label} [{t.transition.id}]\n'
+                    f'\tStart: {t.start_state.label}\n'
+                    f'\tGoal: {t.goal_state.label}')

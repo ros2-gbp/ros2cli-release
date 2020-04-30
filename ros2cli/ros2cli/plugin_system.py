@@ -37,11 +37,10 @@ _extension_instances = {}
 def instantiate_extensions(
     group_name, *, exclude_names=None, unique_instance=False
 ):
-    extension_types = load_entry_points(group_name)
+    extension_types = load_entry_points(
+        group_name, exclude_names=exclude_names)
     extension_instances = {}
     for extension_name, extension_class in extension_types.items():
-        if exclude_names and extension_name in exclude_names:
-            continue
         extension_instance = _instantiate_extension(
             group_name, extension_name, extension_class,
             unique_instance=unique_instance)
@@ -62,13 +61,13 @@ def _instantiate_extension(
         extension_instance = extension_class()
     except PluginException as e:  # noqa: F841
         logger.warning(
-            "Failed to instantiate '{group_name}' extension "
-            "'{extension_name}': {e}".format_map(locals()))
+            f"Failed to instantiate '{group_name}' extension "
+            f"'{extension_name}': {e}")
         return None
     except Exception as e:  # noqa: F841
         logger.error(
-            "Failed to instantiate '{group_name}' extension "
-            "'{extension_name}': {e}".format_map(locals()))
+            f"Failed to instantiate '{group_name}' extension "
+            f"'{extension_name}': {e}")
         return None
     if not unique_instance:
         _extension_instances[extension_class] = extension_instance

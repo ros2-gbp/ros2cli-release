@@ -14,10 +14,41 @@
 
 from rcl_interfaces.msg import ParameterType
 from rcl_interfaces.msg import ParameterValue
+from rcl_interfaces.srv import DescribeParameters
 from rcl_interfaces.srv import GetParameters
+from rcl_interfaces.srv import ListParameters
 from rcl_interfaces.srv import SetParameters
 import rclpy
+from ros2cli.node.direct import DirectNode
 import yaml
+
+
+def get_value(*, parameter_value):
+    """Get the value from a ParameterValue."""
+    if parameter_value.type == ParameterType.PARAMETER_BOOL:
+        value = parameter_value.bool_value
+    elif parameter_value.type == ParameterType.PARAMETER_INTEGER:
+        value = parameter_value.integer_value
+    elif parameter_value.type == ParameterType.PARAMETER_DOUBLE:
+        value = parameter_value.double_value
+    elif parameter_value.type == ParameterType.PARAMETER_STRING:
+        value = parameter_value.string_value
+    elif parameter_value.type == ParameterType.PARAMETER_BYTE_ARRAY:
+        value = parameter_value.byte_array_value
+    elif parameter_value.type == ParameterType.PARAMETER_BOOL_ARRAY:
+        value = parameter_value.bool_array_value
+    elif parameter_value.type == ParameterType.PARAMETER_INTEGER_ARRAY:
+        value = parameter_value.integer_array_value
+    elif parameter_value.type == ParameterType.PARAMETER_DOUBLE_ARRAY:
+        value = parameter_value.double_array_value
+    elif parameter_value.type == ParameterType.PARAMETER_STRING_ARRAY:
+        value = parameter_value.string_array_value
+    elif parameter_value.type == ParameterType.PARAMETER_NOT_SET:
+        value = None
+    else:
+        value = None
+
+    return value
 
 
 def get_parameter_value(*, string_value):
@@ -61,11 +92,34 @@ def get_parameter_value(*, string_value):
     return value
 
 
-def call_get_parameters(*, node, node_name, parameter_names):
+def call_describe_parameters(*, node, node_name, parameter_names=None):
     # create client
     client = node.create_client(
-        GetParameters,
-        '{node_name}/get_parameters'.format_map(locals()))
+        DescribeParameters, f'{node_name}/describe_parameters')
+
+    # call as soon as ready
+    ready = client.wait_for_service(timeout_sec=5.0)
+    if not ready:
+        raise RuntimeError('Wait for service timed out')
+
+    request = DescribeParameters.Request()
+    if parameter_names:
+        request.names = parameter_names
+    future = client.call_async(request)
+    rclpy.spin_until_future_complete(node, future)
+
+    # handle response
+    response = future.result()
+    if response is None:
+        e = future.exception()
+        raise RuntimeError(
+            f"Exception while calling service of node '{node_name}': {e}")
+    return response
+
+
+def call_get_parameters(*, node, node_name, parameter_names):
+    # create client
+    client = node.create_client(GetParameters, f'{node_name}/get_parameters')
 
     # call as soon as ready
     ready = client.wait_for_service(timeout_sec=5.0)
@@ -82,16 +136,13 @@ def call_get_parameters(*, node, node_name, parameter_names):
     if response is None:
         e = future.exception()
         raise RuntimeError(
-            'Exception while calling service of node '
-            "'{args.node_name}': {e}".format_map(locals()))
+            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
 def call_set_parameters(*, node, node_name, parameters):
     # create client
-    client = node.create_client(
-        SetParameters,
-        '{node_name}/set_parameters'.format_map(locals()))
+    client = node.create_client(SetParameters, f'{node_name}/set_parameters')
 
     # call as soon as ready
     ready = client.wait_for_service(timeout_sec=5.0)
@@ -108,6 +159,39 @@ def call_set_parameters(*, node, node_name, parameters):
     if response is None:
         e = future.exception()
         raise RuntimeError(
-            'Exception while calling service of node '
-            "'{args.node_name}': {e}".format_map(locals()))
+            f"Exception while calling service of node '{node_name}': {e}")
     return response
+
+
+def call_list_parameters(*, node, node_name, prefix=None):
+    # create client
+    client = node.create_client(ListParameters, f'{node_name}/list_parameters')
+
+    # call as soon as ready
+    ready = client.wait_for_service(timeout_sec=5.0)
+    if not ready:
+        raise RuntimeError('Wait for service timed out')
+
+    request = ListParameters.Request()
+    future = client.call_async(request)
+    rclpy.spin_until_future_complete(node, future)
+
+    # handle response
+    response = future.result()
+    if response is None:
+        e = future.exception()
+        raise RuntimeError(
+            f"Exception while calling service of node '{node_name}': {e}")
+    return response.result.names
+
+
+class ParameterNameCompleter:
+    """Callable returning a list of parameter names."""
+
+    def __call__(self, prefix, parsed_args, **kwargs):
+        with DirectNode(parsed_args) as node:
+            parameter_names = call_list_parameters(
+                node=node, node_name=parsed_args.node_name)
+            return [
+                n for n in parameter_names
+                if not prefix or n.startswith(prefix)]

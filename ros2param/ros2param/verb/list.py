@@ -62,8 +62,7 @@ class ListVerb(VerbExtension):
             futures = {}
             # create clients for nodes which have the service
             for node_name in node_names:
-                service_name = '{node_name.full_name}/list_parameters' \
-                    .format_map(locals())
+                service_name = f'{node_name.full_name}/list_parameters'
                 if service_name in service_names:
                     client = node.create_client(ListParameters, service_name)
                     clients[node_name] = client
@@ -88,20 +87,19 @@ class ListVerb(VerbExtension):
 
             # wait for all responses
             for future in futures.values():
-                rclpy.spin_until_future_complete(node, future)
+                rclpy.spin_until_future_complete(node, future, timeout_sec=1.0)
 
             # print responses
             for node_name in sorted(futures.keys()):
                 future = futures[node_name]
                 if future.result() is not None:
                     if not args.node_name:
-                        print('{node_name.full_name}:'.format_map(locals()))
+                        print(f'{node_name.full_name}:')
                     response = future.result()
                     for name in sorted(response.result.names):
-                        print('  {name}'.format_map(locals()))
+                        print(f'  {name}')
                 else:
                     e = future.exception()
                     print(
                         'Exception while calling service of node '
-                        "'{node_name.full_name}': {e}".format_map(locals()),
-                        file=sys.stderr)
+                        f"'{node_name.full_name}': {e}", file=sys.stderr)
