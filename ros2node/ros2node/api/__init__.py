@@ -13,24 +13,12 @@
 # limitations under the License.
 
 from collections import namedtuple
-from typing import Any
-from typing import List
 
 from rclpy.node import HIDDEN_NODE_PREFIX
 from ros2cli.node.strategy import NodeStrategy
 
-INFO_NONUNIQUE_WARNING_TEMPLATE = (
-    'There are {num_nodes} nodes in the graph with the exact name "{node_name}". '
-    'You are seeing information about only one of them.'
-)
-
 NodeName = namedtuple('NodeName', ('name', 'namespace', 'full_name'))
 TopicInfo = namedtuple('Topic', ('name', 'types'))
-
-
-def _is_hidden_name(name):
-    # note, we're assuming the hidden node prefix is the same for other hidden names
-    return any(part.startswith(HIDDEN_NODE_PREFIX) for part in name.split('/'))
 
 
 def get_absolute_node_name(node_name):
@@ -51,11 +39,6 @@ def parse_node_name(node_name):
     return NodeName(node_basename, namespace, full_node_name)
 
 
-def has_duplicates(values: List[Any]) -> bool:
-    """Find out if there are any exact duplicates in a list of strings."""
-    return len(set(values)) < len(values)
-
-
 def get_node_names(*, node, include_hidden_nodes=False):
     node_names_and_namespaces = node.get_node_names_and_namespaces()
     return [
@@ -71,68 +54,32 @@ def get_node_names(*, node, include_hidden_nodes=False):
     ]
 
 
-def get_topics(remote_node_name, func, *, include_hidden_topics=False):
+def get_topics(remote_node_name, func):
     node = parse_node_name(remote_node_name)
     names_and_types = func(node.name, node.namespace)
     return [
         TopicInfo(
             name=t[0],
             types=t[1])
-        for t in names_and_types if include_hidden_topics or not _is_hidden_name(t[0])]
+        for t in names_and_types]
 
 
-def get_subscriber_info(*, node, remote_node_name, include_hidden=False):
-    return get_topics(
-        remote_node_name,
-        node.get_subscriber_names_and_types_by_node,
-        include_hidden_topics=include_hidden
-    )
+def get_subscriber_info(*, node, remote_node_name):
+    return get_topics(remote_node_name, node.get_subscriber_names_and_types_by_node)
 
 
-def get_publisher_info(*, node, remote_node_name, include_hidden=False):
-    return get_topics(
-        remote_node_name,
-        node.get_publisher_names_and_types_by_node,
-        include_hidden_topics=include_hidden
-    )
+def get_publisher_info(*, node, remote_node_name):
+    return get_topics(remote_node_name, node.get_publisher_names_and_types_by_node)
 
 
-def get_service_client_info(*, node, remote_node_name, include_hidden=False):
-    return get_topics(
-        remote_node_name,
-        node.get_client_names_and_types_by_node,
-        include_hidden_topics=include_hidden
-    )
+# for backward compatibility only
+def get_service_info(*, node, remote_node_name):
+    return get_service_server_info(
+        node=node, remote_node_name=remote_node_name)
 
 
-def get_service_server_info(*, node, remote_node_name, include_hidden=False):
-    return get_topics(
-        remote_node_name,
-        node.get_service_names_and_types_by_node,
-        include_hidden_topics=include_hidden
-    )
-
-
-def get_action_server_info(*, node, remote_node_name, include_hidden=False):
-    remote_node = parse_node_name(remote_node_name)
-    names_and_types = node.get_action_server_names_and_types_by_node(
-        remote_node.name, remote_node.namespace)
-    return [
-        TopicInfo(
-            name=n,
-            types=t)
-        for n, t in names_and_types if include_hidden or not _is_hidden_name(n)]
-
-
-def get_action_client_info(*, node, remote_node_name, include_hidden=False):
-    remote_node = parse_node_name(remote_node_name)
-    names_and_types = node.get_action_client_names_and_types_by_node(
-        remote_node.name, remote_node.namespace)
-    return [
-        TopicInfo(
-            name=n,
-            types=t)
-        for n, t in names_and_types if include_hidden or not _is_hidden_name(n)]
+def get_service_server_info(*, node, remote_node_name):
+    return get_topics(remote_node_name, node.get_service_names_and_types_by_node)
 
 
 class NodeNameCompleter:

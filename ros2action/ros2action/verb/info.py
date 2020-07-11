@@ -16,7 +16,7 @@ import rclpy
 from ros2action.api import action_name_completer
 from ros2action.api import get_action_clients_and_servers
 from ros2action.verb import VerbExtension
-from ros2cli.node.strategy import NodeStrategy
+from ros2cli.node.direct import DirectNode
 
 
 class InfoVerb(VerbExtension):
@@ -35,7 +35,7 @@ class InfoVerb(VerbExtension):
             help='Only display the number of action clients and action servers')
 
     def main(self, *, args):
-        with NodeStrategy(args) as node:
+        with DirectNode(args) as node:
             try:
                 action_clients, action_servers = get_action_clients_and_servers(
                     node=node,
@@ -50,14 +50,14 @@ class InfoVerb(VerbExtension):
             for client_name, client_types in action_clients:
                 if args.show_types:
                     types_formatted = ', '.join(client_types)
-                    print(f'    {client_name} [{types_formatted}]')
+                    print('    {client_name} [{types_formatted}]'.format_map(locals()))
                 else:
-                    print(f'    {client_name}')
+                    print('    {client_name}'.format_map(locals()))
         print('Action servers: {}'.format(len(action_servers)))
         if not args.count:
             for server_name, server_types in action_servers:
                 if args.show_types:
                     types_formatted = ', '.join(server_types)
-                    print(f'    {server_name} [{types_formatted}]')
+                    print('    {server_name} [{types_formatted}]'.format_map(locals()))
                 else:
-                    print(f'    {server_name}')
+                    print('    {server_name}'.format_map(locals()))

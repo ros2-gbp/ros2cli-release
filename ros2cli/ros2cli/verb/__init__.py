@@ -48,7 +48,8 @@ def add_task_arguments(parser, task_name):
     plugins = get_verb_extensions(task_name)
     for plugin_name, plugin in plugins.items():
         group = parser.add_argument_group(
-            title=f"Arguments for '{plugin_name}' packages")
+            title="Arguments for '{plugin_name}' packages"
+            .format_map(locals()))
         func = getattr(plugin, 'add_%s_arguments' % task_name, None)
         if func:
             func(group)

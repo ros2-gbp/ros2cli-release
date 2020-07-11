@@ -23,7 +23,7 @@ class Counter:
     """Simple class for aggregating topic counts."""
 
     def __init__(self):
-        """Create a Counter."""
+        """Constructor."""
         self.count = {
             'default': 0,
             'transient': 0,

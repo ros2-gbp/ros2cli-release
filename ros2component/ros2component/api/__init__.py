@@ -23,11 +23,11 @@ import composition_interfaces.srv
 import rcl_interfaces.msg
 
 import rclpy
-from rclpy.task import Future
 
+from ros2cli.node.direct import DirectNode
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_node_names
-from ros2node.api import get_service_server_info
+from ros2node.api import get_service_info
 from ros2param.api import get_parameter_value
 from ros2pkg.api import get_executable_paths
 from ros2pkg.api import PackageNotFound
@@ -70,134 +70,30 @@ ComponentInfo = namedtuple('Component', ('uid', 'name'))
 
 def get_container_components_info(*, node, remote_container_node_name):
     """
-    Get information about the components in a container.
+    Get information about the components in a given container.
 
     :param node: an `rclpy.Node` instance.
     :param remote_container_node_name: of the container node to inspect.
-    :return: a list of `ComponentInfo` instances, with the unique id and name of
-    each component in the container.
-    :throws: RuntimeError if an error occurs.
+    :return: a list of `ComponentInfo` instances, with the unique ID and
+    name for each of the components in the container.
     """
-    ok, outcome = get_components_in_container(
-        node=node, remote_container_node_name=remote_container_node_name
+    list_nodes_client = node.create_client(
+        composition_interfaces.srv.ListNodes,
+        '{}/_container/list_nodes'.format(remote_container_node_name)
     )
-    if not ok:
-        raise RuntimeError(f'{outcome} for {remote_container_node_name}')
-    return outcome
-
-
-def get_components_in_container(*, node, remote_container_node_name):
-    """
-    Get information about the components in a container.
-
-    :param node: an `rclpy.Node` instance.
-    :param remote_container_node_names: of the container node to inspect.
-    :return: a tuple with either a truthy boolean and a list of `ComponentInfo`
-    instances containing the unique id and name of each component or a falsy
-    boolean and a reason string in case of error.
-    """
-    return get_components_in_containers(
-        node=node, remote_containers_node_names=[remote_container_node_name]
-    )[remote_container_node_name]
-
-
-def get_components_in_containers(*, node, remote_containers_node_names):
-    """
-    Get information about the components in multiple containers.
-
-    Get information about the components in a container.
-
-    :param node: an `rclpy.Node` instance.
-    :param remote_container_node_names: of the container nodes to inspect.
-    :return: a dict of tuples, with either a truthy boolean and a list of `ComponentInfo`
-    instances containing the unique id and name of each component or a falsy boolean and
-    a reason string in case of error, per container node.
-    """
-    def list_components(node, remote_container_node_name):
-        list_nodes_client = node.create_client(
-            composition_interfaces.srv.ListNodes,
-            f'{remote_container_node_name}/_container/list_nodes'
-        )
-
-        try:
-            while not list_nodes_client.service_is_ready():
-                cancel = yield
-                if cancel:
-                    return remote_container_node_name, (
-                        False, "No 'list_nodes' service found"
-                    )
-
-            future = list_nodes_client.call_async(
-                composition_interfaces.srv.ListNodes.Request()
-            )
-
-            while not future.done():
-                cancel = yield
-                if cancel:
-                    future.cancel()
-                    return remote_container_node_name, (
-                        False, "No 'list_nodes' service response"
-                    )
-
-            response = future.result()
-            return remote_container_node_name, (True, [
-                ComponentInfo(uid, name) for uid, name in
-                zip(response.unique_ids, response.full_node_names)
-            ])
-        finally:
-            node.destroy_client(list_nodes_client)
-
-    def async_run(coroutines):
-        future = Future()
-        outcomes = [None] * len(coroutines)
-
-        for i, co in enumerate(coroutines):
-            try:
-                next(co)
-            except StopIteration as ex:
-                outcomes[i] = ex.value
-            except Exception as ex:
-                future.set_exception(ex)
-                return future, None
-
-        if all(value is not None for value in outcomes):
-            future.set_result(outcomes)
-            return future, None
-
-        def _resume(to_completion=False):
-            nonlocal outcomes
-            if future.done():
-                raise RuntimeError("'async_run' done already")
-            for i, co in enumerate(coroutines):
-                if outcomes[i] is None:
-                    try:
-                        co.send(to_completion)
-                    except StopIteration as ex:
-                        outcomes[i] = ex.value
-                    except Exception as ex:
-                        future.set_exception(ex)
-                        return
-            if to_completion or all(value is not None for value in outcomes):
-                future.set_result(outcomes)
-
-        return future, _resume
-
-    future, resume = async_run([
-        list_components(node, remote_container_node_name)
-        for remote_container_node_name in remote_containers_node_names
-    ])
-
-    if future.done():
-        return dict(future.result())
-
-    timer = node.create_timer(timer_period_sec=0.1, callback=resume)
     try:
-        rclpy.spin_until_future_complete(node, future, timeout_sec=5.0)
-        if not future.done():
-            resume(to_completion=True)
-        return dict(future.result())
+        list_nodes_client.wait_for_service()
+        future = list_nodes_client.call_async(
+            composition_interfaces.srv.ListNodes.Request()
+        )
+        rclpy.spin_until_future_complete(node, future)
+        response = future.result()
+        return [
+            ComponentInfo(uid, name) for uid, name in
+            zip(response.unique_ids, response.full_node_names)
+        ]
     finally:
-        node.destroy_timer(timer)
+        node.destroy_client(list_nodes_client)
 
 
 def load_component_into_container(
@@ -232,10 +128,7 @@ def load_component_into_container(
         '{}/_container/load_node'.format(remote_container_node_name)
     )
     try:
-        if not load_node_client.wait_for_service(timeout_sec=5.0):
-            raise RuntimeError(
-                f"No 'load_node' service found for '{remote_container_node_name}' container"
-            )
+        load_node_client.wait_for_service()
         request = composition_interfaces.srv.LoadNode.Request()
         request.package_name = package_name
         request.plugin_name = plugin_name
@@ -284,10 +177,7 @@ def unload_component_from_container(*, node, remote_container_node_name, compone
         '{}/_container/unload_node'.format(remote_container_node_name)
     )
     try:
-        if not unload_node_client.wait_for_service(timeout_sec=5.0):
-            raise RuntimeError(
-                f"No 'unload_node' service found for '{remote_container_node_name}' container"
-            )
+        unload_node_client.wait_for_service()
         for uid in component_uids:
             request = composition_interfaces.srv.UnloadNode.Request()
             request.unique_id = uid
@@ -301,9 +191,9 @@ def unload_component_from_container(*, node, remote_container_node_name, compone
 
 def find_container_node_names(*, node, node_names):
     """
-    Identify container nodes from a list of node names.
+    Identify container nodes from a a list of node names.
 
-    :param node: a node-like instance
+    :param node: a `ros2cli.node.DirectNode` instance
     :param node_names: list of `ros2node.api.NodeName` instances, as returned
         by `ros2node.api.get_node_names()`
     :return: list of `ros2node.api.NodeName` instances for nodes that are
@@ -312,9 +202,8 @@ def find_container_node_names(*, node, node_names):
     container_node_names = []
     for n in node_names:
         try:
-            services = get_service_server_info(
-                node=node, remote_node_name=n.full_name, include_hidden=True)
-        except rclpy.node.NodeNameNonExistentError:
+            services = get_service_info(node=node, remote_node_name=n.full_name)
+        except RuntimeError:
             continue
         if not any(s.name.endswith('_container/load_node') and
                    'composition_interfaces/srv/LoadNode' in s.types
@@ -340,9 +229,11 @@ def package_with_components_name_completer(prefix, parsed_args, **kwargs):
 def container_node_name_completer(prefix, parsed_args, **kwargs):
     """Callable returning a list of container node names."""
     with NodeStrategy(parsed_args) as node:
+        node_names = get_node_names(node=node)
+    with DirectNode(parsed_args) as node:
         return [
             n.full_name for n in find_container_node_names(
-                node=node, node_names=get_node_names(node=node)
+                node=node, node_names=node_names
             )
         ]
 
@@ -396,6 +287,4 @@ def run_standalone_container(*, container_node_name):
     if executable_path is None:
         raise RuntimeError('No component container node found!')
 
-    return subprocess.Popen([
-        executable_path, '--ros-args', '-r', '__node:=' + container_node_name
-    ])
+    return subprocess.Popen([executable_path, '__node:=' + container_node_name])
