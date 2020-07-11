@@ -1,0 +1,12 @@
+Source: ros-dashing-ros2param
+Section: misc
+Priority: optional
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest, ros-dashing-ament-copyright, ros-dashing-ament-flake8, ros-dashing-ament-pep257, ros-dashing-ament-xmllint, ros-dashing-rcl-interfaces, ros-dashing-rclpy, ros-dashing-ros2cli, ros-dashing-ros-workspace, python3-all, python3-setuptools
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-dashing-ros2param
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, ros-dashing-rcl-interfaces, ros-dashing-rclpy, ros-dashing-ros2cli, ros-dashing-ros2node, ros-dashing-ros2service, ros-dashing-ros-workspace
+Description: The param command for ROS 2 command line tools.
