@@ -84,6 +84,10 @@ class PubVerb(VerbExtension):
             '-t', '--times', type=nonnegative_int, default=0,
             help='Publish this number of times and then exit')
         parser.add_argument(
+            '--keep-alive', metavar='N', type=positive_float, default=0.1,
+            help='Keep publishing node alive for N seconds after the last msg '
+                 '(default: 0.1)')
+        parser.add_argument(
             '-n', '--node-name',
             help='Name of the created publishing node')
         add_qos_arguments_to_argument_parser(
@@ -95,7 +99,8 @@ class PubVerb(VerbExtension):
 
 def main(args):
     qos_profile = qos_profile_from_short_keys(
-        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability)
+        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability,
+        depth=args.qos_depth, history=args.qos_history)
     times = args.times
     if args.once:
         times = 1
@@ -108,7 +113,8 @@ def main(args):
             1. / args.rate,
             args.print,
             times,
-            qos_profile)
+            qos_profile,
+            args.keep_alive)
 
 
 def publisher(
@@ -120,9 +126,13 @@ def publisher(
     print_nth: int,
     times: int,
     qos_profile: QoSProfile,
+    keep_alive: float,
 ) -> Optional[str]:
     """Initialize a node with a single publisher and run its publish loop (maybe only once)."""
-    msg_module = get_message(message_type)
+    try:
+        msg_module = get_message(message_type)
+    except (AttributeError, ModuleNotFoundError, ValueError):
+        raise RuntimeError('The passed message type is invalid')
     values_dictionary = yaml.safe_load(values)
     if not isinstance(values_dictionary, dict):
         return 'The passed value needs to be a dictionary in YAML format'
@@ -149,7 +159,7 @@ def publisher(
     while times == 0 or count < times:
         rclpy.spin_once(node)
 
-    if times == 1:
-        time.sleep(0.1)  # make sure the message reaches the wire before exiting
+    # give some time for the messages to reach the wire before exiting
+    time.sleep(keep_alive)
 
     node.destroy_timer(timer)
