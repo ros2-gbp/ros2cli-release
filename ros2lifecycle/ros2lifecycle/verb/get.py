@@ -42,7 +42,7 @@ class GetVerb(VerbExtension):
         with NodeStrategy(args) as node:
             node_names = get_node_names(
                 node=node, include_hidden_nodes=args.include_hidden_nodes)
-            node_names = [n.full_name for n in node_names]
+            node_names = {n.full_name for n in node_names}
 
         node_name = get_absolute_node_name(args.node_name)
         if node_name:
@@ -61,7 +61,7 @@ class GetVerb(VerbExtension):
                 if isinstance(state, Exception):
                     print(
                         'Exception while calling service of node '
-                        "'{node_name}': {state}".format_map(locals()),
+                        f"'{node_name}': {state}",
                         file=sys.stderr)
                     del states[node_name]
                     if args.node_name:
@@ -72,6 +72,5 @@ class GetVerb(VerbExtension):
                 state = states[node_name]
                 prefix = ''
                 if not args.node_name:
-                    prefix = '{node_name}: '.format_map(locals())
-                print(
-                    prefix + '{state.label} [{state.id}]'.format_map(locals()))
+                    prefix = f'{node_name}: '
+                print(prefix + f'{state.label} [{state.id}]')

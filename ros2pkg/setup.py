@@ -5,7 +5,7 @@ package_name = 'ros2pkg'
 
 setup(
     name=package_name,
-    version='0.7.11',
+    version='0.9.5',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
-    maintainer='Dirk Thomas',
-    maintainer_email='dthomas@osrfoundation.org',
+    maintainer='Claire Wang, Mabel Zhang',
+    maintainer_email='clairewang@openrobotics.org, mabel@openrobotics.org',
     url='https://github.com/ros2/ros2cli/tree/master/ros2pkg',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],
@@ -44,6 +44,7 @@ The package provides the pkg command for the ROS 2 command line tools.""",
             'executables = ros2pkg.verb.executables:ExecutablesVerb',
             'list = ros2pkg.verb.list:ListVerb',
             'prefix = ros2pkg.verb.prefix:PrefixVerb',
+            'xml = ros2pkg.verb.xml:XmlVerb',
         ],
     },
     package_data={

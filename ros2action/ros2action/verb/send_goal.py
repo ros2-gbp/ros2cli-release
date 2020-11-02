@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib
-
 from action_msgs.msg import GoalStatus
 import rclpy
 from rclpy.action import ActionClient
 from ros2action.api import action_name_completer
+from ros2action.api import ActionGoalPrototypeCompleter
 from ros2action.api import ActionTypeCompleter
 from ros2action.verb import VerbExtension
 from ros2cli.node import NODE_NAME_PREFIX
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py import set_message_fields
+from rosidl_runtime_py.utilities import get_action
 
 import yaml
 
@@ -39,9 +39,10 @@ class SendGoalVerb(VerbExtension):
             'action_type',
             help="Type of the ROS action (e.g. 'example_interfaces/action/Fibonacci')")
         arg.completer = ActionTypeCompleter(action_name_key='action_name')
-        parser.add_argument(
+        arg = parser.add_argument(
             'goal',
             help="Goal request values in YAML format (e.g. '{order: 10}')")
+        arg.completer = ActionGoalPrototypeCompleter(action_type_key='action_type')
         parser.add_argument(
             '-f', '--feedback', action='store_true',
             help='Echo feedback messages for the goal')
@@ -71,7 +72,7 @@ def _goal_status_to_string(status):
 
 
 def _feedback_callback(feedback):
-    print('Feedback:\n    {}'.format(message_to_yaml(feedback.feedback, None)))
+    print('Feedback:\n    {}'.format(message_to_yaml(feedback.feedback)))
 
 
 def send_goal(action_name, action_type, goal_values, feedback_callback):
@@ -80,26 +81,15 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
     action_client = None
     try:
         try:
-            # TODO(jacobperron): This logic should come from a rosidl related package
-            parts = action_type.split('/')
-            if len(parts) == 1:
-                raise ValueError()
-            if len(parts) == 2:
-                parts = [parts[0], 'action', parts[1]]
-            package_name = parts[0]
-            action_type = parts[-1]
-            if not all(parts):
-                raise ValueError()
-        except ValueError:
+            action_module = get_action(action_type)
+        except (AttributeError, ModuleNotFoundError, ValueError):
             raise RuntimeError('The passed action type is invalid')
 
-        module = importlib.import_module('.'.join(parts[:-1]))
-        action_module = getattr(module, action_type)
         goal_dict = yaml.safe_load(goal_values)
 
         rclpy.init()
 
-        node_name = NODE_NAME_PREFIX + '_send_goal_{}_{}'.format(package_name, action_type)
+        node_name = f"{NODE_NAME_PREFIX}_send_goal_{action_type.replace('/', '_')}"
         node = rclpy.create_node(node_name)
 
         action_client = ActionClient(node, action_module, action_name)
@@ -114,7 +104,7 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
         print('Waiting for an action server to become available...')
         action_client.wait_for_server()
 
-        print('Sending goal:\n     {}'.format(message_to_yaml(goal, None)))
+        print('Sending goal:\n     {}'.format(message_to_yaml(goal)))
         goal_future = action_client.send_goal_async(goal, feedback_callback)
         rclpy.spin_until_future_complete(node, goal_future)
 
@@ -144,7 +134,7 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
         # no need to potentially cancel the goal anymore
         goal_handle = None
 
-        print('Result:\n    {}'.format(message_to_yaml(result.result, None)))
+        print('Result:\n    {}'.format(message_to_yaml(result.result)))
         print('Goal finished with status: {}'.format(_goal_status_to_string(result.status)))
     finally:
         # Cancel the goal if it's still active

@@ -20,10 +20,10 @@ from ros2cli.node.strategy import NodeStrategy
 
 from ros2lifecycle.api import call_change_states
 from ros2lifecycle.api import call_get_available_transitions
+from ros2lifecycle.api import get_node_names
 from ros2lifecycle.verb import VerbExtension
 
 from ros2node.api import get_absolute_node_name
-from ros2node.api import get_node_names
 from ros2node.api import NodeNameCompleter
 
 
@@ -53,12 +53,11 @@ class SetVerb(VerbExtension):
 
         with DirectNode(args) as node:
             transitions = call_get_available_transitions(
-                node=node, states={args.node_name: None})
-            transitions = transitions[args.node_name]
+                node=node, states={node_name: None})
+            transitions = transitions[node_name]
             if isinstance(transitions, Exception):
                 return 'Exception while calling service of node ' \
-                    "'{args.node_name}': {transitions}" \
-                    .format_map(locals())
+                    f"'{args.node_name}': {transitions}"
 
             # identify requested transition
             for transition in [t.transition for t in transitions]:
@@ -72,20 +71,18 @@ class SetVerb(VerbExtension):
                     return \
                         'Unknown transition requested, available ones are:' + \
                         ''.join(
-                            '\n- {t.transition.label} [{t.transition.id}]'
-                            .format_map(locals())
+                            f'\n- {t.transition.label} [{t.transition.id}]'
                             for t in transitions)
 
             results = call_change_states(
-                node=node, transitions={args.node_name: transition})
-            result = results[args.node_name]
+                node=node, transitions={node_name: transition})
+            result = results[node_name]
 
             # output response
             if isinstance(result, Exception):
                 print(
                     'Exception while calling service of node '
-                    "'{args.node_name}': {result}"
-                    .format_map(locals()), file=sys.stderr)
+                    f"'{args.node_name}': {result}", file=sys.stderr)
             elif result:
                 print('Transitioning successful')
             else:
