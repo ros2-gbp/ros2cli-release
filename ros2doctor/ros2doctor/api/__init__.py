@@ -16,7 +16,8 @@ from typing import List
 from typing import Set
 from typing import Tuple
 
-import importlib_metadata
+from pkg_resources import iter_entry_points
+from pkg_resources import UnknownExtra
 
 from ros2doctor.api.format import doctor_warn
 
@@ -70,10 +71,12 @@ class Result:
         self.error = 0
         self.warning = 0
 
-    def add_error(self):
+    def add_error(self, msg) -> None:
+        doctor_warn(msg)
         self.error += 1
 
-    def add_warning(self):
+    def add_warning(self, msg) -> None:
+        doctor_warn(msg)
         self.warning += 1
 
 
@@ -84,28 +87,28 @@ def run_checks(*, include_warnings=False) -> Tuple[Set[str], int, int]:
     :return: 3-tuple (categories of failed checks, number of failed checks,
              total number of checks)
     """
-    fail_categories = set()  # remove repeating elements
+    failed_cats = set()  # remove repeating elements
     fail = 0
     total = 0
-    for check_entry_pt in importlib_metadata.entry_points().get('ros2doctor.checks', []):
+    for check_entry_pt in iter_entry_points('ros2doctor.checks'):
         try:
             check_class = check_entry_pt.load()
-        except ImportError:
-            doctor_warn(f'Check entry point {check_entry_pt.name} fails to load.')
+        except (ImportError, UnknownExtra):
+            doctor_warn('Check entry point %s fails to load.' % check_entry_pt.name)
         try:
             check_instance = check_class()
         except Exception:
-            doctor_warn(f'Unable to instantiate check object from {check_entry_pt.name}.')
+            doctor_warn('Unable to instantiate check object from %s.' % check_entry_pt.name)
         try:
             check_category = check_instance.category()
             result = check_instance.check()
             if result.error or (include_warnings and result.warning):
                 fail += 1
-                fail_categories.add(check_category)
+                failed_cats.add(check_category)
             total += 1
         except Exception:
-            doctor_warn(f'Fail to call {check_entry_pt.name} class functions.')
-    return fail_categories, fail, total
+            doctor_warn('Fail to call %s class functions.' % check_entry_pt.name)
+    return failed_cats, fail, total
 
 
 def generate_reports(*, categories=None) -> List[Report]:
@@ -115,15 +118,15 @@ def generate_reports(*, categories=None) -> List[Report]:
     :return: list of Report objects
     """
     reports = []
-    for report_entry_pt in importlib_metadata.entry_points().get('ros2doctor.report', []):
+    for report_entry_pt in iter_entry_points('ros2doctor.report'):
         try:
             report_class = report_entry_pt.load()
-        except ImportError:
-            doctor_warn(f'Report entry point {report_entry_pt.name} fails to load.')
+        except (ImportError, UnknownExtra):
+            doctor_warn('Report entry point %s fails to load.' % report_entry_pt.name)
         try:
             report_instance = report_class()
         except Exception:
-            doctor_warn(f'Unable to instantiate report object from {report_entry_pt.name}.')
+            doctor_warn('Unable to instantiate report object from %s.' % report_entry_pt.name)
         try:
             report_category = report_instance.category()
             report = report_instance.report()
@@ -133,5 +136,5 @@ def generate_reports(*, categories=None) -> List[Report]:
             else:
                 reports.append(report)
         except Exception:
-            doctor_warn(f'Fail to call {report_entry_pt.name} class functions.')
+            doctor_warn('Fail to call %s class functions.' % report_entry_pt.name)
     return reports

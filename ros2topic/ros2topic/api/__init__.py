@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import argparse
+import importlib
 
-from argparse import ArgumentTypeError
 from time import sleep
 
 import rclpy
@@ -26,16 +26,6 @@ from ros2cli.node.strategy import NodeStrategy
 from rosidl_runtime_py import get_message_interfaces
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py.utilities import get_message
-
-
-def unsigned_int(string):
-    try:
-        value = int(string)
-    except ValueError:
-        value = -1
-    if value < 0:
-        raise ArgumentTypeError('value must be non-negative integer')
-    return value
 
 
 def get_topic_names_and_types(*, node, include_hidden_topics=False):
@@ -65,6 +55,24 @@ class TopicNameCompleter:
                 node=node,
                 include_hidden_topics=getattr(
                     parsed_args, self.include_hidden_topics_key))
+
+
+def import_message_type(topic_name, message_type):
+    # TODO(dirk-thomas) this logic should come from a rosidl related package
+    try:
+        package_name, *message_name = message_type.split('/')
+        if not package_name or not message_name or not all(message_name):
+            raise ValueError()
+    except ValueError:
+        raise RuntimeError('The passed message type is invalid')
+
+    # TODO(sloretz) node API to get topic types should indicate if action or msg
+    middle_module = 'msg'
+    if topic_name.endswith('/_action/feedback'):
+        middle_module = 'action'
+
+    module = importlib.import_module(package_name + '.' + middle_module)
+    return getattr(module, message_name[-1])
 
 
 def message_type_completer(**kwargs):
@@ -141,10 +149,7 @@ def _get_msg_class(node, topic, include_hidden_topics):
         # Could not determine the type for the passed topic
         return None
 
-    try:
-        return get_message(message_type)
-    except (AttributeError, ModuleNotFoundError, ValueError):
-        raise RuntimeError("The message type '%s' is invalid" % message_type)
+    return import_message_type(topic, message_type)
 
 
 class TopicMessagePrototypeCompleter:
@@ -160,23 +165,14 @@ class TopicMessagePrototypeCompleter:
 
 def qos_profile_from_short_keys(
     preset_profile: str, reliability: str = None, durability: str = None,
-    depth: int = -1, history: str = None,
 ) -> rclpy.qos.QoSProfile:
     """Construct a QoSProfile given the name of a preset, and optional overrides."""
     # Build a QoS profile based on user-supplied arguments
     profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(preset_profile)
-    if history:
-        profile.history = rclpy.qos.QoSHistoryPolicy.get_from_short_key(history)
     if durability:
         profile.durability = rclpy.qos.QoSDurabilityPolicy.get_from_short_key(durability)
     if reliability:
         profile.reliability = rclpy.qos.QoSReliabilityPolicy.get_from_short_key(reliability)
-    if depth >= 0:
-        profile.depth = depth
-    else:
-        if (profile.durability == rclpy.qos.QoSDurabilityPolicy.TRANSIENT_LOCAL
-                and profile.depth == 0):
-            profile.depth = 1
 
     return profile
 
@@ -194,17 +190,6 @@ def add_qos_arguments_to_argument_parser(
              .format(verb, default_preset))
     default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(
         default_preset)
-    parser.add_argument(
-        '--qos-depth', metavar='N', type=int, default=-1,
-        help='Queue size setting to {} with '
-             '(overrides depth value of --qos-profile option)'
-             .format(verb))
-    parser.add_argument(
-        '--qos-history',
-        choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
-        help='History of samples setting to {} with '
-             '(overrides history value of --qos-profile option, default: {})'
-             .format(verb, default_profile.history.short_key))
     parser.add_argument(
         '--qos-reliability',
         choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),

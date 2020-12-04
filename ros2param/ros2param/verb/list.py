@@ -22,8 +22,6 @@ from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_absolute_node_name
 from ros2node.api import get_node_names
 from ros2node.api import NodeNameCompleter
-from ros2param.api import call_describe_parameters
-from ros2param.api import get_parameter_type_string
 from ros2param.verb import VerbExtension
 from ros2service.api import get_service_names
 
@@ -43,9 +41,6 @@ class ListVerb(VerbExtension):
         parser.add_argument(
             '--param-prefixes', nargs='+', default=[],
             help='Only list parameters with the provided prefixes')
-        parser.add_argument(
-            '--param-type', action='store_true',
-            help='Print parameter types with parameter names')
 
     def main(self, *, args):  # noqa: D102
         with NodeStrategy(args) as node:
@@ -67,7 +62,8 @@ class ListVerb(VerbExtension):
             futures = {}
             # create clients for nodes which have the service
             for node_name in node_names:
-                service_name = f'{node_name.full_name}/list_parameters'
+                service_name = '{node_name.full_name}/list_parameters' \
+                    .format_map(locals())
                 if service_name in service_names:
                     client = node.create_client(ListParameters, service_name)
                     clients[node_name] = client
@@ -92,34 +88,20 @@ class ListVerb(VerbExtension):
 
             # wait for all responses
             for future in futures.values():
-                rclpy.spin_until_future_complete(node, future, timeout_sec=1.0)
+                rclpy.spin_until_future_complete(node, future)
 
             # print responses
             for node_name in sorted(futures.keys()):
                 future = futures[node_name]
                 if future.result() is not None:
                     if not args.node_name:
-                        print(f'{node_name.full_name}:')
+                        print('{node_name.full_name}:'.format_map(locals()))
                     response = future.result()
-                    sorted_names = sorted(response.result.names)
-                    # get descriptors for the node if needs to print parameter type
-                    name_to_type_map = {}
-                    if args.param_type is True:
-                        resp = call_describe_parameters(
-                            node=node, node_name=node_name.full_name,
-                            parameter_names=sorted_names)
-                        for descriptor in resp.descriptors:
-                            name_to_type_map[descriptor.name] = get_parameter_type_string(
-                                descriptor.type)
-
-                    for name in sorted_names:
-                        if args.param_type is True:
-                            param_type_str = name_to_type_map[name]
-                            print(f'  {name} (type: {param_type_str})')
-                        else:
-                            print(f'  {name}')
+                    for name in sorted(response.result.names):
+                        print('  {name}'.format_map(locals()))
                 else:
                     e = future.exception()
                     print(
                         'Exception while calling service of node '
-                        f"'{node_name.full_name}': {e}", file=sys.stderr)
+                        "'{node_name.full_name}': {e}".format_map(locals()),
+                        file=sys.stderr)

@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-
+from ros2cli.node.direct import DirectNode
 from ros2cli.node.strategy import add_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_action_client_info
@@ -23,7 +22,6 @@ from ros2node.api import get_publisher_info
 from ros2node.api import get_service_client_info
 from ros2node.api import get_service_server_info
 from ros2node.api import get_subscriber_info
-from ros2node.api import INFO_NONUNIQUE_WARNING_TEMPLATE
 from ros2node.api import NodeNameCompleter
 from ros2node.verb import VerbExtension
 
@@ -47,14 +45,9 @@ class InfoVerb(VerbExtension):
 
     def main(self, *, args):
         with NodeStrategy(args) as node:
-            node_names = get_node_names(node=node, include_hidden_nodes=args.include_hidden)
-            count = [n.full_name for n in node_names].count(args.node_name)
-            if count > 1:
-                print(
-                    INFO_NONUNIQUE_WARNING_TEMPLATE.format(
-                        num_nodes=count, node_name=args.node_name),
-                    file=sys.stderr)
-            if count > 0:
+            node_names = get_node_names(node=node, include_hidden_nodes=True)
+        if args.node_name in (n.full_name for n in node_names):
+            with DirectNode(args) as node:
                 print(args.node_name)
                 subscribers = get_subscriber_info(
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
@@ -80,5 +73,5 @@ class InfoVerb(VerbExtension):
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
                 print('  Action Clients:')
                 print_names_and_types(actions_clients)
-            else:
-                return "Unable to find node '" + args.node_name + "'"
+        else:
+            return "Unable to find node '" + args.node_name + "'"

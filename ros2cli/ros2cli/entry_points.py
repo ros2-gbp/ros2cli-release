@@ -16,7 +16,8 @@
 from collections import defaultdict
 import logging
 
-import importlib_metadata
+from pkg_resources import iter_entry_points
+from pkg_resources import WorkingSet
 
 """
 The group name for entry points identifying extension points.
@@ -40,14 +41,18 @@ def get_all_entry_points():
     extension_points = get_entry_points(EXTENSION_POINT_GROUP_NAME)
 
     entry_points = defaultdict(dict)
-
-    for dist in importlib_metadata.distributions():
-        for ep in dist.entry_points:
+    working_set = WorkingSet()
+    for dist in sorted(working_set):
+        entry_map = dist.get_entry_map()
+        for group_name in entry_map.keys():
             # skip groups which are not registered as extension points
-            if ep.group not in extension_points:
+            if group_name not in extension_points:
                 continue
 
-            entry_points[ep.group][ep.name] = (dist, ep)
+            group = entry_map[group_name]
+            for entry_point_name, entry_point in group.items():
+                entry_points[group_name][entry_point_name] = \
+                    (dist, entry_point)
     return entry_points
 
 
@@ -61,29 +66,27 @@ def get_entry_points(group_name):
     :rtype: dict
     """
     entry_points = {}
-    for entry_point in importlib_metadata.entry_points().get(group_name, []):
+    for entry_point in iter_entry_points(group=group_name):
         entry_points[entry_point.name] = entry_point
     return entry_points
 
 
-def load_entry_points(group_name, *, exclude_names=None):
+def load_entry_points(group_name):
     """
     Load the entry points for a specific group.
 
     :param str group_name: the name of the ``entry_point`` group
-    :param iterable exclude_names: the names of the entry points to exclude
     :returns: mapping of entry point name to loaded entry point
     :rtype: dict
     """
     extension_types = {}
     for entry_point in get_entry_points(group_name).values():
-        if exclude_names and entry_point.name in exclude_names:
-            continue
         try:
             extension_type = entry_point.load()
         except Exception as e:  # noqa: F841
             logger.warning(
-                f"Failed to load entry point '{entry_point.name}': {e}")
+                "Failed to load entry point '{entry_point.name}': {e}"
+                .format_map(locals()))
             continue
         extension_types[entry_point.name] = extension_type
     return extension_types

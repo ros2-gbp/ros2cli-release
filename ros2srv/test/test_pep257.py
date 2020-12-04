@@ -1,4 +1,4 @@
-# Copyright 2020 Open Source Robotics Foundation, Inc.
+# Copyright 2017 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Alias xmlrpc.client module objects to ensure client code uses ros2cli.xmlrpc
-from xmlrpc.client import ProtocolError
-from xmlrpc.client import ServerProxy
+from ament_pep257.main import main
+import pytest
 
 
-__all__ = [
-    'ProtocolError',
-    'ServerProxy'
-]
+@pytest.mark.linter
+@pytest.mark.pep257
+def test_pep257():
+    rc = main(argv=[])
+    assert rc == 0, 'Found code style errors / warnings'

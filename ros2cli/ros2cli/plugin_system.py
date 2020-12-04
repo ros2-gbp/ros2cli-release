@@ -16,7 +16,7 @@
 from collections import OrderedDict
 import logging
 
-from packaging.version import Version
+from pkg_resources import parse_version
 
 from ros2cli.entry_points import load_entry_points
 
@@ -37,10 +37,11 @@ _extension_instances = {}
 def instantiate_extensions(
     group_name, *, exclude_names=None, unique_instance=False
 ):
-    extension_types = load_entry_points(
-        group_name, exclude_names=exclude_names)
+    extension_types = load_entry_points(group_name)
     extension_instances = {}
     for extension_name, extension_class in extension_types.items():
+        if exclude_names and extension_name in exclude_names:
+            continue
         extension_instance = _instantiate_extension(
             group_name, extension_name, extension_class,
             unique_instance=unique_instance)
@@ -61,13 +62,13 @@ def _instantiate_extension(
         extension_instance = extension_class()
     except PluginException as e:  # noqa: F841
         logger.warning(
-            f"Failed to instantiate '{group_name}' extension "
-            f"'{extension_name}': {e}")
+            "Failed to instantiate '{group_name}' extension "
+            "'{extension_name}': {e}".format_map(locals()))
         return None
     except Exception as e:  # noqa: F841
         logger.error(
-            f"Failed to instantiate '{group_name}' extension "
-            f"'{extension_name}': {e}")
+            "Failed to instantiate '{group_name}' extension "
+            "'{extension_name}': {e}".format_map(locals()))
         return None
     if not unique_instance:
         _extension_instances[extension_class] = extension_instance
@@ -85,8 +86,8 @@ def order_extensions_by_name(extensions):
 
 def satisfies_version(version, caret_range):
     assert caret_range.startswith('^'), 'Only supports caret ranges'
-    extension_point_version = Version(version)
-    extension_version = Version(caret_range[1:])
+    extension_point_version = parse_version(version)
+    extension_version = parse_version(caret_range[1:])
     next_extension_version = get_upper_bound_caret_version(
         extension_version)
 
@@ -111,4 +112,4 @@ def get_upper_bound_caret_version(version):
         minor = 0
     else:
         minor += 1
-    return Version('%d.%d.0' % (major, minor))
+    return parse_version('%d.%d.0' % (major, minor))

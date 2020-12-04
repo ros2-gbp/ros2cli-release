@@ -21,32 +21,16 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile
 from ros2cli.node.direct import DirectNode
 from ros2topic.api import add_qos_arguments_to_argument_parser
+from ros2topic.api import import_message_type
 from ros2topic.api import qos_profile_from_short_keys
 from ros2topic.api import TopicMessagePrototypeCompleter
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import TopicTypeCompleter
 from ros2topic.verb import VerbExtension
 from rosidl_runtime_py import set_message_fields
-from rosidl_runtime_py.utilities import get_message
 import yaml
 
 MsgType = TypeVar('MsgType')
-
-
-def nonnegative_int(inval):
-    ret = int(inval)
-    if ret < 0:
-        # The error message here gets completely swallowed by argparse
-        raise ValueError('Value must be positive or zero')
-    return ret
-
-
-def positive_float(inval):
-    ret = float(inval)
-    if ret <= 0.0:
-        # The error message here gets completely swallowed by argparse
-        raise ValueError('Value must be positive')
-    return ret
 
 
 class PubVerb(VerbExtension):
@@ -66,27 +50,19 @@ class PubVerb(VerbExtension):
         arg = parser.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the message with in YAML format '
-                 "(e.g. 'data: Hello World'), "
+                 '(e.g. "data: Hello World"), '
                  'otherwise the message will be published with default values')
         arg.completer = TopicMessagePrototypeCompleter(
             topic_type_key='message_type')
         parser.add_argument(
-            '-r', '--rate', metavar='N', type=positive_float, default=1.0,
+            '-r', '--rate', metavar='N', type=float, default=1.0,
             help='Publishing rate in Hz (default: 1)')
         parser.add_argument(
             '-p', '--print', metavar='N', type=int, default=1,
             help='Only print every N-th published message (default: 1)')
-        group = parser.add_mutually_exclusive_group()
-        group.add_argument(
+        parser.add_argument(
             '-1', '--once', action='store_true',
             help='Publish one message and exit')
-        group.add_argument(
-            '-t', '--times', type=nonnegative_int, default=0,
-            help='Publish this number of times and then exit')
-        parser.add_argument(
-            '--keep-alive', metavar='N', type=positive_float, default=0.1,
-            help='Keep publishing node alive for N seconds after the last msg '
-                 '(default: 0.1)')
         parser.add_argument(
             '-n', '--node-name',
             help='Name of the created publishing node')
@@ -94,16 +70,15 @@ class PubVerb(VerbExtension):
             parser, is_publisher=True, default_preset='system_default')
 
     def main(self, *, args):
+        if args.rate <= 0:
+            raise RuntimeError('rate must be greater than zero')
+
         return main(args)
 
 
 def main(args):
     qos_profile = qos_profile_from_short_keys(
-        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability,
-        depth=args.qos_depth, history=args.qos_history)
-    times = args.times
-    if args.once:
-        times = 1
+        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability)
     with DirectNode(args, node_name=args.node_name) as node:
         return publisher(
             node.node,
@@ -112,9 +87,8 @@ def main(args):
             args.values,
             1. / args.rate,
             args.print,
-            times,
-            qos_profile,
-            args.keep_alive)
+            args.once,
+            qos_profile)
 
 
 def publisher(
@@ -124,15 +98,11 @@ def publisher(
     values: dict,
     period: float,
     print_nth: int,
-    times: int,
+    once: bool,
     qos_profile: QoSProfile,
-    keep_alive: float,
 ) -> Optional[str]:
     """Initialize a node with a single publisher and run its publish loop (maybe only once)."""
-    try:
-        msg_module = get_message(message_type)
-    except (AttributeError, ModuleNotFoundError, ValueError):
-        raise RuntimeError('The passed message type is invalid')
+    msg_module = import_message_type(topic_name, message_type)
     values_dictionary = yaml.safe_load(values)
     if not isinstance(values_dictionary, dict):
         return 'The passed value needs to be a dictionary in YAML format'
@@ -156,10 +126,10 @@ def publisher(
         pub.publish(msg)
 
     timer = node.create_timer(period, timer_callback)
-    while times == 0 or count < times:
+    if once:
         rclpy.spin_once(node)
-
-    # give some time for the messages to reach the wire before exiting
-    time.sleep(keep_alive)
+        time.sleep(0.1)  # make sure the message reaches the wire before exiting
+    else:
+        rclpy.spin(node)
 
     node.destroy_timer(timer)

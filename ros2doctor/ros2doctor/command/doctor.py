@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ros2cli.command import add_subparsers_on_demand
 from ros2cli.command import CommandExtension
 from ros2doctor.api import generate_reports
 from ros2doctor.api import run_checks
@@ -36,16 +35,9 @@ class DoctorCommand(CommandExtension):
             '--include-warnings', '-iw', action='store_true',
             help='Include warnings as failed checks. Warnings are ignored by default.'
         )
-        # add arguments and sub-commands of verbs
-        add_subparsers_on_demand(
-            parser, cli_name, '_verb', 'ros2doctor.verb', required=False)
 
     def main(self, *, parser, args):
         """Run checks and print report to terminal based on user input args."""
-        if hasattr(args, '_verb'):
-            extension = getattr(args, '_verb')
-            return extension.main(args=args)
-
         # `ros2 doctor -r`
         if args.report:
             all_reports = generate_reports()
@@ -54,16 +46,16 @@ class DoctorCommand(CommandExtension):
             return
 
         # `ros2 doctor
-        fail_category, fail, total = run_checks(include_warnings=args.include_warnings)
+        failed_cats, fail, total = run_checks(include_warnings=args.include_warnings)
         if fail:
-            print(f'\n{fail}/{total} check(s) failed\n')
-            print('Failed modules:', *fail_category)
+            print('\n%d/%d checks failed\n' % (fail, total))
+            print('Failed modules:', *failed_cats)
         else:
-            print(f'\nAll {total} checks passed\n')
+            print('\nAll %d checks passed\n' % total)
 
         # `ros2 doctor -rf`
         if args.report_failed and fail != 0:
-            fail_reports = generate_reports(categories=fail_category)
+            fail_reports = generate_reports(categories=failed_cats)
             for report_obj in fail_reports:
                 format_print(report_obj)
 

@@ -22,10 +22,10 @@ import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 
 import launch_testing
-import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
@@ -33,17 +33,9 @@ import launch_testing_ros.tools
 
 import pytest
 
-from rclpy.utilities import get_available_rmw_implementations
+from rmw_implementation import get_available_rmw_implementations
 
 from test_msgs.srv import BasicTypes
-
-
-# Skip cli tests on Windows while they exhibit pathological behavior
-# https://github.com/ros2/build_farmer/issues/248
-if sys.platform.startswith('win'):
-    pytest.skip(
-            'CLI tests can block for a pathological amount of time on Windows.',
-            allow_module_level=True)
 
 
 def get_echo_call_output(**kwargs):
@@ -64,7 +56,7 @@ def get_echo_call_output(**kwargs):
 
 @pytest.mark.rostest
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
-def generate_test_description(rmw_implementation):
+def generate_test_description(rmw_implementation, ready_fn):
     path_to_echo_server_script = os.path.join(
         os.path.dirname(__file__), 'fixtures', 'echo_server.py'
     )
@@ -81,21 +73,21 @@ def generate_test_description(rmw_implementation):
                     on_exit=[
                         # Add test fixture actions.
                         Node(
-                            executable=sys.executable,
+                            node_executable=sys.executable,
                             arguments=[path_to_echo_server_script],
-                            name='echo_server',
-                            namespace='my_ns',
+                            node_name='echo_server',
+                            node_namespace='my_ns',
                             additional_env=additional_env,
                         ),
                         Node(
-                            executable=sys.executable,
+                            node_executable=sys.executable,
                             arguments=[path_to_echo_server_script],
-                            name='_hidden_echo_server',
-                            namespace='my_ns',
+                            node_name='_hidden_echo_server',
+                            node_namespace='my_ns',
                             remappings=[('echo', '_echo')],
                             additional_env=additional_env,
                         ),
-                        launch_testing.actions.ReadyToTest()
+                        OpaqueFunction(function=lambda context: ready_fn())
                     ],
                     additional_env=additional_env
                 )
@@ -138,7 +130,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
                 yield service_command
         cls.launch_service_command = launch_service_command
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_list_services(self):
         with self.launch_service_command(arguments=['list']) as service_command:
             assert service_command.wait_for_shutdown(timeout=10)
@@ -154,7 +146,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_list_hidden(self):
         with self.launch_service_command(
             arguments=['--include-hidden-services', 'list']
@@ -176,7 +168,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_list_with_types(self):
         with self.launch_service_command(arguments=['list', '-t']) as service_command:
             assert service_command.wait_for_shutdown(timeout=10)
@@ -193,16 +185,16 @@ class TestROS2ServiceCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_list_count(self):
         with self.launch_service_command(arguments=['list', '-c']) as service_command:
             assert service_command.wait_for_shutdown(timeout=10)
         assert service_command.exit_code == launch_testing.asserts.EXIT_OK
         output_lines = service_command.output.splitlines()
         assert len(output_lines) == 1
-        assert int(output_lines[0]) == 7
+        assert int(output_lines[0]) == 7 + 6  # cope with launch_ros internal node.
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_find(self):
         with self.launch_service_command(
             arguments=['find', 'test_msgs/srv/BasicTypes']
@@ -215,7 +207,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_find_hidden(self):
         with self.launch_service_command(
             arguments=['find', '--include-hidden-services', 'test_msgs/srv/BasicTypes']
@@ -228,7 +220,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_find_count(self):
         with self.launch_service_command(
             arguments=['find', '-c', 'test_msgs/srv/BasicTypes']
@@ -267,7 +259,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
         assert service_command.exit_code == 1
         assert service_command.output == ''
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_call_no_args(self):
         with self.launch_service_command(
             arguments=['call', '/my_ns/echo', 'test_msgs/srv/BasicTypes']
@@ -280,7 +272,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_call(self):
         with self.launch_service_command(
             arguments=[
@@ -303,7 +295,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_repeated_call(self):
         with self.launch_service_command(
             arguments=[

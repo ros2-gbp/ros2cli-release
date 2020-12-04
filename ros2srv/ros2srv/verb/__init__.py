@@ -1,4 +1,4 @@
-# Copyright 2020 Open Source Robotics Foundation, Inc.
+# Copyright 2017 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ from ros2cli.plugin_system import satisfies_version
 
 class VerbExtension:
     """
-    The extension point for 'doctor' verb extensions.
+    The extension point for 'srv' verb extensions.
 
     The following properties must be defined:
     * `NAME` (will be set to the entry point name)

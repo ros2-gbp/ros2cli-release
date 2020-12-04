@@ -5,7 +5,7 @@ package_name = 'ros2doctor'
 
 setup(
     name=package_name,
-    version='0.9.5',
+    version='0.8.8',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -41,7 +41,6 @@ setup(
             'PlatformCheck = ros2doctor.api.platform:PlatformCheck',
             'NetworkCheck = ros2doctor.api.network:NetworkCheck',
             'TopicCheck = ros2doctor.api.topic:TopicCheck',
-            'PackageCheck = ros2doctor.api.package:PackageCheck',
         ],
         'ros2doctor.report': [
             'PlatformReport = ros2doctor.api.platform:PlatformReport',
@@ -49,13 +48,6 @@ setup(
             'NetworkReport = ros2doctor.api.network:NetworkReport',
             'RMWReport = ros2doctor.api.rmw:RMWReport',
             'TopicReport = ros2doctor.api.topic:TopicReport',
-            'PackageReport = ros2doctor.api.package:PackageReport',
         ],
-        'ros2cli.extension_point': [
-            'ros2doctor.verb = ros2doctor.verb:VerbExtension',
-        ],
-        'ros2doctor.verb': [
-            'hello = ros2doctor.verb.hello:HelloVerb'
-        ]
     }
 )

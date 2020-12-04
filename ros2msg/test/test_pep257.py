@@ -1,4 +1,4 @@
-# Copyright 2020 Open Source Robotics Foundation, Inc.
+# Copyright 2017 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from xmlrpc.server import SimpleXMLRPCRequestHandler
-from xmlrpc.server import SimpleXMLRPCServer
+from ament_pep257.main import main
+import pytest
 
 
-class LocalXMLRPCServer(SimpleXMLRPCServer):
-
-    def verify_request(self, request, client_address):
-        if client_address[0] != '127.0.0.1':
-            return False
-        return super(LocalXMLRPCServer, self).verify_request(request, client_address)
-
-
-class RequestHandler(SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/ros2cli/',)
+@pytest.mark.linter
+@pytest.mark.pep257
+def test_pep257():
+    rc = main(argv=[])
+    assert rc == 0, 'Found code style errors / warnings'

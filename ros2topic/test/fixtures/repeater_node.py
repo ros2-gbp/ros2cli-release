@@ -19,7 +19,8 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_system_default
 from rclpy.utilities import remove_ros_args
-from rosidl_runtime_py.utilities import get_message
+
+from ros2topic.api import import_message_type
 
 
 class RepeaterNode(Node):
@@ -36,10 +37,14 @@ class RepeaterNode(Node):
         self.pub.publish(self.message_type())
 
 
+def message_type(message_typename):
+    return import_message_type('~/output', message_typename)
+
+
 def parse_arguments(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        'message_type', type=get_message,
+        'message_type', type=message_type,
         help='Message type for the repeater to publish.'
     )
     return parser.parse_args(args=remove_ros_args(args))

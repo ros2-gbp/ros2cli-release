@@ -16,7 +16,7 @@ import sys
 
 import rclpy
 from rclpy.node import Node
-from ros2topic.api import qos_profile_from_short_keys
+from rclpy.qos import qos_profile_system_default
 
 from std_msgs.msg import String
 
@@ -25,11 +25,8 @@ class ListenerNode(Node):
 
     def __init__(self):
         super().__init__('listener')
-        qos_profile = qos_profile_from_short_keys(
-            'system_default', durability='transient_local',
-            reliability='reliable')
         self.sub = self.create_subscription(
-            String, 'chatter', self.callback, qos_profile
+            String, 'chatter', self.callback, qos_profile_system_default
         )
 
     def callback(self, msg):

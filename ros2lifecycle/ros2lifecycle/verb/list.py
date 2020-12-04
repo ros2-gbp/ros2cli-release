@@ -60,9 +60,10 @@ class ListVerb(VerbExtension):
             transitions = transitions[node_name]
             if isinstance(transitions, Exception):
                 return 'Exception while calling service of node ' \
-                    f"'{args.node_name}': {transitions}"
+                    "'{args.node_name}': {transitions}" \
+                    .format_map(locals())
             for t in transitions:
                 print(
-                    f'- {t.transition.label} [{t.transition.id}]\n'
-                    f'\tStart: {t.start_state.label}\n'
-                    f'\tGoal: {t.goal_state.label}')
+                    '- {t.transition.label} [{t.transition.id}]\n'
+                    '\tStart: {t.start_state.label}\n'
+                    '\tGoal: {t.goal_state.label}'.format_map(locals()))

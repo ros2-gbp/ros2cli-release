@@ -16,13 +16,14 @@
 import argparse
 import signal
 
-from ros2cli.command import add_subparsers_on_demand
+from ros2cli.command import add_subparsers
+from ros2cli.command import get_command_extensions
 
 
 def main(*, script_name='ros2', argv=None, description=None, extension=None):
     if description is None:
-        description = f'{script_name} is an extensible command-line tool ' \
-            'for ROS 2.'
+        description = '{script_name} is an extensible command-line tool for ' \
+            'ROS 2.'.format_map(locals())
 
     # top level parser
     parser = argparse.ArgumentParser(
@@ -34,13 +35,14 @@ def main(*, script_name='ros2', argv=None, description=None, extension=None):
     if extension:
         extension.add_arguments(parser, script_name)
     else:
-        # get command entry points as needed
+        # get command extensions
+        extensions = get_command_extensions('ros2cli.command')
         selected_extension_key = '_command'
-        add_subparsers_on_demand(
-            parser, script_name, selected_extension_key, 'ros2cli.command',
+        add_subparsers(
+            parser, script_name, selected_extension_key, extensions,
             # hide the special commands in the help
             hide_extensions=['extension_points', 'extensions'],
-            required=False, argv=argv)
+            required=False)
 
     # register argcomplete hook if available
     try:

@@ -58,11 +58,13 @@ class RunCommand(CommandExtension):
                 package_name=args.package_name,
                 executable_name=args.executable_name)
         except PackageNotFound:
-            raise RuntimeError(f"Package '{args.package_name}' not found")
+            raise RuntimeError(
+                "Package '{args.package_name}' not found"
+                .format_map(locals()))
         except MultipleExecutables as e:
             msg = 'Multiple executables found:'
             for p in e.paths:
-                msg += f'\n- {p}'
+                msg += '\n- {p}'.format_map(locals())
             raise RuntimeError(msg)
         if path is None:
             return 'No executable found'
