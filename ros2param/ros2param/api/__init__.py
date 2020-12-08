@@ -34,15 +34,15 @@ def get_value(*, parameter_value):
     elif parameter_value.type == ParameterType.PARAMETER_STRING:
         value = parameter_value.string_value
     elif parameter_value.type == ParameterType.PARAMETER_BYTE_ARRAY:
-        value = parameter_value.byte_array_value
+        value = list(parameter_value.byte_array_value)
     elif parameter_value.type == ParameterType.PARAMETER_BOOL_ARRAY:
-        value = parameter_value.bool_array_value
+        value = list(parameter_value.bool_array_value)
     elif parameter_value.type == ParameterType.PARAMETER_INTEGER_ARRAY:
-        value = parameter_value.integer_array_value
+        value = list(parameter_value.integer_array_value)
     elif parameter_value.type == ParameterType.PARAMETER_DOUBLE_ARRAY:
-        value = parameter_value.double_array_value
+        value = list(parameter_value.double_array_value)
     elif parameter_value.type == ParameterType.PARAMETER_STRING_ARRAY:
-        value = parameter_value.string_array_value
+        value = list(parameter_value.string_array_value)
     elif parameter_value.type == ParameterType.PARAMETER_NOT_SET:
         value = None
     else:
@@ -95,8 +95,7 @@ def get_parameter_value(*, string_value):
 def call_describe_parameters(*, node, node_name, parameter_names=None):
     # create client
     client = node.create_client(
-        DescribeParameters,
-        '{node_name}/describe_parameters'.format_map(locals()))
+        DescribeParameters, f'{node_name}/describe_parameters')
 
     # call as soon as ready
     ready = client.wait_for_service(timeout_sec=5.0)
@@ -114,16 +113,13 @@ def call_describe_parameters(*, node, node_name, parameter_names=None):
     if response is None:
         e = future.exception()
         raise RuntimeError(
-            "Exception while calling service of node '{node_name}': {e}"
-            .format_map(locals()))
+            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
 def call_get_parameters(*, node, node_name, parameter_names):
     # create client
-    client = node.create_client(
-        GetParameters,
-        '{node_name}/get_parameters'.format_map(locals()))
+    client = node.create_client(GetParameters, f'{node_name}/get_parameters')
 
     # call as soon as ready
     ready = client.wait_for_service(timeout_sec=5.0)
@@ -140,16 +136,13 @@ def call_get_parameters(*, node, node_name, parameter_names):
     if response is None:
         e = future.exception()
         raise RuntimeError(
-            'Exception while calling service of node '
-            "'{args.node_name}': {e}".format_map(locals()))
+            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
 def call_set_parameters(*, node, node_name, parameters):
     # create client
-    client = node.create_client(
-        SetParameters,
-        '{node_name}/set_parameters'.format_map(locals()))
+    client = node.create_client(SetParameters, f'{node_name}/set_parameters')
 
     # call as soon as ready
     ready = client.wait_for_service(timeout_sec=5.0)
@@ -166,16 +159,13 @@ def call_set_parameters(*, node, node_name, parameters):
     if response is None:
         e = future.exception()
         raise RuntimeError(
-            'Exception while calling service of node '
-            "'{args.node_name}': {e}".format_map(locals()))
+            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
 def call_list_parameters(*, node, node_name, prefix=None):
     # create client
-    client = node.create_client(
-        ListParameters,
-        '{node_name}/list_parameters'.format_map(locals()))
+    client = node.create_client(ListParameters, f'{node_name}/list_parameters')
 
     # call as soon as ready
     ready = client.wait_for_service(timeout_sec=5.0)
@@ -191,9 +181,24 @@ def call_list_parameters(*, node, node_name, prefix=None):
     if response is None:
         e = future.exception()
         raise RuntimeError(
-            "Exception while calling service of node '{node_name}': {e}"
-            .format_map(locals()))
+            f"Exception while calling service of node '{node_name}': {e}")
     return response.result.names
+
+
+def get_parameter_type_string(parameter_type):
+    mapping = {
+        ParameterType.PARAMETER_BOOL: 'boolean',
+        ParameterType.PARAMETER_INTEGER: 'integer',
+        ParameterType.PARAMETER_DOUBLE: 'double',
+        ParameterType.PARAMETER_STRING: 'string',
+        ParameterType.PARAMETER_BYTE_ARRAY: 'byte array',
+        ParameterType.PARAMETER_BOOL_ARRAY: 'boolean array',
+        ParameterType.PARAMETER_INTEGER_ARRAY: 'integer array',
+        ParameterType.PARAMETER_DOUBLE_ARRAY: 'double array',
+        ParameterType.PARAMETER_STRING_ARRAY: 'string array',
+        ParameterType.PARAMETER_NOT_SET: 'not set',
+    }
+    return mapping[parameter_type]
 
 
 class ParameterNameCompleter:

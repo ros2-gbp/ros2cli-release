@@ -15,13 +15,14 @@
 import contextlib
 import itertools
 import re
+import sys
 import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
-from launch.actions import OpaqueFunction
 
 import launch_testing
+import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
@@ -29,16 +30,24 @@ import launch_testing.tools
 import pytest
 
 
-some_messages_from_std_msgs = [
-    'std_msgs/msg/Bool',
-    'std_msgs/msg/Float32',
-    'std_msgs/msg/Float64',
+# Skip cli tests on Windows while they exhibit pathological behavior
+# https://github.com/ros2/build_farmer/issues/248
+if sys.platform.startswith('win'):
+    pytest.skip(
+            'CLI tests can block for a pathological amount of time on Windows.',
+            allow_module_level=True)
+
+
+some_messages_from_test_msgs = [
+    'test_msgs/msg/BasicTypes',
+    'test_msgs/msg/Constants',
+    'test_msgs/msg/Strings',
 ]
 
-some_services_from_std_srvs = [
-    'std_srvs/srv/Empty',
-    'std_srvs/srv/SetBool',
-    'std_srvs/srv/Trigger',
+some_services_from_test_msgs = [
+    'test_msgs/srv/Arrays',
+    'test_msgs/srv/BasicTypes',
+    'test_msgs/srv/Empty',
 ]
 
 some_actions_from_test_msgs = [
@@ -46,16 +55,16 @@ some_actions_from_test_msgs = [
 ]
 
 some_interfaces = (
-    some_messages_from_std_msgs +
-    some_services_from_std_srvs +
+    some_messages_from_test_msgs +
+    some_services_from_test_msgs +
     some_actions_from_test_msgs
 )
 
 
 @pytest.mark.rostest
 @launch_testing.markers.keep_alive
-def generate_test_description(ready_fn):
-    return LaunchDescription([OpaqueFunction(function=lambda context: ready_fn())])
+def generate_test_description():
+    return LaunchDescription([launch_testing.actions.ReadyToTest()])
 
 
 class TestROS2InterfaceCLI(unittest.TestCase):
@@ -68,11 +77,12 @@ class TestROS2InterfaceCLI(unittest.TestCase):
         proc_output
     ):
         @contextlib.contextmanager
-        def launch_interface_command(self, arguments):
+        def launch_interface_command(self, arguments, prepend_arguments=[], shell=False):
             interface_command_action = ExecuteProcess(
-                cmd=['ros2', 'interface', *arguments],
+                cmd=[*prepend_arguments, 'ros2', 'interface', *arguments],
                 additional_env={'PYTHONUNBUFFERED': '1'},
                 name='ros2interface-cli',
+                shell=shell,
                 output='screen'
             )
             with launch_testing.tools.launch_process(
@@ -117,7 +127,7 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             strict=True
         )
         assert launch_testing.tools.expect_output(
-            expected_lines=some_messages_from_std_msgs,
+            expected_lines=some_messages_from_test_msgs,
             lines=output_lines,
             strict=False
         )
@@ -137,7 +147,7 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             strict=True
         )
         assert launch_testing.tools.expect_output(
-            expected_lines=some_services_from_std_srvs,
+            expected_lines=some_services_from_test_msgs,
             lines=output_lines,
             strict=False
         )
@@ -174,38 +184,6 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             strict=True
         )
 
-    def test_package_on_std_msgs(self):
-        with self.launch_interface_command(
-            arguments=['package', 'std_msgs']
-        ) as interface_command:
-            assert interface_command.wait_for_shutdown(timeout=2)
-        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
-        output_lines = interface_command.output.splitlines()
-        assert launch_testing.tools.expect_output(
-            expected_lines=itertools.repeat(
-                re.compile(r'std_msgs/msg/[A-z0-9_]+'), len(output_lines)
-            ),
-            lines=output_lines,
-            strict=True
-        )
-        assert all(msg in output_lines for msg in some_messages_from_std_msgs)
-
-    def test_package_on_std_srvs(self):
-        with self.launch_interface_command(
-            arguments=['package', 'std_srvs']
-        ) as interface_command:
-            assert interface_command.wait_for_shutdown(timeout=2)
-        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
-        output_lines = interface_command.output.splitlines()
-        assert launch_testing.tools.expect_output(
-            expected_lines=itertools.repeat(
-                re.compile(r'std_srvs/srv/[A-z0-9_]+'), len(output_lines)
-            ),
-            lines=output_lines,
-            strict=True
-        )
-        assert all(srv in output_lines for srv in some_services_from_std_srvs)
-
     def test_package_on_test_msgs(self):
         with self.launch_interface_command(
             arguments=['package', 'test_msgs']
@@ -220,15 +198,13 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             lines=output_lines,
             strict=True
         )
-        assert all(action in output_lines for action in some_actions_from_test_msgs)
+        assert all(interface in output_lines for interface in some_interfaces)
 
     def test_packages(self):
         with self.launch_interface_command(arguments=['packages']) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         output_lines = interface_command.output.splitlines()
-        assert 'std_msgs' in output_lines
-        assert 'std_srvs' in output_lines
         assert 'test_msgs' in output_lines
 
     def test_packages_with_messages(self):
@@ -238,8 +214,6 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         output_lines = interface_command.output.splitlines()
-        assert 'std_msgs' in output_lines
-        assert 'std_srvs' not in output_lines
         assert 'test_msgs' in output_lines
 
     def test_packages_with_services(self):
@@ -249,8 +223,6 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         output_lines = interface_command.output.splitlines()
-        assert 'std_msgs' not in output_lines
-        assert 'std_srvs' in output_lines
         assert 'test_msgs' in output_lines
 
     def test_packages_with_actions(self):
@@ -260,19 +232,80 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         output_lines = interface_command.output.splitlines()
-        assert 'std_msgs' not in output_lines
-        assert 'std_srvs' not in output_lines
         assert 'test_msgs' in output_lines
 
     def test_show_message(self):
         with self.launch_interface_command(
-            arguments=['show', 'std_msgs/msg/String']
+            arguments=['show', 'test_msgs/msg/BasicTypes']
         ) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                'string data'
+                'bool bool_value',
+                'byte byte_value',
+                'char char_value',
+                'float32 float32_value',
+                'float64 float64_value',
+                'int8 int8_value',
+                'uint8 uint8_value',
+                'int16 int16_value',
+                'uint16 uint16_value',
+                'int32 int32_value',
+                'uint32 uint32_value',
+                'int64 int64_value',
+                'uint64 uint64_value',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_all_comments_for_message(self):
+        with self.launch_interface_command(
+                arguments=['show', 'test_msgs/msg/Builtins', '--all-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'builtin_interfaces/Duration duration_value',
+                '\t# Duration defines a period between two time points.',
+                '\t# Messages of this datatype are of ROS Time following this design:',
+                '\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t# Seconds component, range is valid over any possible int32 value.',
+                '\tint32 sec',
+                '',
+                '\t# Nanoseconds component in the range of [0, 10e9).',
+                '\tuint32 nanosec',
+                'builtin_interfaces/Time time_value',
+                '\t# This message communicates ROS Time defined here:',
+                '\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t# The seconds component, valid over all int32 values.',
+                '\tint32 sec',
+                '',
+                '\t# The nanoseconds component, valid in the range [0, 10e9).',
+                '\tuint32 nanosec',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_no_comments_for_message(self):
+        with self.launch_interface_command(
+                arguments=['show', 'test_msgs/msg/Builtins', '--no-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'builtin_interfaces/Duration duration_value',
+                '\tint32 sec',
+                '\tuint32 nanosec',
+                'builtin_interfaces/Time time_value',
+                '\tint32 sec',
+                '\tuint32 nanosec',
             ],
             text=interface_command.output,
             strict=True
@@ -280,16 +313,41 @@ class TestROS2InterfaceCLI(unittest.TestCase):
 
     def test_show_service(self):
         with self.launch_interface_command(
-            arguments=['show', 'std_srvs/srv/SetBool']
+            arguments=['show', 'test_msgs/srv/BasicTypes']
         ) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                'bool data # e.g. for hardware enabling / disabling',
+                'bool bool_value',
+                'byte byte_value',
+                'char char_value',
+                'float32 float32_value',
+                'float64 float64_value',
+                'int8 int8_value',
+                'uint8 uint8_value',
+                'int16 int16_value',
+                'uint16 uint16_value',
+                'int32 int32_value',
+                'uint32 uint32_value',
+                'int64 int64_value',
+                'uint64 uint64_value',
+                'string string_value',
                 '---',
-                'bool success   # indicate successful run of triggered service',
-                'string message # informational, e.g. for error messages'
+                'bool bool_value',
+                'byte byte_value',
+                'char char_value',
+                'float32 float32_value',
+                'float64 float64_value',
+                'int8 int8_value',
+                'uint8 uint8_value',
+                'int16 int16_value',
+                'uint16 uint16_value',
+                'int32 int32_value',
+                'uint32 uint32_value',
+                'int64 int64_value',
+                'uint64 uint64_value',
+                'string string_value',
             ],
             text=interface_command.output,
             strict=True
@@ -316,6 +374,357 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             strict=True
         )
 
+    def test_show_nested_message(self):
+        with self.launch_interface_command(
+                arguments=['show', 'test_msgs/msg/Nested']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'BasicTypes basic_types_value',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_nested_action(self):
+        with self.launch_interface_command(
+                arguments=['show', 'test_msgs/action/NestedMessage']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                '# goal definition',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\tint32 sec',
+                '\tuint32 nanosec',
+                '---',
+                '# result definition',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\tint32 sec',
+                '\tuint32 nanosec',
+                '---',
+                '# feedback',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\tint32 sec',
+                '\tuint32 nanosec',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_no_comments_for_nested_action(self):
+        with self.launch_interface_command(
+                arguments=['show', 'test_msgs/action/NestedMessage', '--no-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\tint32 sec',
+                '\tuint32 nanosec',
+                '---',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\tint32 sec',
+                '\tuint32 nanosec',
+                '---',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\tint32 sec',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\tint32 sec',
+                '\tuint32 nanosec',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_all_comments_for_nested_action(self):
+        with self.launch_interface_command(
+                arguments=['show', 'test_msgs/action/NestedMessage', '--all-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                '# goal definition',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\t# Duration defines a period between two time points.',
+                '\t\t# Messages of this datatype are of ROS Time following this design:',
+                '\t\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t\t# Seconds component, range is valid over any possible int32 value.',
+                '\t\tint32 sec',
+                '',
+                '\t\t# Nanoseconds component in the range of [0, 10e9).',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\t# This message communicates ROS Time defined here:',
+                '\t\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t\t# The seconds component, valid over all int32 values.',
+                '\t\tint32 sec',
+                '',
+                '\t\t# The nanoseconds component, valid in the range [0, 10e9).',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\t# This message communicates ROS Time defined here:',
+                '\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t# The seconds component, valid over all int32 values.',
+                '\tint32 sec',
+                '',
+                '\t# The nanoseconds component, valid in the range [0, 10e9).',
+                '\tuint32 nanosec',
+                '---',
+                '# result definition',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\t# Duration defines a period between two time points.',
+                '\t\t# Messages of this datatype are of ROS Time following this design:',
+                '\t\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t\t# Seconds component, range is valid over any possible int32 value.',
+                '\t\tint32 sec',
+                '',
+                '\t\t# Nanoseconds component in the range of [0, 10e9).',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\t# This message communicates ROS Time defined here:',
+                '\t\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t\t# The seconds component, valid over all int32 values.',
+                '\t\tint32 sec',
+                '',
+                '\t\t# The nanoseconds component, valid in the range [0, 10e9).',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\t# This message communicates ROS Time defined here:',
+                '\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t# The seconds component, valid over all int32 values.',
+                '\tint32 sec',
+                '',
+                '\t# The nanoseconds component, valid in the range [0, 10e9).',
+                '\tuint32 nanosec',
+                '---',
+                '# feedback',
+                'Builtins nested_field_no_pkg',
+                '\tbuiltin_interfaces/Duration duration_value',
+                '\t\t# Duration defines a period between two time points.',
+                '\t\t# Messages of this datatype are of ROS Time following this design:',
+                '\t\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t\t# Seconds component, range is valid over any possible int32 value.',
+                '\t\tint32 sec',
+                '',
+                '\t\t# Nanoseconds component in the range of [0, 10e9).',
+                '\t\tuint32 nanosec',
+                '\tbuiltin_interfaces/Time time_value',
+                '\t\t# This message communicates ROS Time defined here:',
+                '\t\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t\t# The seconds component, valid over all int32 values.',
+                '\t\tint32 sec',
+                '',
+                '\t\t# The nanoseconds component, valid in the range [0, 10e9).',
+                '\t\tuint32 nanosec',
+                'test_msgs/BasicTypes nested_field',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+                'builtin_interfaces/Time nested_different_pkg',
+                '\t# This message communicates ROS Time defined here:',
+                '\t# https://design.ros2.org/articles/clock_and_time.html',
+                '',
+                '\t# The seconds component, valid over all int32 values.',
+                '\tint32 sec',
+                '',
+                '\t# The nanoseconds component, valid in the range [0, 10e9).',
+                '\tuint32 nanosec',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
     def test_show_not_a_package(self):
         with self.launch_interface_command(
             arguments=['show', 'not_a_package/msg/String']
@@ -330,7 +739,7 @@ class TestROS2InterfaceCLI(unittest.TestCase):
 
     def test_show_not_an_interface(self):
         with self.launch_interface_command(
-            arguments=['show', 'std_msgs/msg/NotAMessageTypeName']
+            arguments=['show', 'test_msgs/msg/NotAMessageTypeName']
         ) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == 1
@@ -338,6 +747,36 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             expected_lines=[re.compile(
                 r"Could not find the interface '.+NotAMessageTypeName\.idl'"
             )],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_stdin(self):
+        with self.launch_interface_command(
+            arguments=['show', '-'],
+            prepend_arguments=[
+                sys.executable, '-c', r'"print(\"test_msgs/msg/BasicTypes\")"', '|'
+            ],
+            shell=True
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'bool bool_value',
+                'byte byte_value',
+                'char char_value',
+                'float32 float32_value',
+                'float64 float64_value',
+                'int8 int8_value',
+                'uint8 uint8_value',
+                'int16 int16_value',
+                'uint16 uint16_value',
+                'int32 int32_value',
+                'uint32 uint32_value',
+                'int64 int64_value',
+                'uint64 uint64_value',
+            ],
             text=interface_command.output,
             strict=True
         )

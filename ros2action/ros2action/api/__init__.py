@@ -12,17 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
-from ament_index_python import get_resource
-from ament_index_python import get_resources
-from ament_index_python import has_resource
-
-import rclpy.action
 from rclpy.expand_topic_name import expand_topic_name
 from rclpy.validate_full_topic_name import validate_full_topic_name
-from ros2cli.node.direct import DirectNode
-from rosidl_runtime_py.convert import message_to_yaml
+from ros2cli.node.strategy import NodeStrategy
+from rosidl_runtime_py import get_action_interfaces
+from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py.utilities import get_action
 
 
@@ -43,8 +37,7 @@ def get_action_clients_and_servers(*, node, action_name):
         node_fqn = '/'.join(node_ns) + node_name
 
         # Get any action clients associated with the node
-        client_names_and_types = rclpy.action.get_action_client_names_and_types_by_node(
-            node,
+        client_names_and_types = node.get_action_client_names_and_types_by_node(
             node_name,
             node_ns,
         )
@@ -53,8 +46,7 @@ def get_action_clients_and_servers(*, node, action_name):
                 action_clients.append((node_fqn, client_types))
 
         # Get any action servers associated with the node
-        server_names_and_types = rclpy.action.get_action_server_names_and_types_by_node(
-            node,
+        server_names_and_types = node.get_action_server_names_and_types_by_node(
             node_name,
             node_ns,
         )
@@ -66,7 +58,7 @@ def get_action_clients_and_servers(*, node, action_name):
 
 
 def get_action_names_and_types(*, node):
-    return rclpy.action.get_action_names_and_types(node)
+    return node.get_action_names_and_types()
 
 
 def get_action_names(*, node):
@@ -74,54 +66,18 @@ def get_action_names(*, node):
     return [n for (n, t) in action_names_and_types]
 
 
-def get_action_types(package_name):
-    if not has_resource('packages', package_name):
-        raise LookupError('Unknown package name')
-    try:
-        content, _ = get_resource('rosidl_interfaces', package_name)
-    except LookupError:
-        return []
-    interface_names = content.splitlines()
-    # TODO(jacobperron) this logic should come from a rosidl related package
-    # Only return actions in action folder
-    return {
-        n[7:-7]
-        for n in interface_names
-        if n.startswith('action/') and n[-7:] in ('.idl', '.action')}
-
-
-def get_all_action_types():
-    all_action_types = {}
-    for package_name in get_resources('rosidl_interfaces'):
-        action_types = get_action_types(package_name)
-        if action_types:
-            all_action_types[package_name] = action_types
-    return all_action_types
-
-
-def get_action_path(package_name, action_name):
-    action_types = get_action_types(package_name)
-    if action_name not in action_types:
-        raise LookupError('Unknown action type')
-    prefix_path = has_resource('packages', package_name)
-    # TODO(jacobperron) this logic should come from a rosidl related package
-    return os.path.join(prefix_path, 'share', package_name, 'action', action_name + '.action')
-
-
 def action_name_completer(prefix, parsed_args, **kwargs):
     """Callable returning a list of action names."""
-    with DirectNode(parsed_args) as node:
+    with NodeStrategy(parsed_args) as node:
         return get_action_names(node=node)
 
 
 def action_type_completer(**kwargs):
     """Callable returning a list of action types."""
     action_types = []
-    action_types_dict = get_all_action_types()
-    for package_name in sorted(action_types_dict.keys()):
-        for action_name in sorted(action_types_dict[package_name]):
-            action_types.append(
-                '{package_name}/action/{action_name}'.format_map(locals()))
+    for package_name, action_names in get_action_interfaces.items():
+        for action_name in action_names:
+            action_types.append(f'{package_name}/{action_name}')
     return action_types
 
 
@@ -136,7 +92,7 @@ class ActionTypeCompleter:
             return action_type_completer()
 
         action_name = getattr(parsed_args, self.action_name_key)
-        with DirectNode(parsed_args) as node:
+        with NodeStrategy(parsed_args) as node:
             names_and_types = get_action_names_and_types(node=node)
             for n, t in names_and_types:
                 if n == action_name:

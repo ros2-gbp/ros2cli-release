@@ -94,7 +94,7 @@ class CreateVerb(VerbExtension):
             git = shutil.which('git')
             if git is not None:
                 p = subprocess.Popen(
-                    [git, 'config', 'user.email'],
+                    [git, 'config', '--global', 'user.email'],
                     stdout=subprocess.PIPE)
                 resp = p.communicate()
                 email = resp[0].decode().rstrip()

@@ -20,9 +20,9 @@ import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
-from launch.actions import OpaqueFunction
 
 import launch_testing
+import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
@@ -30,14 +30,22 @@ import launch_testing_ros.tools
 
 import pytest
 
-from rmw_implementation import get_available_rmw_implementations
+from rclpy.utilities import get_available_rmw_implementations
 
 import yaml
 
 
+# Skip cli tests on Windows while they exhibit pathological behavior
+# https://github.com/ros2/build_farmer/issues/248
+if sys.platform.startswith('win'):
+    pytest.skip(
+            'CLI tests can block for a pathological amount of time on Windows.',
+            allow_module_level=True)
+
+
 @pytest.mark.rostest
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
-def generate_test_description(rmw_implementation, ready_fn):
+def generate_test_description(rmw_implementation):
     path_to_action_server_executable = os.path.join(
         os.path.dirname(__file__), 'fixtures', 'fibonacci_action_server.py'
     )
@@ -55,7 +63,7 @@ def generate_test_description(rmw_implementation, ready_fn):
                             cmd=[sys.executable, path_to_action_server_executable],
                             additional_env={'RMW_IMPLEMENTATION': rmw_implementation}
                         ),
-                        OpaqueFunction(function=lambda context: ready_fn())
+                        launch_testing.actions.ReadyToTest()
                     ],
                     additional_env={'RMW_IMPLEMENTATION': rmw_implementation}
                 )
@@ -64,7 +72,7 @@ def generate_test_description(rmw_implementation, ready_fn):
     ])
 
 
-def get_fibonacci_send_goal_output(*, order=1, with_feedback=False):
+def get_fibonacci_send_goal_output(*, order=1, with_feedback=0):
     assert order > 0
     output = [
         'Waiting for an action server to become available...',
@@ -77,12 +85,13 @@ def get_fibonacci_send_goal_output(*, order=1, with_feedback=False):
     sequence = [0, 1]
     for _ in range(order - 1):
         sequence.append(sequence[-1] + sequence[-2])
-        if with_feedback:
+        if with_feedback > 0:
             output.append('Feedback:')
             output.extend(('    ' + yaml.dump({
                 'sequence': sequence
             })).splitlines())
             output.append('')
+            with_feedback -= 1
     output.append('Result:'),
     output.extend(('    ' + yaml.dump({
         'sequence': sequence
@@ -135,7 +144,7 @@ class TestROS2ActionCLI(unittest.TestCase):
             strict=False
         )
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_fibonacci_info(self):
         with self.launch_action_command(arguments=['info', '/fibonacci']) as action_command:
             assert action_command.wait_for_shutdown(timeout=10)
@@ -151,7 +160,7 @@ class TestROS2ActionCLI(unittest.TestCase):
             strict=False
         )
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_fibonacci_info_with_types(self):
         with self.launch_action_command(arguments=['info', '-t', '/fibonacci']) as action_command:
             assert action_command.wait_for_shutdown(timeout=10)
@@ -167,7 +176,7 @@ class TestROS2ActionCLI(unittest.TestCase):
             strict=False
         )
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_fibonacci_info_count(self):
         with self.launch_action_command(arguments=['info', '-c', '/fibonacci']) as action_command:
             assert action_command.wait_for_shutdown(timeout=10)
@@ -182,7 +191,7 @@ class TestROS2ActionCLI(unittest.TestCase):
             strict=False
         )
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_list(self):
         with self.launch_action_command(arguments=['list']) as action_command:
             assert action_command.wait_for_shutdown(timeout=10)
@@ -193,7 +202,7 @@ class TestROS2ActionCLI(unittest.TestCase):
             strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_list_with_types(self):
         with self.launch_action_command(arguments=['list', '-t']) as action_command:
             assert action_command.wait_for_shutdown(timeout=10)
@@ -203,7 +212,7 @@ class TestROS2ActionCLI(unittest.TestCase):
             text=action_command.output, strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_list_count(self):
         with self.launch_action_command(arguments=['list', '-c']) as action_command:
             assert action_command.wait_for_shutdown(timeout=10)
@@ -212,7 +221,7 @@ class TestROS2ActionCLI(unittest.TestCase):
         assert len(command_output_lines) == 1
         assert int(command_output_lines[0]) == 1
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_send_fibonacci_goal(self):
         with self.launch_action_command(
             arguments=[
@@ -229,7 +238,7 @@ class TestROS2ActionCLI(unittest.TestCase):
             text=action_command.output, strict=True
         )
 
-    @launch_testing.markers.retry_on_failure(times=5)
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_send_fibonacci_goal_with_feedback(self):
         with self.launch_action_command(
             arguments=[
@@ -243,85 +252,6 @@ class TestROS2ActionCLI(unittest.TestCase):
             assert action_command.wait_for_shutdown(timeout=10)
         assert action_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
-            expected_lines=get_fibonacci_send_goal_output(
-                order=5, with_feedback=True
-            ),
-            text=action_command.output, strict=True
-        )
-
-    def test_show_fibonacci(self):
-        with self.launch_action_command(
-            arguments=['show', 'test_msgs/action/Fibonacci'],
-        ) as action_command:
-            assert action_command.wait_for_shutdown(timeout=2)
-        assert action_command.exit_code == launch_testing.asserts.EXIT_OK
-        assert launch_testing.tools.expect_output(
-            expected_lines=[
-                re.compile('.* UserWarning: .*'),
-                re.compile(".*'ros2 action show' is deprecated and will be removed in ROS Foxy.*"),
-                'int32 order',
-                '---',
-                'int32[] sequence',
-                '---',
-                'int32[] sequence'
-            ],
-            text=action_command.output,
-            strict=False
-        )
-
-    def test_show_not_a_package(self):
-        with self.launch_action_command(
-            arguments=['show', 'not_a_package/action/Fibonacci'],
-        ) as action_command:
-            assert action_command.wait_for_shutdown(timeout=2)
-        assert action_command.exit_code == 1
-        assert launch_testing.tools.expect_output(
-            expected_lines=[
-                re.compile('.* UserWarning: .*'),
-                re.compile(".*'ros2 action show' is deprecated and will be removed in ROS Foxy.*"),
-                'Unknown package name',
-            ],
-            text=action_command.output, strict=True
-        )
-
-    # TODO(hidmic): make 'ros2 action show' fail accordingly
-    # def test_show_not_an_action_ns(self):
-    #     with self.launch_action_command(
-    #             arguments=['show', 'test_msgs/foo/Fibonacci'],
-    #     ) as action_command:
-    #         assert action_command.wait_for_shutdown(timeout=2)
-    #     assert action_command.exit_code == 1
-    #     assert launch_testing.tools.expect_output(
-    #         expected_lines=['Unknown action type'],
-    #         text=action_command.output, strict=True
-    #     )
-
-    def test_show_not_an_action_typename(self):
-        with self.launch_action_command(
-            arguments=['show', 'test_msgs/action/NotAnActionTypeName'],
-        ) as action_command:
-            assert action_command.wait_for_shutdown(timeout=2)
-        assert action_command.exit_code == 1
-        assert launch_testing.tools.expect_output(
-            expected_lines=[
-                re.compile('.* UserWarning: .*'),
-                re.compile(".*'ros2 action show' is deprecated and will be removed in ROS Foxy.*"),
-                'Unknown action type',
-            ],
-            text=action_command.output, strict=True
-        )
-
-    def test_show_not_an_action_type(self):
-        with self.launch_action_command(
-            arguments=['show', 'not_an_action_type']
-        ) as action_command:
-            assert action_command.wait_for_shutdown(timeout=2)
-        assert action_command.exit_code == 1
-        assert launch_testing.tools.expect_output(
-            expected_lines=[
-                re.compile('.* UserWarning: .*'),
-                re.compile(".*'ros2 action show' is deprecated and will be removed in ROS Foxy.*"),
-                'The passed action type is invalid',
-            ],
-            text=action_command.output, strict=True
+            expected_lines=get_fibonacci_send_goal_output(order=5, with_feedback=1),
+            text=action_command.output, strict=False
         )
