@@ -295,11 +295,11 @@ class TestROS2TopicCLI(unittest.TestCase):
                 re.compile(r'Endpoint type: (INVALID|PUBLISHER|SUBSCRIPTION)'),
                 re.compile(r'GID: [\w\.]+'),
                 'QoS profile:',
-                re.compile(r'  Reliability: RMW_QOS_POLICY_RELIABILITY_\w+'),
-                re.compile(r'  Durability: RMW_QOS_POLICY_DURABILITY_\w+'),
+                re.compile(r'  Reliability: (RELIABLE|BEST_EFFORT|SYSTEM_DEFAULT|UNKNOWN)'),
+                re.compile(r'  Durability: (VOLATILE|TRANSIENT_LOCAL|SYSTEM_DEFAULT|UNKNOWN)'),
                 re.compile(r'  Lifespan: \d+ nanoseconds'),
                 re.compile(r'  Deadline: \d+ nanoseconds'),
-                re.compile(r'  Liveliness: RMW_QOS_POLICY_LIVELINESS_\w+'),
+                re.compile(r'  Liveliness: (AUTOMATIC|MANUAL_BY_TOPIC|SYSTEM_DEFAULT|UNKNOWN)'),
                 re.compile(r'  Liveliness lease duration: \d+ nanoseconds'),
                 '',
                 'Subscription count: 0',
@@ -539,6 +539,67 @@ class TestROS2TopicCLI(unittest.TestCase):
                 launch_testing.tools.expect_output, expected_lines=[
                     re.compile(r'data: Hello...'),
                     '---'
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'alignment_check'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '0',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_nested(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/cmd_vel', '--field', 'twist.angular'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    'x: 0.0',
+                    'y: 0.0',
+                    'z: 0.0',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_not_a_member(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'not_member'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'not_member': 'Arrays' object has no attribute 'not_member'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    def test_topic_echo_field_invalid(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', '/'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field '/': 'Arrays' object has no attribute '/'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', '.'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field value '.'",
                 ], strict=True
             ), timeout=10)
         assert topic_command.wait_for_shutdown(timeout=10)
