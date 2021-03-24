@@ -62,9 +62,8 @@ class TestROS2DoctorCLI(unittest.TestCase):
         args.ttl = None
         args.once = True
         with mock.patch('socket.gethostname', return_value='!nv@lid-n*de-n4me'):
-            summary = SummaryTable()
             hello_verb = HelloVerb()
-            hello_verb.main(args=args, summary_table=summary)
+            summary = hello_verb.main(args=args)
             expected_summary = _generate_expected_summary_table()
             self.assertEqual(summary._pub, expected_summary._pub)
             self.assertEqual(summary._sub, expected_summary._sub)
