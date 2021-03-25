@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.9.9',
+    version='0.12.0',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],
@@ -24,8 +24,8 @@ setup(
     zip_safe=False,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
-    maintainer='Dirk Thomas',
-    maintainer_email='dthomas@osrfoundation.org',
+    maintainer='Claire Wang, Mabel Zhang',
+    maintainer_email='clairewang@openrobotics.org, mabel@openrobotics.org',
     url='https://github.com/ros2/ros2cli/tree/master/ros2cli',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],

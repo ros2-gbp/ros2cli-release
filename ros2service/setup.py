@@ -5,7 +5,7 @@ package_name = 'ros2service'
 
 setup(
     name=package_name,
-    version='0.9.9',
+    version='0.12.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='William Woodall',
     author_email='william@osrfoundation.org',
-    maintainer='William Woodall',
-    maintainer_email='william@osrfoundation.org',
+    maintainer='Claire Wang, Mabel Zhang',
+    maintainer_email='clairewang@openrobotics.org, mabel@openrobotics.org',
     url='https://github.com/ros2/ros2cli/tree/master/ros2service',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],

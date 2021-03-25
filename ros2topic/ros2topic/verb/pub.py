@@ -99,7 +99,8 @@ class PubVerb(VerbExtension):
 
 def main(args):
     qos_profile = qos_profile_from_short_keys(
-        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability)
+        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability,
+        depth=args.qos_depth, history=args.qos_history)
     times = args.times
     if args.once:
         times = 1
@@ -125,10 +126,13 @@ def publisher(
     print_nth: int,
     times: int,
     qos_profile: QoSProfile,
-    keep_alive: float = 0.1,
+    keep_alive: float,
 ) -> Optional[str]:
     """Initialize a node with a single publisher and run its publish loop (maybe only once)."""
-    msg_module = get_message(message_type)
+    try:
+        msg_module = get_message(message_type)
+    except (AttributeError, ModuleNotFoundError, ValueError):
+        raise RuntimeError('The passed message type is invalid')
     values_dictionary = yaml.safe_load(values)
     if not isinstance(values_dictionary, dict):
         return 'The passed value needs to be a dictionary in YAML format'
