@@ -1,1 +1,1 @@
-{"base": "e1d7cf94", "parent": "debian/rolling/ros2multicast", "previous": "82b3bba1", "trim": "", "trimbase": ""}
+{"base": "7c0f09a6", "parent": "debian/galactic/ros2multicast", "previous": "a31570c8", "trim": "", "trimbase": ""}
