@@ -1,1 +1,1 @@
-{"base": "be4ee39c", "parent": "debian/rolling/ros2doctor", "previous": "faf7b6c1", "trim": "", "trimbase": ""}
+{"base": "201c533b", "parent": "debian/galactic/ros2doctor", "previous": "e57c34e7", "trim": "", "trimbase": ""}
