@@ -139,7 +139,7 @@ tracks:
       :{release_inc} --os-name rhel
     devel_branch: foxy
     last_version: 0.9.9
-    name: upstream
+    name: ros2cli
     patches: null
     release_inc: '1'
     release_repo_url: https://github.com/ros2-gbp/ros2cli-release.git
@@ -165,7 +165,7 @@ tracks:
       :{release_inc} --os-name rhel
     devel_branch: master
     last_version: 0.13.0
-    name: upstream
+    name: ros2cli
     patches: null
     release_inc: '2'
     release_repo_url: https://github.com/ros2-gbp/ros2cli-release.git
@@ -239,7 +239,7 @@ tracks:
       :{release_inc} --os-name rhel
     devel_branch: master
     last_version: 0.13.0
-    name: upstream
+    name: ros2cli
     patches: null
     release_inc: '1'
     release_repo_url: https://github.com/ros2-gbp/ros2cli-release.git
