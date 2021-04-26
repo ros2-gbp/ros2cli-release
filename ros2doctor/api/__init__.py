@@ -21,6 +21,7 @@ try:
 except ModuleNotFoundError:
     import importlib_metadata
 
+from ros2cli.node.strategy import NodeStrategy
 from ros2doctor.api.format import doctor_warn
 
 
@@ -95,10 +96,12 @@ def run_checks(*, include_warnings=False) -> Tuple[Set[str], int, int]:
             check_class = check_entry_pt.load()
         except ImportError:
             doctor_warn(f'Check entry point {check_entry_pt.name} fails to load.')
+            continue
         try:
             check_instance = check_class()
         except Exception:
             doctor_warn(f'Unable to instantiate check object from {check_entry_pt.name}.')
+            continue
         try:
             check_category = check_instance.category()
             result = check_instance.check()
@@ -123,10 +126,12 @@ def generate_reports(*, categories=None) -> List[Report]:
             report_class = report_entry_pt.load()
         except ImportError:
             doctor_warn(f'Report entry point {report_entry_pt.name} fails to load.')
+            continue
         try:
             report_instance = report_class()
         except Exception:
             doctor_warn(f'Unable to instantiate report object from {report_entry_pt.name}.')
+            continue
         try:
             report_category = report_instance.category()
             report = report_instance.report()
@@ -138,3 +143,14 @@ def generate_reports(*, categories=None) -> List[Report]:
         except Exception:
             doctor_warn(f'Fail to call {report_entry_pt.name} class functions.')
     return reports
+
+
+def get_topic_names(skip_topics: List = ()) -> List:
+    """Get all topic names using rclpy API."""
+    topics = []
+    with NodeStrategy(None) as node:
+        topic_names_types = node.get_topic_names_and_types()
+        for t_name, _ in topic_names_types:
+            if t_name not in skip_topics:
+                topics.append(t_name)
+    return topics
