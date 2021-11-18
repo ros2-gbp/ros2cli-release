@@ -179,10 +179,6 @@ def call_describe_parameters(*, node, node_name, parameter_names=None):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
@@ -202,10 +198,6 @@ def call_get_parameters(*, node, node_name, parameter_names):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
@@ -225,10 +217,6 @@ def call_set_parameters(*, node, node_name, parameters):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
@@ -247,11 +235,23 @@ def call_list_parameters(*, node, node_name, prefix=None):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response.result.names
+
+
+def get_parameter_type_string(parameter_type):
+    mapping = {
+        ParameterType.PARAMETER_BOOL: 'boolean',
+        ParameterType.PARAMETER_INTEGER: 'integer',
+        ParameterType.PARAMETER_DOUBLE: 'double',
+        ParameterType.PARAMETER_STRING: 'string',
+        ParameterType.PARAMETER_BYTE_ARRAY: 'byte array',
+        ParameterType.PARAMETER_BOOL_ARRAY: 'boolean array',
+        ParameterType.PARAMETER_INTEGER_ARRAY: 'integer array',
+        ParameterType.PARAMETER_DOUBLE_ARRAY: 'double array',
+        ParameterType.PARAMETER_STRING_ARRAY: 'string array',
+        ParameterType.PARAMETER_NOT_SET: 'not set',
+    }
+    return mapping[parameter_type]
 
 
 class ParameterNameCompleter:

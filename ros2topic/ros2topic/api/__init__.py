@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
-
+from argparse import ArgumentTypeError
 from time import sleep
+from typing import Optional
 
 import rclpy
 
@@ -25,6 +25,16 @@ from ros2cli.node.strategy import NodeStrategy
 from rosidl_runtime_py import get_message_interfaces
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py.utilities import get_message
+
+
+def unsigned_int(string):
+    try:
+        value = int(string)
+    except ValueError:
+        value = -1
+    if value < 0:
+        raise ArgumentTypeError('value must be non-negative integer')
+    return value
 
 
 def get_topic_names_and_types(*, node, include_hidden_topics=False):
@@ -130,7 +140,10 @@ def _get_msg_class(node, topic, include_hidden_topics):
         # Could not determine the type for the passed topic
         return None
 
-    return get_message(message_type)
+    try:
+        return get_message(message_type)
+    except (AttributeError, ModuleNotFoundError, ValueError):
+        raise RuntimeError("The message type '%s' is invalid" % message_type)
 
 
 class TopicMessagePrototypeCompleter:
@@ -144,42 +157,31 @@ class TopicMessagePrototypeCompleter:
         return [message_to_yaml(message())]
 
 
-def qos_profile_from_short_keys(
-    preset_profile: str, reliability: str = None, durability: str = None,
+def profile_configure_short_keys(
+    profile: rclpy.qos.QoSProfile = None, reliability: str = None,
+    durability: str = None, depth: Optional[int] = None, history: str = None,
 ) -> rclpy.qos.QoSProfile:
-    """Construct a QoSProfile given the name of a preset, and optional overrides."""
-    # Build a QoS profile based on user-supplied arguments
-    profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(preset_profile)
+    """Configure a QoSProfile given a profile, and optional overrides."""
+    if history:
+        profile.history = rclpy.qos.QoSHistoryPolicy.get_from_short_key(history)
     if durability:
         profile.durability = rclpy.qos.QoSDurabilityPolicy.get_from_short_key(durability)
     if reliability:
         profile.reliability = rclpy.qos.QoSReliabilityPolicy.get_from_short_key(reliability)
+    if depth and depth >= 0:
+        profile.depth = depth
+    else:
+        if (profile.durability == rclpy.qos.QoSDurabilityPolicy.TRANSIENT_LOCAL
+                and profile.depth == 0):
+            profile.depth = 1
 
+
+def qos_profile_from_short_keys(
+    preset_profile: str, reliability: str = None, durability: str = None,
+    depth: Optional[int] = None, history: str = None,
+) -> rclpy.qos.QoSProfile:
+    """Construct a QoSProfile given the name of a preset, and optional overrides."""
+    # Build a QoS profile based on user-supplied arguments
+    profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(preset_profile)
+    profile_configure_short_keys(profile, reliability, durability, depth, history)
     return profile
-
-
-def add_qos_arguments_to_argument_parser(
-    parser: argparse.ArgumentParser, is_publisher: bool = True, default_preset: str = 'sensor_data'
-) -> None:
-    """Extend an existing ArgumentParser to allow input of QoS policy overrides."""
-    verb = 'publish' if is_publisher else 'subscribe'
-    parser.add_argument(
-        '--qos-profile',
-        choices=rclpy.qos.QoSPresetProfiles.short_keys(),
-        default=default_preset,
-        help='Quality of service preset profile to {} with (default: {})'
-             .format(verb, default_preset))
-    default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(
-        default_preset)
-    parser.add_argument(
-        '--qos-reliability',
-        choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
-        help='Quality of service reliability setting to {} with '
-             '(overrides reliability value of --qos-profile option, default: {})'
-             .format(verb, default_profile.reliability.short_key))
-    parser.add_argument(
-        '--qos-durability',
-        choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
-        help='Quality of service durability setting to {} with '
-             '(overrides durability value of --qos-profile option, default: {})'
-             .format(verb, default_profile.durability.short_key))
