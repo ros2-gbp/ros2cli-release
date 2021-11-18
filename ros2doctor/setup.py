@@ -5,7 +5,7 @@ package_name = 'ros2doctor'
 
 setup(
     name=package_name,
-    version='0.14.0',
+    version='0.15.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Claire Wang',
     author_email='clairewang@openrobotics.org',
-    maintainer='Claire Wang',
-    maintainer_email='clairewang@openrobotics.org',
+    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
+    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
     url='',
     download_url='',
     keywords=[],
