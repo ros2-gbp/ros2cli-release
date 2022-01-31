@@ -26,10 +26,6 @@
 
 @[end if]@
   <export>
-@[if exports]@
-@[  for export in exports]@
-    <@export.tagname>@export.content</@export.tagname>
-@[  end for]@
-@[end if]@
+    <build_type>@build_type</build_type>
   </export>
 </package>
