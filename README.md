@@ -1,3 +1,41 @@
+## ros2cli (rolling) - 0.18.0-1
+
+The packages in the `ros2cli` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --track rolling --rosdistro rolling ros2cli` on `Tue, 01 Mar 2022 19:09:13 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2cli_test_interfaces`
+- `ros2component`
+- `ros2doctor`
+- `ros2interface`
+- `ros2lifecycle`
+- `ros2lifecycle_test_fixtures`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.17.1-2`
+- old version: `0.17.1-2`
+- new version: `0.18.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.10.7`
+- catkin_pkg version: `0.4.24`
+- rosdep version: `0.21.0`
+- rosdistro version: `0.8.3`
+- vcstools version: `0.1.42`
+
+
 ## ros2cli (foxy) - 0.9.11-1
 
 The packages in the `ros2cli` repository were released into the `foxy` distro by running `/usr/bin/bloom-release -r foxy ros2cli` on `Mon, 31 Jan 2022 22:18:16 -0000`
