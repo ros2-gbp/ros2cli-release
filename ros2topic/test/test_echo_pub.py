@@ -286,20 +286,13 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                             'Echo CLI did not print expected message'
                         )
                     else:
-                        # TODO(mm318): remove special case for FastRTPS when
-                        # https://github.com/ros2/rmw_fastrtps/issues/356 is resolved
-                        if 'rmw_fastrtps' in get_rmw_implementation_identifier():
-                            assert not command.output, (
-                                'Echo CLI should not have received anything with incompatible QoS'
+                        assert command.output, (
+                            'Echo CLI did not print incompatible QoS warning'
+                        )
+                        assert ("New publisher discovered on topic '{}', offering incompatible"
+                                ' QoS.'.format(topic) in command.output), (
+                                'Echo CLI did not print expected incompatible QoS warning'
                             )
-                        else:
-                            assert command.output, (
-                                'Echo CLI did not print incompatible QoS warning'
-                            )
-                            assert ("New publisher discovered on topic '{}', offering incompatible"
-                                    ' QoS.'.format(topic) in command.output), (
-                                    'Echo CLI did not print expected incompatible QoS warning'
-                                )
                 finally:
                     # Cleanup
                     self.node.destroy_timer(publish_timer)
@@ -391,6 +384,50 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                     ], strict=True
                 ), timeout=10), 'Echo CLI did not print expected message'
             assert command.wait_for_shutdown(timeout=10)
+
+        finally:
+            # Cleanup
+            self.node.destroy_timer(publish_timer)
+            self.node.destroy_publisher(publisher)
+
+    @launch_testing.markers.retry_on_failure(times=5)
+    def test_echo_once(self, launch_service, proc_info, proc_output):
+        topic = '/clitest/topic/echo_once'
+        publisher = self.node.create_publisher(String, topic, 10)
+        assert publisher
+
+        def publish_message():
+            publisher.publish(String(data='hello'))
+
+        publish_timer = self.node.create_timer(1.0, publish_message)
+
+        try:
+            command_action = ExecuteProcess(
+                cmd=['ros2', 'topic', 'echo', '--once', topic, 'std_msgs/msg/String'],
+                additional_env={
+                    'PYTHONUNBUFFERED': '1'
+                },
+                output='screen'
+            )
+            with launch_testing.tools.launch_process(
+                launch_service, command_action, proc_info, proc_output,
+                output_filter=launch_testing_ros.tools.basic_output_filter(
+                    filtered_rmw_implementation=get_rmw_implementation_identifier()
+                )
+            ) as command:
+                # The future won't complete - we will hit the timeout
+                self.executor.spin_until_future_complete(
+                    rclpy.task.Future(), timeout_sec=3
+                )
+                assert command.wait_for_shutdown(timeout=5)
+            assert launch_testing.tools.expect_output(
+                expected_lines=[
+                    'data: hello',
+                    '---',
+                ],
+                text=command.output,
+                strict=True
+            )
 
         finally:
             # Cleanup
