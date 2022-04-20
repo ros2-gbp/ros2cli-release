@@ -1,1 +1,1 @@
-{"base": "db54f219", "parent": "debian/rolling/ros2cli_test_interfaces", "previous": "b2101bf1", "trim": "", "trimbase": ""}
+{"base": "1492656b", "parent": "debian/humble/ros2cli_test_interfaces", "previous": "597f1dee", "trim": "", "trimbase": ""}
