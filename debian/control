@@ -1,0 +1,12 @@
+Source: ros-humble-ros2service
+Section: misc
+Priority: optional
+Maintainer: Aditya Pande <aditya.pande@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest <!nocheck>, python3-pytest-timeout <!nocheck>, ros-humble-ament-copyright <!nocheck>, ros-humble-ament-flake8 <!nocheck>, ros-humble-ament-pep257 <!nocheck>, ros-humble-ament-xmllint <!nocheck>, ros-humble-launch <!nocheck>, ros-humble-launch-ros <!nocheck>, ros-humble-launch-testing <!nocheck>, ros-humble-launch-testing-ros <!nocheck>, ros-humble-rclpy, ros-humble-ros2cli, ros-humble-test-msgs <!nocheck>, ros-humble-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-humble-ros2service
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-yaml, ros-humble-rclpy, ros-humble-ros2cli, ros-humble-rosidl-runtime-py, ros-humble-ros-workspace
+Description: The service command for ROS 2 command line tools.
