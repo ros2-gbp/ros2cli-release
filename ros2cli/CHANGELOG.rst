@@ -2,49 +2,15 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.18.3 (2022-04-08)
--------------------
-* Fix importlib_metadata warning on Python 3.10. (`#706 <https://github.com/ros2/ros2cli/issues/706>`_)
-* Contributors: Chris Lalancette
-
-0.18.2 (2022-03-30)
--------------------
-* Add timeout to kill hanging tests (`#701 <https://github.com/ros2/ros2cli/issues/701>`_)
-* Contributors: Audrow Nash
-
-0.18.1 (2022-03-28)
+0.13.3 (2022-04-28)
 -------------------
 
-0.18.0 (2022-03-01)
+0.13.2 (2021-05-07)
 -------------------
-
-0.17.1 (2022-01-25)
--------------------
-
-0.17.0 (2022-01-25)
--------------------
-
-0.16.1 (2022-01-14)
--------------------
-
-0.16.0 (2022-01-14)
--------------------
-* Use try_shutdown() instead of shutdown() in DirectNode.__exit_\_() (`#683 <https://github.com/ros2/ros2cli/issues/683>`_)
+* Add changelog. (`#636 <https://github.com/ros2/ros2cli/issues/636>`_)
 * Contributors: Ivan Santiago Paunovic
 
-0.15.0 (2021-11-18)
--------------------
-* Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (`#673 <https://github.com/ros2/ros2cli/issues/673>`_)
-* Updated maintainers (`#670 <https://github.com/ros2/ros2cli/issues/670>`_)
-* Reapply `#659 <https://github.com/ros2/ros2cli/issues/659>`_ (`#661 <https://github.com/ros2/ros2cli/issues/661>`_)
-* Revert "Make the ros2cli output always line buffered (`#659 <https://github.com/ros2/ros2cli/issues/659>`_)" (`#660 <https://github.com/ros2/ros2cli/issues/660>`_)
-* Make the ros2cli output always line buffered (`#659 <https://github.com/ros2/ros2cli/issues/659>`_)
-* add uuid to ros2 daemon node name. (`#658 <https://github.com/ros2/ros2cli/issues/658>`_)
-* Transfer daemon socket ownership on spawn. (`#652 <https://github.com/ros2/ros2cli/issues/652>`_)
-* Add changelogs (`#635 <https://github.com/ros2/ros2cli/issues/635>`_)
-* Contributors: Aditya Pande, Audrow Nash, Ivan Santiago Paunovic, Michel Hidalgo, Tomoya Fujita
-
-0.14.0 (2021-04-26)
+0.13.1 (2021-04-26)
 -------------------
 * Ensure only one daemon can run at a time. (`#622 <https://github.com/ros2/ros2cli/issues/622>`_)
 * Contributors: Michel Hidalgo
