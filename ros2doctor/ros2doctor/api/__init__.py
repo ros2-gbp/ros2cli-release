@@ -21,6 +21,7 @@ try:
 except ModuleNotFoundError:
     import importlib_metadata
 
+from ros2cli.node.strategy import NodeStrategy
 from ros2doctor.api.format import doctor_warn
 
 
@@ -90,7 +91,12 @@ def run_checks(*, include_warnings=False) -> Tuple[Set[str], int, int]:
     fail_categories = set()  # remove repeating elements
     fail = 0
     total = 0
-    for check_entry_pt in importlib_metadata.entry_points().get('ros2doctor.checks', []):
+    entry_points = importlib_metadata.entry_points()
+    if hasattr(entry_points, 'select'):
+        groups = entry_points.select(group='ros2doctor.checks')
+    else:
+        groups = entry_points.get('ros2doctor.checks', [])
+    for check_entry_pt in groups:
         try:
             check_class = check_entry_pt.load()
         except ImportError as e:
@@ -120,7 +126,12 @@ def generate_reports(*, categories=None) -> List[Report]:
     :return: list of Report objects
     """
     reports = []
-    for report_entry_pt in importlib_metadata.entry_points().get('ros2doctor.report', []):
+    entry_points = importlib_metadata.entry_points()
+    if hasattr(entry_points, 'select'):
+        groups = entry_points.select(group='ros2doctor.report')
+    else:
+        groups = entry_points.get('ros2doctor.report', [])
+    for report_entry_pt in groups:
         try:
             report_class = report_entry_pt.load()
         except ImportError as e:
@@ -142,3 +153,14 @@ def generate_reports(*, categories=None) -> List[Report]:
         except Exception:
             doctor_warn(f'Fail to call {report_entry_pt.name} class functions.')
     return reports
+
+
+def get_topic_names(skip_topics: List = ()) -> List:
+    """Get all topic names using rclpy API."""
+    topics = []
+    with NodeStrategy(None) as node:
+        topic_names_types = node.get_topic_names_and_types()
+        for t_name, _ in topic_names_types:
+            if t_name not in skip_topics:
+                topics.append(t_name)
+    return topics

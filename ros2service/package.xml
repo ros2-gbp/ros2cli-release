@@ -2,14 +2,18 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>ros2service</name>
-  <version>0.13.3</version>
+  <version>0.19.0</version>
   <description>
     The service command for ROS 2 command line tools.
   </description>
-  <maintainer email="mabel@openrobotics.org">Mabel Zhang</maintainer>
+
+  <maintainer email="aditya.pande@openrobotics.org">Aditya Pande</maintainer>
   <maintainer email="audrow@openrobotics.org">Audrow Nash</maintainer>
+  <maintainer email="michael.jeronimo@openrobotics.org">Michael Jeronimo</maintainer>
+
   <license>Apache License 2.0</license>
 
+  <author email="mabel@openrobotics.org">Mabel Zhang</author>
   <author email="william@osrfoundation.org">William Woodall</author>
 
   <depend>rclpy</depend>
@@ -22,8 +26,12 @@
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
   <test_depend>ament_xmllint</test_depend>
+  <test_depend>launch</test_depend>
+  <test_depend>launch_ros</test_depend>
+  <test_depend>launch_testing</test_depend>
+  <test_depend>launch_testing_ros</test_depend>
   <test_depend>python3-pytest</test_depend>
-  <test_depend>ros_testing</test_depend>
+  <test_depend>python3-pytest-timeout</test_depend>
   <test_depend>test_msgs</test_depend>
 
   <export>

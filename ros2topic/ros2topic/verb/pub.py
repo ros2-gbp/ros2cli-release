@@ -18,10 +18,11 @@ from typing import TypeVar
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSDurabilityPolicy
 from rclpy.qos import QoSProfile
+from rclpy.qos import QoSReliabilityPolicy
 from ros2cli.node.direct import DirectNode
-from ros2topic.api import add_qos_arguments_to_argument_parser
-from ros2topic.api import qos_profile_from_short_keys
+from ros2topic.api import profile_configure_short_keys
 from ros2topic.api import TopicMessagePrototypeCompleter
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import TopicTypeCompleter
@@ -47,6 +48,13 @@ def positive_float(inval):
         # The error message here gets completely swallowed by argparse
         raise ValueError('Value must be positive')
     return ret
+
+
+def get_pub_qos_profile():
+    return QoSProfile(
+        reliability=QoSReliabilityPolicy.RELIABLE,
+        durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+        depth=1)
 
 
 class PubVerb(VerbExtension):
@@ -84,26 +92,63 @@ class PubVerb(VerbExtension):
             '-t', '--times', type=nonnegative_int, default=0,
             help='Publish this number of times and then exit')
         parser.add_argument(
+            '-w', '--wait-matching-subscriptions', type=nonnegative_int, default=None,
+            help=(
+                'Wait until finding the specified number of matching subscriptions. '
+                'Defaults to 1 when using "-1"/"--once"/"--times", otherwise defaults to 0.'))
+        parser.add_argument(
             '--keep-alive', metavar='N', type=positive_float, default=0.1,
             help='Keep publishing node alive for N seconds after the last msg '
                  '(default: 0.1)')
         parser.add_argument(
             '-n', '--node-name',
             help='Name of the created publishing node')
-        add_qos_arguments_to_argument_parser(
-            parser, is_publisher=True, default_preset='system_default')
+        parser.add_argument(
+            '--qos-profile',
+            choices=rclpy.qos.QoSPresetProfiles.short_keys(),
+            help='Quality of service preset profile to publish)')
+        default_profile = get_pub_qos_profile()
+        parser.add_argument(
+            '--qos-depth', metavar='N', type=int, default=-1,
+            help='Queue size setting to publish with '
+                 '(overrides depth value of --qos-profile option)')
+        parser.add_argument(
+            '--qos-history',
+            choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
+            help='History of samples setting to publish with '
+                 '(overrides history value of --qos-profile option, default: {})'
+                 .format(default_profile.history.short_key))
+        parser.add_argument(
+            '--qos-reliability',
+            choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
+            help='Quality of service reliability setting to publish with '
+                 '(overrides reliability value of --qos-profile option, default: {})'
+                 .format(default_profile.reliability.short_key))
+        parser.add_argument(
+            '--qos-durability',
+            choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
+            help='Quality of service durability setting to publish with '
+                 '(overrides durability value of --qos-profile option, default: {})'
+                 .format(default_profile.durability.short_key))
 
     def main(self, *, args):
         return main(args)
 
 
 def main(args):
-    qos_profile = qos_profile_from_short_keys(
-        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability,
-        depth=args.qos_depth, history=args.qos_history)
+    qos_profile = get_pub_qos_profile()
+
+    qos_profile_name = args.qos_profile
+    if qos_profile_name:
+        qos_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(qos_profile_name)
+    profile_configure_short_keys(
+        qos_profile, args.qos_reliability, args.qos_durability,
+        args.qos_depth, args.qos_history)
+
     times = args.times
     if args.once:
         times = 1
+
     with DirectNode(args, node_name=args.node_name) as node:
         return publisher(
             node.node,
@@ -113,6 +158,8 @@ def main(args):
             1. / args.rate,
             args.print,
             times,
+            args.wait_matching_subscriptions
+            if args.wait_matching_subscriptions is not None else int(times != 0),
             qos_profile,
             args.keep_alive)
 
@@ -125,6 +172,7 @@ def publisher(
     period: float,
     print_nth: int,
     times: int,
+    wait_matching_subscriptions: int,
     qos_profile: QoSProfile,
     keep_alive: float,
 ) -> Optional[str]:
@@ -138,6 +186,15 @@ def publisher(
         return 'The passed value needs to be a dictionary in YAML format'
 
     pub = node.create_publisher(msg_module, topic_name, qos_profile)
+
+    times_since_last_log = 0
+    while pub.get_subscription_count() < wait_matching_subscriptions:
+        # Print a message reporting we're waiting each 1s, check condition each 100ms.
+        if not times_since_last_log:
+            print(
+                f'Waiting for at least {wait_matching_subscriptions} matching subscription(s)...')
+        times_since_last_log = (times_since_last_log + 1) % 10
+        time.sleep(0.1)
 
     msg = msg_module()
     try:
@@ -155,11 +212,14 @@ def publisher(
             print('publishing #%d: %r\n' % (count, msg))
         pub.publish(msg)
 
-    timer = node.create_timer(period, timer_callback)
-    while times == 0 or count < times:
-        rclpy.spin_once(node)
-
-    # give some time for the messages to reach the wire before exiting
-    time.sleep(keep_alive)
-
-    node.destroy_timer(timer)
+    timer_callback()
+    if times != 1:
+        timer = node.create_timer(period, timer_callback)
+        while times == 0 or count < times:
+            rclpy.spin_once(node)
+        # give some time for the messages to reach the wire before exiting
+        time.sleep(keep_alive)
+        node.destroy_timer(timer)
+    else:
+        # give some time for the messages to reach the wire before exiting
+        time.sleep(keep_alive)

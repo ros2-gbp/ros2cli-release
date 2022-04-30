@@ -62,9 +62,7 @@ def get_parameter_value(*, string_value):
     try:
         yaml_value = yaml.safe_load(string_value)
     except yaml.parser.ParserError:
-        value.type = ParameterType.PARAMETER_STRING
-        value.string_value = string_value
-        return value
+        yaml_value = string_value
 
     if isinstance(yaml_value, bool):
         value.type = ParameterType.PARAMETER_BOOL
@@ -93,7 +91,7 @@ def get_parameter_value(*, string_value):
             value.string_value = string_value
     else:
         value.type = ParameterType.PARAMETER_STRING
-        value.string_value = string_value
+        value.string_value = yaml_value
     return value
 
 
@@ -179,10 +177,6 @@ def call_describe_parameters(*, node, node_name, parameter_names=None):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
@@ -202,10 +196,6 @@ def call_get_parameters(*, node, node_name, parameter_names):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
@@ -225,10 +215,6 @@ def call_set_parameters(*, node, node_name, parameters):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response
 
 
@@ -247,10 +233,6 @@ def call_list_parameters(*, node, node_name, prefix=None):
 
     # handle response
     response = future.result()
-    if response is None:
-        e = future.exception()
-        raise RuntimeError(
-            f"Exception while calling service of node '{node_name}': {e}")
     return response.result.names
 
 

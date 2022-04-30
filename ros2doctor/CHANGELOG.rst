@@ -2,19 +2,54 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.13.3 (2022-04-28)
+0.19.0 (2022-04-29)
 -------------------
 
-0.13.2 (2021-05-07)
+0.18.3 (2022-04-08)
 -------------------
-* Improve ros2 doctor on Windows. (`#631 <https://github.com/ros2/ros2cli/issues/631>`_) (`#634 <https://github.com/ros2/ros2cli/issues/634>`_)
-* Add changelog. (`#636 <https://github.com/ros2/ros2cli/issues/636>`_)
-* Contributors: Ivan Santiago Paunovic, mergify[bot]
+* Fix importlib_metadata warning on Python 3.10. (`#706 <https://github.com/ros2/ros2cli/issues/706>`_)
+* Contributors: Chris Lalancette
 
-0.13.1 (2021-04-26)
+0.18.2 (2022-03-30)
 -------------------
+* Add timeout to kill hanging tests (`#701 <https://github.com/ros2/ros2cli/issues/701>`_)
+* Contributors: Audrow Nash
+
+0.18.1 (2022-03-28)
+-------------------
+
+0.18.0 (2022-03-01)
+-------------------
+
+0.17.1 (2022-01-25)
+-------------------
+
+0.17.0 (2022-01-25)
+-------------------
+* Switch ros2 doctor to using psutil for network checks. (`#687 <https://github.com/ros2/ros2cli/issues/687>`_)
+* Contributors: Chris Lalancette
+
+0.16.1 (2022-01-14)
+-------------------
+
+0.16.0 (2022-01-14)
+-------------------
+* Depend on launch packages instead of ros_testing to avoid circular dependency (`#685 <https://github.com/ros2/ros2cli/issues/685>`_)
+* Contributors: Shane Loretz
+
+0.15.0 (2021-11-18)
+-------------------
+* Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (`#673 <https://github.com/ros2/ros2cli/issues/673>`_)
+* Updated maintainers (`#670 <https://github.com/ros2/ros2cli/issues/670>`_)
+* Add changelogs (`#635 <https://github.com/ros2/ros2cli/issues/635>`_)
+* Improve ros2 doctor on Windows. (`#631 <https://github.com/ros2/ros2cli/issues/631>`_)
+* Contributors: Aditya Pande, Audrow Nash, Ivan Santiago Paunovic
+
+0.14.0 (2021-04-26)
+-------------------
+* Add QoS compatibility check and report. (`#621 <https://github.com/ros2/ros2cli/issues/621>`_)
 * Continue to next iteration after exceptions in generate_reports. (`#623 <https://github.com/ros2/ros2cli/issues/623>`_)
-* Contributors: Alberto Soragna
+* Contributors: Alberto Soragna, Audrow Nash
 
 0.13.0 (2021-04-06)
 -------------------
