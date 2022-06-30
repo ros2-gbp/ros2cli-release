@@ -129,6 +129,8 @@ def generate_test_description(rmw_implementation):
     ])
 
 
+# Flaky on Galactic: https://github.com/ros2/ros2cli/issues/630
+@pytest.mark.xfail
 class TestVerbDump(unittest.TestCase):
 
     @classmethod
@@ -284,7 +286,7 @@ class TestVerbDump(unittest.TestCase):
             )
             # Dump with ros2 param dump and compare that output matches input file
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -323,7 +325,7 @@ class TestVerbDump(unittest.TestCase):
             )
             # Dump with ros2 param and check that wildcard parameters are loaded
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -344,7 +346,7 @@ class TestVerbDump(unittest.TestCase):
 
             # Dump and check that wildcard parameters were overriden if in node namespace
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK

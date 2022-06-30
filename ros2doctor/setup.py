@@ -5,7 +5,7 @@ package_name = 'ros2doctor'
 
 setup(
     name=package_name,
-    version='0.19.0',
+    version='0.13.4',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Claire Wang',
     author_email='clairewang@openrobotics.org',
-    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
-    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
+    maintainer='Claire Wang',
+    maintainer_email='clairewang@openrobotics.org',
     url='',
     download_url='',
     keywords=[],
@@ -41,7 +41,6 @@ setup(
             'PlatformCheck = ros2doctor.api.platform:PlatformCheck',
             'NetworkCheck = ros2doctor.api.network:NetworkCheck',
             'TopicCheck = ros2doctor.api.topic:TopicCheck',
-            'QoSCompatibilityCheck = ros2doctor.api.qos_compatibility:QoSCompatibilityCheck',
             'PackageCheck = ros2doctor.api.package:PackageCheck',
         ],
         'ros2doctor.report': [
@@ -50,7 +49,6 @@ setup(
             'NetworkReport = ros2doctor.api.network:NetworkReport',
             'RMWReport = ros2doctor.api.rmw:RMWReport',
             'TopicReport = ros2doctor.api.topic:TopicReport',
-            'QoSCompatibilityReport = ros2doctor.api.qos_compatibility:QoSCompatibilityReport',
             'PackageReport = ros2doctor.api.package:PackageReport',
         ],
         'ros2cli.extension_point': [
