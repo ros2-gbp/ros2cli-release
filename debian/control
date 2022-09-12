@@ -1,0 +1,12 @@
+Source: ros-foxy-ros2cli
+Section: misc
+Priority: optional
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest <!nocheck>, ros-foxy-ament-copyright <!nocheck>, ros-foxy-ament-flake8 <!nocheck>, ros-foxy-ament-pep257 <!nocheck>, ros-foxy-ament-xmllint <!nocheck>, ros-foxy-test-msgs <!nocheck>, ros-foxy-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-foxy-ros2cli
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-netifaces, python3-pkg-resources, ros-foxy-rclpy, ros-foxy-ros-workspace
+Description: Framework for ROS 2 command line tools.
