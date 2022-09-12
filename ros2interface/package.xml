@@ -2,16 +2,12 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ros2interface</name>
-  <version>0.13.4</version>
+  <version>0.9.12</version>
   <description>
     The interface command for ROS 2 command line tools
   </description>
-  <maintainer email="mabel@openrobotics.org">Mabel Zhang</maintainer>
-  <maintainer email="audrow@openrobotics.org">Audrow Nash</maintainer>
+  <maintainer email="jacob@osrfoundation.org">Jacob Perron</maintainer>
   <license>Apache License 2.0</license>
-
-  <author>Siddharth Kucheria</author>
-  <author email="jacob@osrfoundation.org">Jacob Perron</author>
 
   <depend>ros2cli</depend>
 
@@ -24,7 +20,6 @@
   <test_depend>ament_xmllint</test_depend>
   <test_depend>python3-pytest</test_depend>
   <test_depend>ros_testing</test_depend>
-  <test_depend>ros2cli_test_interfaces</test_depend>
   <test_depend>test_msgs</test_depend>
 
   <export>

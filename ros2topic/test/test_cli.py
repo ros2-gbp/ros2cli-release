@@ -255,31 +255,6 @@ class TestROS2TopicCLI(unittest.TestCase):
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_list_with_verbose(self):
-        with self.launch_topic_command(arguments=['list', '-v']) as topic_command:
-            assert topic_command.wait_for_shutdown(timeout=10)
-        assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
-        assert launch_testing.tools.expect_output(
-            expected_lines=[
-                'Published topics:',
-                ' * /arrays [test_msgs/msg/Arrays] 1 publisher',
-                ' * /bounded_sequences [test_msgs/msg/BoundedSequences] 1 publisher',
-                ' * /chatter [std_msgs/msg/String] 1 publisher',
-                ' * /cmd_vel [geometry_msgs/msg/TwistStamped] 1 publisher',
-                ' * /defaults [test_msgs/msg/Defaults] 1 publisher',
-                ' * /parameter_events [rcl_interfaces/msg/ParameterEvent] 9 publishers',
-                ' * /rosout [rcl_interfaces/msg/Log] 9 publishers',
-                ' * /unbounded_sequences [test_msgs/msg/UnboundedSequences] 1 publisher',
-                '',
-                'Subscribed topics:',
-                ' * /chit_chatter [std_msgs/msg/String] 1 subscriber',
-                '',
-            ],
-            text=topic_command.output,
-            strict=True
-        )
-
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_list_count(self):
         with self.launch_topic_command(arguments=['list', '-c']) as topic_command:
             assert topic_command.wait_for_shutdown(timeout=10)
@@ -320,11 +295,11 @@ class TestROS2TopicCLI(unittest.TestCase):
                 re.compile(r'Endpoint type: (INVALID|PUBLISHER|SUBSCRIPTION)'),
                 re.compile(r'GID: [\w\.]+'),
                 'QoS profile:',
-                re.compile(r'  Reliability: (RELIABLE|BEST_EFFORT|SYSTEM_DEFAULT|UNKNOWN)'),
-                re.compile(r'  Durability: (VOLATILE|TRANSIENT_LOCAL|SYSTEM_DEFAULT|UNKNOWN)'),
+                re.compile(r'  Reliability: RMW_QOS_POLICY_RELIABILITY_\w+'),
+                re.compile(r'  Durability: RMW_QOS_POLICY_DURABILITY_\w+'),
                 re.compile(r'  Lifespan: \d+ nanoseconds'),
                 re.compile(r'  Deadline: \d+ nanoseconds'),
-                re.compile(r'  Liveliness: (AUTOMATIC|MANUAL_BY_TOPIC|SYSTEM_DEFAULT|UNKNOWN)'),
+                re.compile(r'  Liveliness: RMW_QOS_POLICY_LIVELINESS_\w+'),
                 re.compile(r'  Liveliness lease duration: \d+ nanoseconds'),
                 '',
                 'Subscription count: 0',
@@ -564,67 +539,6 @@ class TestROS2TopicCLI(unittest.TestCase):
                 launch_testing.tools.expect_output, expected_lines=[
                     re.compile(r'data: Hello...'),
                     '---'
-                ], strict=True
-            ), timeout=10)
-        assert topic_command.wait_for_shutdown(timeout=10)
-
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_topic_echo_field(self):
-        with self.launch_topic_command(
-            arguments=['echo', '/arrays', '--field', 'alignment_check'],
-        ) as topic_command:
-            assert topic_command.wait_for_output(functools.partial(
-                launch_testing.tools.expect_output, expected_lines=[
-                    '0',
-                    '---',
-                ], strict=True
-            ), timeout=10)
-        assert topic_command.wait_for_shutdown(timeout=10)
-
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_topic_echo_field_nested(self):
-        with self.launch_topic_command(
-            arguments=['echo', '/cmd_vel', '--field', 'twist.angular'],
-        ) as topic_command:
-            assert topic_command.wait_for_output(functools.partial(
-                launch_testing.tools.expect_output, expected_lines=[
-                    'x: 0.0',
-                    'y: 0.0',
-                    'z: 0.0',
-                    '---',
-                ], strict=True
-            ), timeout=10)
-        assert topic_command.wait_for_shutdown(timeout=10)
-
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_topic_echo_field_not_a_member(self):
-        with self.launch_topic_command(
-            arguments=['echo', '/arrays', '--field', 'not_member'],
-        ) as topic_command:
-            assert topic_command.wait_for_output(functools.partial(
-                launch_testing.tools.expect_output, expected_lines=[
-                    "Invalid field 'not_member': 'Arrays' object has no attribute 'not_member'",
-                ], strict=True
-            ), timeout=10)
-        assert topic_command.wait_for_shutdown(timeout=10)
-
-    def test_topic_echo_field_invalid(self):
-        with self.launch_topic_command(
-            arguments=['echo', '/arrays', '--field', '/'],
-        ) as topic_command:
-            assert topic_command.wait_for_output(functools.partial(
-                launch_testing.tools.expect_output, expected_lines=[
-                    "Invalid field '/': 'Arrays' object has no attribute '/'",
-                ], strict=True
-            ), timeout=10)
-        assert topic_command.wait_for_shutdown(timeout=10)
-
-        with self.launch_topic_command(
-            arguments=['echo', '/arrays', '--field', '.'],
-        ) as topic_command:
-            assert topic_command.wait_for_output(functools.partial(
-                launch_testing.tools.expect_output, expected_lines=[
-                    "Invalid field value '.'",
                 ], strict=True
             ), timeout=10)
         assert topic_command.wait_for_shutdown(timeout=10)

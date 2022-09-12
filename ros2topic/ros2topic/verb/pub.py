@@ -126,13 +126,10 @@ def publisher(
     print_nth: int,
     times: int,
     qos_profile: QoSProfile,
-    keep_alive: float,
+    keep_alive: float = 0.1,
 ) -> Optional[str]:
     """Initialize a node with a single publisher and run its publish loop (maybe only once)."""
-    try:
-        msg_module = get_message(message_type)
-    except (AttributeError, ModuleNotFoundError, ValueError):
-        raise RuntimeError('The passed message type is invalid')
+    msg_module = get_message(message_type)
     values_dictionary = yaml.safe_load(values)
     if not isinstance(values_dictionary, dict):
         return 'The passed value needs to be a dictionary in YAML format'

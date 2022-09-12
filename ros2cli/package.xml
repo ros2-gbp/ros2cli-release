@@ -2,20 +2,14 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>ros2cli</name>
-  <version>0.13.4</version>
+  <version>0.9.12</version>
   <description>
     Framework for ROS 2 command line tools.
   </description>
-  <maintainer email="mabel@openrobotics.org">Mabel Zhang</maintainer>
-  <maintainer email="audrow@openrobotics.org">Audrow Nash</maintainer>
+  <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
   <license>Apache License 2.0</license>
 
-  <author email="dthomas@osrfoundation.org">Dirk Thomas</author>	
-
-  <exec_depend>python3-argcomplete</exec_depend>
-  <exec_depend>python3-importlib-metadata</exec_depend>
   <exec_depend>python3-netifaces</exec_depend>
-  <exec_depend>python3-packaging</exec_depend>
   <exec_depend>python3-pkg-resources</exec_depend>
   <exec_depend>rclpy</exec_depend>
 

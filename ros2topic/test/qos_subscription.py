@@ -55,7 +55,7 @@ def main(args=None):
             lambda msg: counter.onMsg('transient', msg),
             QoSProfile(
                 depth=10,
-                durability=QoSDurabilityPolicy.TRANSIENT_LOCAL))
+                durability=QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL))
 
     sub_volatile = node.create_subscription(
             String,
@@ -63,7 +63,7 @@ def main(args=None):
             lambda msg: counter.onMsg('volatile', msg),
             QoSProfile(
                 depth=10,
-                durability=QoSDurabilityPolicy.VOLATILE))
+                durability=QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_VOLATILE))
 
     sub_reliable = node.create_subscription(
             String,
@@ -71,7 +71,7 @@ def main(args=None):
             lambda msg: counter.onMsg('reliable', msg),
             QoSProfile(
                 depth=10,
-                reliability=QoSReliabilityPolicy.RELIABLE))
+                reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_RELIABLE))
 
     sub_best_effort = node.create_subscription(
             String,
@@ -79,7 +79,7 @@ def main(args=None):
             lambda msg: counter.onMsg('best_effort', msg),
             QoSProfile(
                 depth=10,
-                reliability=QoSReliabilityPolicy.BEST_EFFORT))
+                reliability=QoSReliabilityPolicy.RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT))
 
     # Asserts to suppress unused variable warnings.
     assert sub_default

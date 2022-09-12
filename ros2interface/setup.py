@@ -5,7 +5,7 @@ package_name = 'ros2interface'
 
 setup(
     name=package_name,
-    version='0.13.4',
+    version='0.9.12',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -14,10 +14,10 @@ setup(
     ],
     install_requires=['ros2cli'],
     zip_safe=True,
-    author='Siddharth Kucheria, Jacob Perron',
-    author_email='kucheria@osrfoundation.org, jacob@osrfoundation.org',
-    maintainer='Claire Wang, Mabel Zhang',
-    maintainer_email='clairewang@openrobotics.org, mabel@openrobotics.org',
+    author='Siddharth Kucheria',
+    author_email='kucheria@osrfoundation.org',
+    maintainer='Jacob Perron',
+    maintainer_email='jacob@osrfoundation.org',
     url='https://github.com/ros2/ros2cli/tree/master/ros2interface',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],

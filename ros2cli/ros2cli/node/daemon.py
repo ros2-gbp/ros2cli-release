@@ -16,7 +16,6 @@ import errno
 import os
 import platform
 import socket
-import struct
 import subprocess
 import sys
 import time
@@ -30,14 +29,15 @@ from ros2cli.xmlrpc.client import ServerProxy
 
 def is_daemon_running(args):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
+    if platform.system() != 'Windows':
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     addr = ('localhost', get_daemon_port())
     try:
         s.bind(addr)
     except socket.error as e:
         if e.errno == errno.EADDRINUSE:
             return True
-    finally:
+    else:
         s.close()
     return False
 
@@ -101,7 +101,7 @@ class DaemonNode:
     def __init__(self, args):
         self._args = args
         self._proxy = ServerProxy(
-            'http://localhost:%d/ros2cli/' % get_daemon_port(),
+            'http://127.0.0.1:%d/ros2cli/' % get_daemon_port(),
             allow_none=True)
         self._methods = []
 
@@ -130,34 +130,6 @@ class DaemonNode:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self._proxy.__exit__(exc_type, exc_value, traceback)
-
-
-def shutdown_daemon(args, wait_duration=None):
-    """
-    Shuts down remote daemon node.
-
-    :param args: DaemonNode arguments namespace.
-    :param wait_duration: optional duration, in seconds, to wait
-      until the daemon node is fully shut down. Non-positive
-      durations will result in an indefinite wait.
-    :return: whether the daemon is shut down already or not.
-    """
-    with DaemonNode(args) as node:
-        node.system.shutdown()
-
-    if wait_duration is None:
-        return not is_daemon_running(args)
-
-    if wait_duration > 0.0:
-        timeout = time.time() + wait_duration
-    else:
-        timeout = None
-
-    while is_daemon_running(args):
-        time.sleep(0.1)
-        if timeout and time.time() >= timeout:
-            return False
-    return True
 
 
 def add_arguments(parser):
