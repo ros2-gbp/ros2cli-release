@@ -138,7 +138,7 @@ tracks:
     - git-bloom-generate -y rosrpm --prefix release/:{ros_distro} :{ros_distro} -i
       :{release_inc} --os-name rhel
     devel_branch: foxy
-    last_version: 0.9.11
+    last_version: 0.9.12
     name: ros2cli
     patches: null
     release_inc: '1'
