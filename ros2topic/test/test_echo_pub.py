@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
 import sys
 import unittest
 
@@ -179,7 +180,7 @@ class TestROS2TopicEchoPub(unittest.TestCase):
     @launch_testing.markers.retry_on_failure(times=5)
     def test_pub_times(self, launch_service, proc_info, proc_output):
         command_action = ExecuteProcess(
-            cmd=(['ros2', 'topic', 'pub', '-t', '5', '/clitest/topic/pub_times',
+            cmd=(['ros2', 'topic', 'pub', '-t', '5', '-w', '0', '/clitest/topic/pub_times',
                   'std_msgs/String', 'data: hello']),
             additional_env={
                 'PYTHONUNBUFFERED': '1'
@@ -215,11 +216,12 @@ class TestROS2TopicEchoPub(unittest.TestCase):
     @launch_testing.markers.retry_on_failure(times=5)
     def test_echo_basic(self, launch_service, proc_info, proc_output):
         params = [
-            ('/clitest/topic/echo_basic', False, True),
-            ('/clitest/topic/echo_compatible_qos', True, True),
-            ('/clitest/topic/echo_incompatible_qos', True, False)
+            ('/clitest/topic/echo_basic', False, True, False),
+            ('/clitest/topic/echo_compatible_qos', True, True, False),
+            ('/clitest/topic/echo_incompatible_qos', True, False, False),
+            ('/clitest/topic/echo_message_lost', False, True, True),
         ]
-        for topic, provide_qos, compatible_qos in params:
+        for topic, provide_qos, compatible_qos, message_lost in params:
             with self.subTest(topic=topic, provide_qos=provide_qos, compatible_qos=compatible_qos):
                 # Check for inconsistent arguments
                 assert provide_qos if not compatible_qos else True
@@ -246,7 +248,8 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                             depth=10,
                             reliability=ReliabilityPolicy.BEST_EFFORT,
                             durability=DurabilityPolicy.VOLATILE)
-
+                if not message_lost:
+                    echo_extra_options.append('--no-lost-messages')
                 publisher = self.node.create_publisher(String, topic, publisher_qos_profile)
                 assert publisher
 
@@ -283,21 +286,150 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                             'Echo CLI did not print expected message'
                         )
                     else:
-                        # TODO(mm318): remove special case for FastRTPS when
-                        # https://github.com/ros2/rmw_fastrtps/issues/356 is resolved
-                        if 'rmw_fastrtps' in get_rmw_implementation_identifier():
-                            assert not command.output, (
-                                'Echo CLI should not have received anything with incompatible QoS'
+                        assert command.output, (
+                            'Echo CLI did not print incompatible QoS warning'
+                        )
+                        assert ("New publisher discovered on topic '{}', offering incompatible"
+                                ' QoS.'.format(topic) in command.output), (
+                                'Echo CLI did not print expected incompatible QoS warning'
                             )
-                        else:
-                            assert command.output, (
-                                'Echo CLI did not print incompatible QoS warning'
-                            )
-                            assert ('New publisher discovered on this topic, offering incompatible'
-                                    ' QoS.' in command.output), (
-                                    'Echo CLI did not print expected incompatible QoS warning'
-                                )
                 finally:
                     # Cleanup
                     self.node.destroy_timer(publish_timer)
                     self.node.destroy_publisher(publisher)
+
+    @launch_testing.markers.retry_on_failure(times=1)
+    def test_echo_filter(self, launch_service, proc_info, proc_output):
+        params = [
+            ('/clitest/topic/echo_filter_all_pass', "m.data=='hello'", True),
+            ('/clitest/topic/echo_filter_all_filtered', "m.data=='success'", False),
+
+        ]
+        for topic, filter_expr, has_output in params:
+            with self.subTest(topic=topic, filter_expr=filter_expr, print_count=10):
+                # Check for inconsistent arguments
+                publisher = self.node.create_publisher(String, topic, 10)
+                assert publisher
+
+                def publish_message():
+                    publisher.publish(String(data='hello'))
+
+                publish_timer = self.node.create_timer(0.5, publish_message)
+
+                try:
+                    command_action = ExecuteProcess(
+                        cmd=(['ros2', 'topic', 'echo'] +
+                             ['--filter', filter_expr] +
+                             [topic, 'std_msgs/String']),
+                        additional_env={
+                            'PYTHONUNBUFFERED': '1'
+                        },
+                        output='screen'
+                    )
+                    with launch_testing.tools.launch_process(
+                        launch_service, command_action, proc_info, proc_output,
+                        output_filter=launch_testing_ros.tools.basic_output_filter(
+                            filtered_rmw_implementation=get_rmw_implementation_identifier()
+                        )
+                    ) as command:
+                        # The future won't complete - we will hit the timeout
+                        self.executor.spin_until_future_complete(
+                            rclpy.task.Future(), timeout_sec=5
+                        )
+                    command.wait_for_shutdown(timeout=10)
+                    # Check results
+                    if has_output:
+                        assert 'hello' in command.output, 'Echo CLI did not output'
+                    else:
+                        assert 'hello' not in command.output, 'All messages should be filtered out'
+
+                finally:
+                    # Cleanup
+                    self.node.destroy_timer(publish_timer)
+                    self.node.destroy_publisher(publisher)
+
+    @launch_testing.markers.retry_on_failure(times=5)
+    def test_echo_raw(self, launch_service, proc_info, proc_output):
+        topic = '/clitest/topic/echo_raw'
+        publisher = self.node.create_publisher(String, topic, 10)
+        assert publisher
+
+        def publish_message():
+            publisher.publish(String(data='hello'))
+
+        publish_timer = self.node.create_timer(0.5, publish_message)
+
+        try:
+            command_action = ExecuteProcess(
+                cmd=['ros2', 'topic', 'echo', '--raw', topic, 'std_msgs/msg/String'],
+                additional_env={
+                    'PYTHONUNBUFFERED': '1'
+                },
+                output='screen'
+            )
+            with launch_testing.tools.launch_process(
+                launch_service, command_action, proc_info, proc_output,
+                output_filter=launch_testing_ros.tools.basic_output_filter(
+                    filtered_rmw_implementation=get_rmw_implementation_identifier()
+                )
+            ) as command:
+                # The future won't complete - we will hit the timeout
+                self.executor.spin_until_future_complete(
+                    rclpy.task.Future(), timeout_sec=5
+                )
+                assert command.wait_for_output(functools.partial(
+                    launch_testing.tools.expect_output, expected_lines=[
+                        "b'\\x00\\x01\\x00\\x00\\x06\\x00\\x00\\x00hello\\x00\\x00\\x00'",
+                        '---',
+                    ], strict=True
+                ), timeout=10), 'Echo CLI did not print expected message'
+            assert command.wait_for_shutdown(timeout=10)
+
+        finally:
+            # Cleanup
+            self.node.destroy_timer(publish_timer)
+            self.node.destroy_publisher(publisher)
+
+    @launch_testing.markers.retry_on_failure(times=5)
+    def test_echo_once(self, launch_service, proc_info, proc_output):
+        topic = '/clitest/topic/echo_once'
+        publisher = self.node.create_publisher(String, topic, 10)
+        assert publisher
+
+        def publish_message():
+            publisher.publish(String(data='hello'))
+
+        publish_timer = self.node.create_timer(1.0, publish_message)
+
+        try:
+            command_action = ExecuteProcess(
+                cmd=['ros2', 'topic', 'echo', '--once', topic, 'std_msgs/msg/String'],
+                additional_env={
+                    'PYTHONUNBUFFERED': '1'
+                },
+                output='screen'
+            )
+            with launch_testing.tools.launch_process(
+                launch_service, command_action, proc_info, proc_output,
+                output_filter=launch_testing_ros.tools.basic_output_filter(
+                    filtered_rmw_implementation=get_rmw_implementation_identifier()
+                )
+            ) as command:
+                # The future won't complete - we will hit the timeout
+                self.executor.spin_until_future_complete(
+                    rclpy.task.Future(), timeout_sec=3
+                )
+                assert command.wait_for_shutdown(timeout=5)
+            assert launch_testing.tools.expect_output(
+                expected_lines=[
+                    'data: hello',
+                    '---',
+                ],
+                text=command.output,
+                strict=True
+            )
+
+        finally:
+            # Cleanup
+            self.node.destroy_timer(publish_timer)
+            self.node.destroy_publisher(publisher)

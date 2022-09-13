@@ -16,9 +16,12 @@ from typing import List
 from typing import Set
 from typing import Tuple
 
-from pkg_resources import iter_entry_points
-from pkg_resources import UnknownExtra
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
 
+from ros2cli.node.strategy import NodeStrategy
 from ros2doctor.api.format import doctor_warn
 
 
@@ -88,15 +91,22 @@ def run_checks(*, include_warnings=False) -> Tuple[Set[str], int, int]:
     fail_categories = set()  # remove repeating elements
     fail = 0
     total = 0
-    for check_entry_pt in iter_entry_points('ros2doctor.checks'):
+    entry_points = importlib_metadata.entry_points()
+    if hasattr(entry_points, 'select'):
+        groups = entry_points.select(group='ros2doctor.checks')
+    else:
+        groups = entry_points.get('ros2doctor.checks', [])
+    for check_entry_pt in groups:
         try:
             check_class = check_entry_pt.load()
-        except (ImportError, UnknownExtra):
-            doctor_warn(f'Check entry point {check_entry_pt.name} fails to load.')
+        except ImportError as e:
+            doctor_warn(f'Check entry point {check_entry_pt.name} fails to load: {e}')
+            continue
         try:
             check_instance = check_class()
         except Exception:
             doctor_warn(f'Unable to instantiate check object from {check_entry_pt.name}.')
+            continue
         try:
             check_category = check_instance.category()
             result = check_instance.check()
@@ -116,15 +126,22 @@ def generate_reports(*, categories=None) -> List[Report]:
     :return: list of Report objects
     """
     reports = []
-    for report_entry_pt in iter_entry_points('ros2doctor.report'):
+    entry_points = importlib_metadata.entry_points()
+    if hasattr(entry_points, 'select'):
+        groups = entry_points.select(group='ros2doctor.report')
+    else:
+        groups = entry_points.get('ros2doctor.report', [])
+    for report_entry_pt in groups:
         try:
             report_class = report_entry_pt.load()
-        except (ImportError, UnknownExtra):
-            doctor_warn(f'Report entry point {report_entry_pt.name} fails to load.')
+        except ImportError as e:
+            doctor_warn(f'Report entry point {report_entry_pt.name} fails to load: {e}')
+            continue
         try:
             report_instance = report_class()
         except Exception:
             doctor_warn(f'Unable to instantiate report object from {report_entry_pt.name}.')
+            continue
         try:
             report_category = report_instance.category()
             report = report_instance.report()
@@ -136,3 +153,14 @@ def generate_reports(*, categories=None) -> List[Report]:
         except Exception:
             doctor_warn(f'Fail to call {report_entry_pt.name} class functions.')
     return reports
+
+
+def get_topic_names(skip_topics: List = ()) -> List:
+    """Get all topic names using rclpy API."""
+    topics = []
+    with NodeStrategy(None) as node:
+        topic_names_types = node.get_topic_names_and_types()
+        for t_name, _ in topic_names_types:
+            if t_name not in skip_topics:
+                topics.append(t_name)
+    return topics

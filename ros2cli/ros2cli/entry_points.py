@@ -16,8 +16,10 @@
 from collections import defaultdict
 import logging
 
-from pkg_resources import iter_entry_points
-from pkg_resources import WorkingSet
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
 
 """
 The group name for entry points identifying extension points.
@@ -41,18 +43,14 @@ def get_all_entry_points():
     extension_points = get_entry_points(EXTENSION_POINT_GROUP_NAME)
 
     entry_points = defaultdict(dict)
-    working_set = WorkingSet()
-    for dist in sorted(working_set):
-        entry_map = dist.get_entry_map()
-        for group_name in entry_map.keys():
+
+    for dist in importlib_metadata.distributions():
+        for ep in dist.entry_points:
             # skip groups which are not registered as extension points
-            if group_name not in extension_points:
+            if ep.group not in extension_points:
                 continue
 
-            group = entry_map[group_name]
-            for entry_point_name, entry_point in group.items():
-                entry_points[group_name][entry_point_name] = \
-                    (dist, entry_point)
+            entry_points[ep.group][ep.name] = (dist, ep)
     return entry_points
 
 
@@ -65,8 +63,13 @@ def get_entry_points(group_name):
       to ``EntryPoint`` instances
     :rtype: dict
     """
+    entry_points_impl = importlib_metadata.entry_points()
+    if hasattr(entry_points_impl, 'select'):
+        groups = entry_points_impl.select(group=group_name)
+    else:
+        groups = entry_points_impl.get(group_name, [])
     entry_points = {}
-    for entry_point in iter_entry_points(group=group_name):
+    for entry_point in groups:
         entry_points[entry_point.name] = entry_point
     return entry_points
 

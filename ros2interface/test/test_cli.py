@@ -236,13 +236,66 @@ class TestROS2InterfaceCLI(unittest.TestCase):
 
     def test_show_message(self):
         with self.launch_interface_command(
-            arguments=['show', 'test_msgs/msg/Nested']
+            arguments=['show', 'ros2cli_test_interfaces/msg/ShortVariedMultiNested']
         ) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                'BasicTypes basic_types_value'
+                '# A short, varied, and nested type',
+                'ShortVariedNested short_varied_nested # Comment - Nesting Level 3: 1 of 1',
+                '\tShortVaried short_varied',
+                '\t\tbool BOOL_CONST=true',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values',
+                '# Trailing comment',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_message_with_all_comments(self):
+        with self.launch_interface_command(
+            arguments=[
+                'show', 'ros2cli_test_interfaces/msg/ShortVariedMultiNested', '--all-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                '# A short, varied, and nested type',
+                'ShortVariedNested short_varied_nested # Comment - Nesting Level 3: 1 of 1',
+                '\t# A short, varied type',
+                '\tShortVaried short_varied # Comment - Nesting Level 2: 1 of 1',
+                '\t\t# A constant',
+                '\t\tbool BOOL_CONST=true # Comment - Nesting Level 1: 1 of 2',
+                '',
+                '\t\t# Bool and array of bools',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values # Comment - Nesting Level 1: 2 of 2',
+                '',
+                '\t\t# Trailing comment',
+                '\t# Trailing comment',
+                '# Trailing comment',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_message_with_no_comments(self):
+        with self.launch_interface_command(
+            arguments=[
+                'show', 'ros2cli_test_interfaces/msg/ShortVariedMultiNested', '--no-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'ShortVariedNested short_varied_nested',
+                '\tShortVaried short_varied',
+                '\t\tbool BOOL_CONST=true',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values',
             ],
             text=interface_command.output,
             strict=True
@@ -250,41 +303,72 @@ class TestROS2InterfaceCLI(unittest.TestCase):
 
     def test_show_service(self):
         with self.launch_interface_command(
-            arguments=['show', 'test_msgs/srv/BasicTypes']
+            arguments=['show', 'ros2cli_test_interfaces/srv/ShortVariedMultiNested']
         ) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                'bool bool_value',
-                'byte byte_value',
-                'char char_value',
-                'float32 float32_value',
-                'float64 float64_value',
-                'int8 int8_value',
-                'uint8 uint8_value',
-                'int16 int16_value',
-                'uint16 uint16_value',
-                'int32 int32_value',
-                'uint32 uint32_value',
-                'int64 int64_value',
-                'uint64 uint64_value',
-                'string string_value',
+                '# Request',
+                'ShortVariedNested short_varied_nested # Comment - Nesting Level 3: 1 of 2',
+                '\tShortVaried short_varied',
+                '\t\tbool BOOL_CONST=true',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values',
+                '---',
+                '# Response',
+                'bool bool_value # Comment - Nesting Level 3: 2 of 2',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_service_with_all_comments(self):
+        with self.launch_interface_command(
+                arguments=[
+                    'show', 'ros2cli_test_interfaces/srv/ShortVariedMultiNested', '--all-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                '# Request',
+                'ShortVariedNested short_varied_nested # Comment - Nesting Level 3: 1 of 2',
+                '\t# A short, varied type',
+                '\tShortVaried short_varied # Comment - Nesting Level 2: 1 of 1',
+                '\t\t# A constant',
+                '\t\tbool BOOL_CONST=true # Comment - Nesting Level 1: 1 of 2',
+                '',
+                '\t\t# Bool and array of bools',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values # Comment - Nesting Level 1: 2 of 2',
+                '',
+                '\t\t# Trailing comment',
+                '\t# Trailing comment',
+                '---',
+                '# Response',
+                'bool bool_value # Comment - Nesting Level 3: 2 of 2',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_service_with_no_comments(self):
+        with self.launch_interface_command(
+                arguments=[
+                    'show', 'ros2cli_test_interfaces/srv/ShortVariedMultiNested', '--no-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'ShortVariedNested short_varied_nested',
+                '\tShortVaried short_varied',
+                '\t\tbool BOOL_CONST=true',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values',
                 '---',
                 'bool bool_value',
-                'byte byte_value',
-                'char char_value',
-                'float32 float32_value',
-                'float64 float64_value',
-                'int8 int8_value',
-                'uint8 uint8_value',
-                'int16 int16_value',
-                'uint16 uint16_value',
-                'int32 int32_value',
-                'uint32 uint32_value',
-                'int64 int64_value',
-                'uint64 uint64_value',
-                'string string_value',
             ],
             text=interface_command.output,
             strict=True
@@ -292,20 +376,84 @@ class TestROS2InterfaceCLI(unittest.TestCase):
 
     def test_show_action(self):
         with self.launch_interface_command(
-            arguments=['show', 'test_msgs/action/Fibonacci']
+                arguments=['show', 'ros2cli_test_interfaces/action/ShortVariedMultiNested']
         ) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                '#goal definition',
-                'int32 order',
+                '# Goal definition',
+                'ShortVariedNested short_varied_nested # Comment - Nesting Level 3: 1 of 2',
+                '\tShortVaried short_varied',
+                '\t\tbool BOOL_CONST=true',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values',
                 '---',
-                '#result definition',
-                'int32[] sequence',
+                '# Result definition',
+                'bool bool_value # Comment - Nesting Level 3: 2 of 2',
                 '---',
-                '#feedback',
-                'int32[] sequence',
+                '# Feedback definition',
+                'bool[3] bool_values',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_action_with_all_comments(self):
+        with self.launch_interface_command(
+                arguments=[
+                    'show',
+                    'ros2cli_test_interfaces/action/ShortVariedMultiNested',
+                    '--all-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                '# Goal definition',
+                'ShortVariedNested short_varied_nested # Comment - Nesting Level 3: 1 of 2',
+                '\t# A short, varied type',
+                '\tShortVaried short_varied # Comment - Nesting Level 2: 1 of 1',
+                '\t\t# A constant',
+                '\t\tbool BOOL_CONST=true # Comment - Nesting Level 1: 1 of 2',
+                '',
+                '\t\t# Bool and array of bools',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values # Comment - Nesting Level 1: 2 of 2',
+                '',
+                '\t\t# Trailing comment',
+                '\t# Trailing comment',
+                '---',
+                '# Result definition',
+                'bool bool_value # Comment - Nesting Level 3: 2 of 2',
+                '---',
+                '# Feedback definition',
+                'bool[3] bool_values',
+            ],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_action_with_no_comments(self):
+        with self.launch_interface_command(
+                arguments=[
+                    'show',
+                    'ros2cli_test_interfaces/action/ShortVariedMultiNested',
+                    '--no-comments']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'ShortVariedNested short_varied_nested',
+                '\tShortVaried short_varied',
+                '\t\tbool BOOL_CONST=true',
+                '\t\tbool bool_value',
+                '\t\tbool[<=3] bool_values',
+                '---',
+                'bool bool_value',
+                '---',
+                'bool[3] bool_values',
             ],
             text=interface_command.output,
             strict=True
@@ -340,14 +488,28 @@ class TestROS2InterfaceCLI(unittest.TestCase):
     def test_show_stdin(self):
         with self.launch_interface_command(
             arguments=['show', '-'],
-            prepend_arguments=[sys.executable, '-c', r'"print(\"test_msgs/msg/Nested\")"', '|'],
+            prepend_arguments=[
+                sys.executable, '-c', r'"print(\"test_msgs/msg/BasicTypes\")"', '|'
+            ],
             shell=True
         ) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
         assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
             expected_lines=[
-                'BasicTypes basic_types_value'
+                'bool bool_value',
+                'byte byte_value',
+                'char char_value',
+                'float32 float32_value',
+                'float64 float64_value',
+                'int8 int8_value',
+                'uint8 uint8_value',
+                'int16 int16_value',
+                'uint16 uint16_value',
+                'int32 int32_value',
+                'uint32 uint32_value',
+                'int64 int64_value',
+                'uint64 uint64_value',
             ],
             text=interface_command.output,
             strict=True

@@ -255,6 +255,31 @@ class TestROS2TopicCLI(unittest.TestCase):
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_list_with_verbose(self):
+        with self.launch_topic_command(arguments=['list', '-v']) as topic_command:
+            assert topic_command.wait_for_shutdown(timeout=10)
+        assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'Published topics:',
+                ' * /arrays [test_msgs/msg/Arrays] 1 publisher',
+                ' * /bounded_sequences [test_msgs/msg/BoundedSequences] 1 publisher',
+                ' * /chatter [std_msgs/msg/String] 1 publisher',
+                ' * /cmd_vel [geometry_msgs/msg/TwistStamped] 1 publisher',
+                ' * /defaults [test_msgs/msg/Defaults] 1 publisher',
+                ' * /parameter_events [rcl_interfaces/msg/ParameterEvent] 9 publishers',
+                ' * /rosout [rcl_interfaces/msg/Log] 9 publishers',
+                ' * /unbounded_sequences [test_msgs/msg/UnboundedSequences] 1 publisher',
+                '',
+                'Subscribed topics:',
+                ' * /chit_chatter [std_msgs/msg/String] 1 subscriber',
+                '',
+            ],
+            text=topic_command.output,
+            strict=True
+        )
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_list_count(self):
         with self.launch_topic_command(arguments=['list', '-c']) as topic_command:
             assert topic_command.wait_for_shutdown(timeout=10)
@@ -295,12 +320,15 @@ class TestROS2TopicCLI(unittest.TestCase):
                 re.compile(r'Endpoint type: (INVALID|PUBLISHER|SUBSCRIPTION)'),
                 re.compile(r'GID: [\w\.]+'),
                 'QoS profile:',
-                re.compile(r'  Reliability: RMW_QOS_POLICY_RELIABILITY_\w+'),
-                re.compile(r'  Durability: RMW_QOS_POLICY_DURABILITY_\w+'),
-                re.compile(r'  Lifespan: \d+ nanoseconds'),
-                re.compile(r'  Deadline: \d+ nanoseconds'),
-                re.compile(r'  Liveliness: RMW_QOS_POLICY_LIVELINESS_\w+'),
-                re.compile(r'  Liveliness lease duration: \d+ nanoseconds'),
+                re.compile(r'  Reliability: (RELIABLE|BEST_EFFORT|SYSTEM_DEFAULT|UNKNOWN)'),
+                re.compile(
+                    r'  History \(Depth\): (KEEP_LAST|KEEP_ALL|SYSTEM_DEFAULT|UNKNOWN)[\s\(\d\)]?'
+                ),
+                re.compile(r'  Durability: (VOLATILE|TRANSIENT_LOCAL|SYSTEM_DEFAULT|UNKNOWN)'),
+                '  Lifespan: Infinite',
+                '  Deadline: Infinite',
+                re.compile(r'  Liveliness: (AUTOMATIC|MANUAL_BY_TOPIC|SYSTEM_DEFAULT|UNKNOWN)'),
+                '  Liveliness lease duration: Infinite',
                 '',
                 'Subscription count: 0',
                 ''
@@ -543,6 +571,67 @@ class TestROS2TopicCLI(unittest.TestCase):
             ), timeout=10)
         assert topic_command.wait_for_shutdown(timeout=10)
 
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'alignment_check'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '0',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_nested(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/cmd_vel', '--field', 'twist.angular'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    'x: 0.0',
+                    'y: 0.0',
+                    'z: 0.0',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_not_a_member(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'not_member'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'not_member': 'Arrays' object has no attribute 'not_member'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    def test_topic_echo_field_invalid(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', '/'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field '/': 'Arrays' object has no attribute '/'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', '.'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field value '.'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
     def test_topic_echo_no_publisher(self):
         with self.launch_topic_command(
             arguments=['echo', '/this_topic_has_no_pub'],
@@ -574,7 +663,7 @@ class TestROS2TopicCLI(unittest.TestCase):
                     'publisher: beginning loop',
                     "publishing #1: std_msgs.msg.String(data='foo')",
                     ''
-                ], strict=True
+                ]
             ), timeout=10)
             assert self.listener_node.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
@@ -600,13 +689,58 @@ class TestROS2TopicCLI(unittest.TestCase):
                     'publisher: beginning loop',
                     "publishing #1: std_msgs.msg.String(data='bar')",
                     ''
-                ], strict=True
+                ]
             ), timeout=10)
             assert topic_command.wait_for_shutdown(timeout=10)
             assert self.listener_node.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
                     re.compile(r'\[INFO\] \[\d+\.\d*\] \[listener\]: I heard: \[bar\]')
                 ], strict=False
+            ), timeout=10)
+        assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
+
+    def test_topic_pub_once_matching_two_listeners(
+        self, launch_service, proc_info, proc_output, path_to_listener_node_script, additional_env
+    ):
+        second_listener_node_action = Node(
+            executable=sys.executable,
+            arguments=[path_to_listener_node_script],
+            remappings=[('chatter', 'chit_chatter')],
+            additional_env=additional_env,
+            name='second_listener',
+        )
+        with launch_testing.tools.launch_process(
+            launch_service, second_listener_node_action, proc_info, proc_output
+        ) as second_listener_node, \
+            self.launch_topic_command(
+                arguments=[
+                    'pub', '--once',
+                    '--keep-alive', '3',  # seconds
+                    '-w', '2',
+                    '--qos-durability', 'transient_local',
+                    '--qos-reliability', 'reliable',
+                    '/chit_chatter',
+                    'std_msgs/msg/String',
+                    '{data: bar}'
+                ]
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    'publisher: beginning loop',
+                    "publishing #1: std_msgs.msg.String(data='bar')",
+                    ''
+                ]
+            ), timeout=10)
+            assert topic_command.wait_for_shutdown(timeout=10)
+            assert self.listener_node.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    re.compile(r'\[INFO\] \[\d+\.\d*\] \[listener\]: I heard: \[bar\]')
+                ]
+            ), timeout=10)
+            assert second_listener_node.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    re.compile(r'\[INFO\] \[\d+\.\d*\] \[second_listener\]: I heard: \[bar\]')
+                ]
             ), timeout=10)
         assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
 
@@ -630,7 +764,7 @@ class TestROS2TopicCLI(unittest.TestCase):
                     '',
                     "publishing #4: std_msgs.msg.String(data='fizz')",
                     ''
-                ], strict=True
+                ]
             ), timeout=10), 'Output does not match: ' + topic_command.output
             assert self.listener_node.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[

@@ -129,7 +129,7 @@ def generate_test_description(rmw_implementation):
     ])
 
 
-class TestVerbDump(unittest.TestCase):
+class TestVerbLoad(unittest.TestCase):
 
     @classmethod
     def setUpClass(
@@ -284,7 +284,7 @@ class TestVerbDump(unittest.TestCase):
             )
             # Dump with ros2 param dump and compare that output matches input file
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -305,8 +305,7 @@ class TestVerbDump(unittest.TestCase):
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code != launch_testing.asserts.EXIT_OK
             assert launch_testing.tools.expect_output(
-                expected_lines=['Param file does not contain parameters for '
-                                f'{TEST_NAMESPACE}/{TEST_NODE}'],
+                expected_lines=['Param file does not contain selected parameters'],
                 text=param_load_command.output,
                 strict=False
             )
@@ -323,7 +322,7 @@ class TestVerbDump(unittest.TestCase):
             )
             # Dump with ros2 param and check that wildcard parameters are loaded
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -344,7 +343,7 @@ class TestVerbDump(unittest.TestCase):
 
             # Dump and check that wildcard parameters were overriden if in node namespace
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK

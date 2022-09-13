@@ -5,7 +5,7 @@ package_name = 'ros2component'
 
 setup(
     name=package_name,
-    version='0.9.12',
+    version='0.20.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Michel Hidalgo',
     author_email='michel@ekumenlabs.com',
-    maintainer='Michel Hidalgo',
-    maintainer_email='michel@ekumenlabs.com',
+    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
+    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
     url='https://github.com/ros2/ros2cli/tree/master/ros2component',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],
