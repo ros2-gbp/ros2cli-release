@@ -21,6 +21,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy
 from rclpy.qos import QoSProfile
 from rclpy.qos import QoSReliabilityPolicy
+from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
 from ros2topic.api import profile_configure_short_keys
 from ros2topic.api import TopicMessagePrototypeCompleter
@@ -130,6 +131,7 @@ class PubVerb(VerbExtension):
             help='Quality of service durability setting to publish with '
                  '(overrides durability value of --qos-profile option, default: {})'
                  .format(default_profile.durability.short_key))
+        add_direct_node_arguments(parser)
 
     def main(self, *, args):
         return main(args)
@@ -198,14 +200,17 @@ def publisher(
 
     msg = msg_module()
     try:
-        set_message_fields(msg, values_dictionary)
+        timestamp_fields = set_message_fields(
+            msg, values_dictionary, expand_header_auto=True, expand_time_now=True)
     except Exception as e:
         return 'Failed to populate field: {0}'.format(e)
-
     print('publisher: beginning loop')
     count = 0
 
     def timer_callback():
+        stamp_now = node.get_clock().now().to_msg()
+        for field_setter in timestamp_fields:
+            field_setter(stamp_now)
         nonlocal count
         count += 1
         if print_nth and count % print_nth == 0:
