@@ -2,6 +2,24 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.21.0 (2022-11-02)
+-------------------
+* Add support use_sim_time for ros2 topic hz/bw/pub. (`#754 <https://github.com/ros2/ros2cli/issues/754>`_)
+* Use set_message_fields from rosidl_runtime_py (`#761 <https://github.com/ros2/ros2cli/issues/761>`_)
+* Contributors: Esteve Fernandez, Lei Liu
+
+0.20.0 (2022-09-13)
+-------------------
+* Expand auto to the current time when passed to a Header field (`#749 <https://github.com/ros2/ros2cli/issues/749>`_)
+* Add verbose option to echo that also prints the associated message info (`#707 <https://github.com/ros2/ros2cli/issues/707>`_)
+* Contributors: Esteve Fernandez, Ivan Santiago Paunovic
+
+0.19.0 (2022-04-29)
+-------------------
+* update docs for bandwidth functions. (`#709 <https://github.com/ros2/ros2cli/issues/709>`_)
+* Split the bandwidth functions into a get and print. (`#708 <https://github.com/ros2/ros2cli/issues/708>`_)
+* Contributors: Chris Lalancette, Tomoya Fujita
+
 0.18.3 (2022-04-08)
 -------------------
 
