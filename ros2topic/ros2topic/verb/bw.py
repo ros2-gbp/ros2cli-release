@@ -30,13 +30,12 @@
 # https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
 
 from argparse import ArgumentTypeError
-import sys
 import threading
+import time
 import traceback
 
 import rclpy
 from rclpy.qos import qos_profile_sensor_data
-from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
 from ros2topic.api import get_msg_class
 from ros2topic.api import TopicNameCompleter
@@ -80,7 +79,6 @@ class BwVerb(VerbExtension):
             '--window', '-w', type=positive_int, default=DEFAULT_WINDOW_SIZE,
             help='maximum window size, in # of messages, for calculating rate '
                  f'(default: {DEFAULT_WINDOW_SIZE})', metavar='WINDOW')
-        add_direct_node_arguments(parser)
 
     def main(self, *, args):
         with DirectNode(args) as node:
@@ -95,17 +93,15 @@ class ROSTopicBandwidth(object):
         self.sizes = []
         self.times = []
         self.window_size = window_size
-        self.use_sim_time = node.get_parameter('use_sim_time').value
-        self.clock = node.get_clock()
 
     def callback(self, data):
         """Execute ros sub callback."""
         with self.lock:
             try:
-                t = self.clock.now()
+                t = time.monotonic()
                 self.times.append(t)
                 # TODO(yechun1): Subscribing to the msgs and calculate the length may be
-                # inefficient. Optimize here if a better solution is found.
+                # inefficiency. To optimize here if found better solution.
                 self.sizes.append(len(data))  # AnyMsg instance
                 assert(len(self.times) == len(self.sizes))
 
@@ -115,35 +111,22 @@ class ROSTopicBandwidth(object):
             except Exception:
                 traceback.print_exc()
 
-    def get_bw(self):
-        """Get the average publishing bw."""
+    def print_bw(self):
+        """Print the average publishing bw to screen."""
         if len(self.times) < 2:
-            return None, None, None, None, None
+            return
         with self.lock:
             n = len(self.times)
-            tn = self.clock.now()
+            tn = time.monotonic()
             t0 = self.times[0]
-            if tn <= t0:
-                print('WARNING: time is reset!', file=sys.stderr)
-                self.times = []
-                self.sizes = []
-                return None, None, None, None, None
 
             total = sum(self.sizes)
-            bytes_per_s = total / ((tn.nanoseconds - t0.nanoseconds) * 1.e-9)
+            bytes_per_s = total / (tn - t0)
             mean = total / n
 
             # min and max
             max_s = max(self.sizes)
             min_s = min(self.sizes)
-
-        return bytes_per_s, n, mean, min_s, max_s
-
-    def print_bw(self):
-        """Print the average publishing bw to screen."""
-        (bytes_per_s, n, mean, min_s, max_s) = self.get_bw()
-        if bytes_per_s is None:
-            return
 
         # min/max and even mean are likely to be much smaller,
         # but for now I prefer unit consistency
