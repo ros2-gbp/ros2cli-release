@@ -2,16 +2,10 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.21.0 (2022-11-02)
+0.18.4 (2022-11-07)
 -------------------
-
-0.20.0 (2022-09-13)
--------------------
-* XMLRPC server accepts request from all local IP addresses. (`#729 <https://github.com/ros2/ros2cli/issues/729>`_)
-* Contributors: Tomoya Fujita
-
-0.19.0 (2022-04-29)
--------------------
+* XMLRPC server accepts request from all local IP addresses. (`#729 <https://github.com/ros2/ros2cli/issues/729>`_) (`#733 <https://github.com/ros2/ros2cli/issues/733>`_)
+* Contributors: mergify[bot]
 
 0.18.3 (2022-04-08)
 -------------------
