@@ -2,17 +2,10 @@
 Changelog for package ros2component
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.21.0 (2022-11-02)
+0.18.4 (2022-11-07)
 -------------------
-
-0.20.0 (2022-09-13)
--------------------
-* Fix the component load help to mention load, not unload. (`#756 <https://github.com/ros2/ros2cli/issues/756>`_)
-* Remove unused arguments from ros2 component types. (`#711 <https://github.com/ros2/ros2cli/issues/711>`_)
-* Contributors: Chris Lalancette
-
-0.19.0 (2022-04-29)
--------------------
+* Fix the component load help to mention load, not unload. (`#756 <https://github.com/ros2/ros2cli/issues/756>`_) (`#757 <https://github.com/ros2/ros2cli/issues/757>`_)
+* Contributors: mergify[bot]
 
 0.18.3 (2022-04-08)
 -------------------
