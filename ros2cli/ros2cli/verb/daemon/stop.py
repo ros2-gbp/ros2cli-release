@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ros2cli.node.daemon import shutdown_daemon
+from ros2cli.node.daemon import DaemonNode
+from ros2cli.node.daemon import is_daemon_running
 from ros2cli.verb.daemon import VerbExtension
 
 
@@ -20,7 +21,16 @@ class StopVerb(VerbExtension):
     """Stop the daemon if it is running."""
 
     def main(self, *, args):
-        if shutdown_daemon(args, timeout=10.0):
-            print('The daemon has been stopped')
-        else:
+        running = is_daemon_running(args)
+        if not running:
             print('The daemon is not running')
+            return
+
+        with DaemonNode(args) as daemon:
+            try:
+                shutdown = daemon.system.shutdown
+            except AttributeError:
+                return 'Failed to shutdown daemon, ' \
+                    'it might be using a different rmw implementation'
+            shutdown()
+        print('The daemon has been stopped')
