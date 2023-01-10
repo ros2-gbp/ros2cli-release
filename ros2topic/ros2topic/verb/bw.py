@@ -1,45 +1,42 @@
 # Copyright (c) 2008, Willow Garage, Inc.
-# All rights reserved.
-#
-# Software License Agreement (BSD License 2.0)
 #
 # Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
+# modification, are permitted provided that the following conditions are met:
 #
-#  * Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-#  * Redistributions in binary form must reproduce the above
-#    copyright notice, this list of conditions and the following
-#    disclaimer in the documentation and/or other materials provided
-#    with the distribution.
-#  * Neither the name of Willow Garage, Inc. nor the names of its
-#    contributors may be used to endorse or promote products derived
-#    from this software without specific prior written permission.
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#
+#    * Neither the name of the copyright holder nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#      this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
 # This file is originally from:
 # https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
 
 from argparse import ArgumentTypeError
+import sys
 import threading
-import time
 import traceback
 
 import rclpy
 from rclpy.qos import qos_profile_sensor_data
+from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
 from ros2topic.api import get_msg_class
 from ros2topic.api import TopicNameCompleter
@@ -83,6 +80,7 @@ class BwVerb(VerbExtension):
             '--window', '-w', type=positive_int, default=DEFAULT_WINDOW_SIZE,
             help='maximum window size, in # of messages, for calculating rate '
                  f'(default: {DEFAULT_WINDOW_SIZE})', metavar='WINDOW')
+        add_direct_node_arguments(parser)
 
     def main(self, *, args):
         with DirectNode(args) as node:
@@ -97,12 +95,14 @@ class ROSTopicBandwidth(object):
         self.sizes = []
         self.times = []
         self.window_size = window_size
+        self.use_sim_time = node.get_parameter('use_sim_time').value
+        self.clock = node.get_clock()
 
     def callback(self, data):
         """Execute ros sub callback."""
         with self.lock:
             try:
-                t = time.monotonic()
+                t = self.clock.now()
                 self.times.append(t)
                 # TODO(yechun1): Subscribing to the msgs and calculate the length may be
                 # inefficiency. To optimize here if found better solution.
@@ -121,11 +121,16 @@ class ROSTopicBandwidth(object):
             return
         with self.lock:
             n = len(self.times)
-            tn = time.monotonic()
+            tn = self.clock.now()
             t0 = self.times[0]
+            if tn <= t0:
+                print('WARNING: time is reset!', file=sys.stderr)
+                self.times = []
+                self.sizes = []
+                return None, None, None, None, None
 
             total = sum(self.sizes)
-            bytes_per_s = total / (tn - t0)
+            bytes_per_s = total / ((tn.nanoseconds - t0.nanoseconds) * 1.e-9)
             mean = total / n
 
             # min and max

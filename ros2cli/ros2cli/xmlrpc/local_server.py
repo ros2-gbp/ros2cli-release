@@ -14,8 +14,22 @@
 
 import socket
 import struct
-from xmlrpc.server import SimpleXMLRPCRequestHandler
+# Import SimpleXMLRPCRequestHandler to re-export it.
+from xmlrpc.server import SimpleXMLRPCRequestHandler  # noqa
 from xmlrpc.server import SimpleXMLRPCServer
+
+import netifaces
+
+
+def get_local_ipaddrs():
+    iplist = []
+    interfaces = netifaces.interfaces()
+    for interface in interfaces:
+        addrs = netifaces.ifaddresses(interface)
+        if netifaces.AF_INET in addrs.keys():
+            for value in addrs[netifaces.AF_INET]:
+                iplist.append(value['addr'])
+    return iplist
 
 
 class LocalXMLRPCServer(SimpleXMLRPCServer):
@@ -36,10 +50,6 @@ class LocalXMLRPCServer(SimpleXMLRPCServer):
         return sock, addr
 
     def verify_request(self, request, client_address):
-        if client_address[0] != '127.0.0.1':
+        if client_address[0] not in get_local_ipaddrs():
             return False
         return super(LocalXMLRPCServer, self).verify_request(request, client_address)
-
-
-class RequestHandler(SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/ros2cli/',)
