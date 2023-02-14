@@ -2,15 +2,24 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.18.5 (2023-01-10)
+0.22.0 (2023-02-14)
 -------------------
-* Fix network aware node issue (`#785 <https://github.com/ros2/ros2cli/issues/785>`_) (`#786 <https://github.com/ros2/ros2cli/issues/786>`_)
-* Contributors: mergify[bot]
+* Save method list via connection check to XMLRPC server. (`#796 <https://github.com/ros2/ros2cli/issues/796>`_)
+* ZSH argcomplete: call compinit only if needed (`#750 <https://github.com/ros2/ros2cli/issues/750>`_)
+* Fix network aware node issue (`#785 <https://github.com/ros2/ros2cli/issues/785>`_)
+* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
+* Contributors: Audrow Nash, Ivan Santiago Paunovic, Tomoya Fujita, mjbogusz
 
-0.18.4 (2022-11-07)
+0.21.0 (2022-11-02)
 -------------------
-* XMLRPC server accepts request from all local IP addresses. (`#729 <https://github.com/ros2/ros2cli/issues/729>`_) (`#733 <https://github.com/ros2/ros2cli/issues/733>`_)
-* Contributors: mergify[bot]
+
+0.20.0 (2022-09-13)
+-------------------
+* XMLRPC server accepts request from all local IP addresses. (`#729 <https://github.com/ros2/ros2cli/issues/729>`_)
+* Contributors: Tomoya Fujita
+
+0.19.0 (2022-04-29)
+-------------------
 
 0.18.3 (2022-04-08)
 -------------------

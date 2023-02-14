@@ -2,10 +2,20 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.18.5 (2023-01-10)
+0.22.0 (2023-02-14)
+-------------------
+* resolve `#790 <https://github.com/ros2/ros2cli/issues/790>`_ (`#801 <https://github.com/ros2/ros2cli/issues/801>`_)
+* Add alias library targets for CMake (`#718 <https://github.com/ros2/ros2cli/issues/718>`_)
+* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
+* Contributors: Audrow Nash, Kenji Brameld, RFRIEDM-Trimble
+
+0.21.0 (2022-11-02)
 -------------------
 
-0.18.4 (2022-11-07)
+0.20.0 (2022-09-13)
+-------------------
+
+0.19.0 (2022-04-29)
 -------------------
 
 0.18.3 (2022-04-08)

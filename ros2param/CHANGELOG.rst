@@ -2,10 +2,21 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.18.5 (2023-01-10)
+0.22.0 (2023-02-14)
+-------------------
+* Fix printing of integer and double arrays. (`#804 <https://github.com/ros2/ros2cli/issues/804>`_)
+* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
+* Contributors: Audrow Nash, Chris Lalancette
+
+0.21.0 (2022-11-02)
 -------------------
 
-0.18.4 (2022-11-07)
+0.20.0 (2022-09-13)
+-------------------
+* refactor: make ros2param use rclpy.parameter_client (`#716 <https://github.com/ros2/ros2cli/issues/716>`_)
+* Contributors: Brian
+
+0.19.0 (2022-04-29)
 -------------------
 
 0.18.3 (2022-04-08)

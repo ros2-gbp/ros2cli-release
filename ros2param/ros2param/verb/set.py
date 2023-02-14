@@ -15,14 +15,15 @@
 import sys
 
 from rcl_interfaces.msg import Parameter
+from rclpy.parameter import get_parameter_value
 from ros2cli.node.direct import DirectNode
 from ros2cli.node.strategy import add_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_absolute_node_name
 from ros2node.api import get_node_names
 from ros2node.api import NodeNameCompleter
+
 from ros2param.api import call_set_parameters
-from ros2param.api import get_parameter_value
 from ros2param.api import ParameterNameCompleter
 from ros2param.verb import VerbExtension
 
@@ -56,7 +57,7 @@ class SetVerb(VerbExtension):
 
         with DirectNode(args) as node:
             parameter = Parameter()
-            Parameter.name = args.parameter_name
+            parameter.name = args.parameter_name
             parameter.value = get_parameter_value(string_value=args.value)
 
             response = call_set_parameters(
