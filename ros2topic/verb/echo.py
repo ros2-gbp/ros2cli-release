@@ -27,7 +27,9 @@ from rclpy.qos_event import UnsupportedEventTypeError
 from rclpy.task import Future
 from ros2cli.node.strategy import add_arguments as add_strategy_node_arguments
 from ros2cli.node.strategy import NodeStrategy
+from ros2topic.api import add_qos_arguments
 from ros2topic.api import get_msg_class
+from ros2topic.api import positive_float
 from ros2topic.api import qos_profile_from_short_keys
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import unsigned_int
@@ -40,7 +42,6 @@ import yaml
 
 DEFAULT_TRUNCATE_LENGTH = 128
 MsgType = TypeVar('MsgType')
-default_profile_str = 'sensor_data'
 
 
 class EchoVerb(VerbExtension):
@@ -57,34 +58,7 @@ class EchoVerb(VerbExtension):
         parser.add_argument(
             'message_type', nargs='?',
             help="Type of the ROS message (e.g. 'std_msgs/msg/String')")
-        parser.add_argument(
-            '--qos-profile',
-            choices=rclpy.qos.QoSPresetProfiles.short_keys(),
-            help='Quality of service preset profile to subscribe with (default: {})'
-                 .format(default_profile_str))
-        default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(default_profile_str)
-        parser.add_argument(
-            '--qos-depth', metavar='N', type=int,
-            help='Queue size setting to subscribe with '
-                 '(overrides depth value of --qos-profile option)')
-        parser.add_argument(
-            '--qos-history',
-            choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
-            help='History of samples setting to subscribe with '
-                 '(overrides history value of --qos-profile option, default: {})'
-                 .format(default_profile.history.short_key))
-        parser.add_argument(
-            '--qos-reliability',
-            choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
-            help='Quality of service reliability setting to subscribe with '
-                 '(overrides reliability value of --qos-profile option, default: '
-                 'Automatically match existing publishers )')
-        parser.add_argument(
-            '--qos-durability',
-            choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
-            help='Quality of service durability setting to subscribe with '
-                 '(overrides durability value of --qos-profile option, default: '
-                 'Automatically match existing publishers )')
+        add_qos_arguments(parser, 'subscribe', 'sensor_data')
         parser.add_argument(
             '--csv', action='store_true',
             help=(
@@ -131,26 +105,31 @@ class EchoVerb(VerbExtension):
         parser.add_argument(
             '--once', action='store_true', help='Print the first message received and then exit.')
         parser.add_argument(
+            '--timeout', metavar='N', type=positive_float,
+            help='Set a timeout in seconds for waiting', default=None)
+        parser.add_argument(
             '--include-message-info', '-i', action='store_true',
             help='Shows the associated message info.')
 
     def choose_qos(self, node, args):
 
-        if (args.qos_profile is not None or
-                args.qos_reliability is not None or
+        if (args.qos_reliability is not None or
                 args.qos_durability is not None or
                 args.qos_depth is not None or
-                args.qos_history is not None):
+                args.qos_history is not None or
+                args.qos_liveliness is not None or
+                args.qos_liveliness_lease_duration_seconds is not None):
 
-            if args.qos_profile is None:
-                args.qos_profile = default_profile_str
-            return qos_profile_from_short_keys(args.qos_profile,
-                                               reliability=args.qos_reliability,
-                                               durability=args.qos_durability,
-                                               depth=args.qos_depth,
-                                               history=args.qos_history)
+            return qos_profile_from_short_keys(
+                args.qos_profile,
+                reliability=args.qos_reliability,
+                durability=args.qos_durability,
+                depth=args.qos_depth,
+                history=args.qos_history,
+                liveliness=args.qos_liveliness,
+                liveliness_lease_duration_s=args.qos_liveliness_lease_duration_seconds)
 
-        qos_profile = QoSPresetProfiles.get_from_short_key(default_profile_str)
+        qos_profile = QoSPresetProfiles.get_from_short_key(args.qos_profile)
         reliability_reliable_endpoints_count = 0
         durability_transient_local_endpoints_count = 0
 
@@ -213,14 +192,16 @@ class EchoVerb(VerbExtension):
         self.no_arr = args.no_arr
         self.no_str = args.no_str
         self.flow_style = args.flow_style
+        self.once = args.once
 
         self.filter_fn = None
         if args.filter_expr:
             self.filter_fn = _expr_eval(args.filter_expr)
 
         self.future = None
-        if args.once:
+        if args.timeout or args.once:
             self.future = Future()
+
         self.include_message_info = args.include_message_info
 
         with NodeStrategy(args) as node:
@@ -239,6 +220,9 @@ class EchoVerb(VerbExtension):
             if message_type is None:
                 raise RuntimeError(
                     'Could not determine the type for the passed topic')
+
+            if args.timeout is not None:
+                self.timer = node.create_timer(args.timeout, self._timed_out)
 
             self.subscribe_and_spin(
                 node,
@@ -285,6 +269,9 @@ class EchoVerb(VerbExtension):
         else:
             rclpy.spin(node)
 
+    def _timed_out(self):
+        self.future.set_result(True)
+
     def _subscriber_callback(self, msg, info):
         submsg = msg
         if self.field is not None:
@@ -298,7 +285,7 @@ class EchoVerb(VerbExtension):
         if self.filter_fn is not None and not self.filter_fn(submsg):
             return
 
-        if self.future is not None:
+        if self.future is not None and self.once:
             self.future.set_result(True)
 
         if not hasattr(submsg, '__slots__'):
