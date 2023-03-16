@@ -5,7 +5,7 @@ package_name = 'ros2topic'
 
 setup(
     name=package_name,
-    version='0.23.0',
+    version='0.9.13',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
-    maintainer='Audrow Nash, Geoffrey Biggs',
-    maintainer_email='audrow@openrobotics.org, geoff@openrobotics.org',
+    maintainer='Dirk Thomas',
+    maintainer_email='dthomas@osrfoundation.org',
     url='https://github.com/ros2/ros2cli/tree/master/ros2topic',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],

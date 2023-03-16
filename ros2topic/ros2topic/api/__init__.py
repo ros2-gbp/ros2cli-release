@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from argparse import ArgumentParser
+import argparse
+
 from argparse import ArgumentTypeError
 from time import sleep
-from typing import Optional
 
 import rclpy
 
-from rclpy.duration import Duration
 from rclpy.expand_topic_name import expand_topic_name
 from rclpy.topic_or_service_is_hidden import topic_or_service_is_hidden
 from rclpy.validate_full_topic_name import validate_full_topic_name
@@ -37,26 +36,6 @@ def unsigned_int(string):
     if value < 0:
         raise ArgumentTypeError('value must be non-negative integer')
     return value
-
-
-def positive_int(string):
-    try:
-        value = int(string)
-    except ValueError:
-        value = -1
-    if value <= 0:
-        raise ArgumentTypeError('value must be a positive integer')
-    return value
-
-
-def positive_float(inval):
-    try:
-        ret = float(inval)
-    except ValueError:
-        raise ArgumentTypeError('Expects a floating point number')
-    if ret <= 0.0:
-        raise ArgumentTypeError('Value must be positive')
-    return ret
 
 
 def get_topic_names_and_types(*, node, include_hidden_topics=False):
@@ -162,10 +141,7 @@ def _get_msg_class(node, topic, include_hidden_topics):
         # Could not determine the type for the passed topic
         return None
 
-    try:
-        return get_message(message_type)
-    except (AttributeError, ModuleNotFoundError, ValueError):
-        raise RuntimeError("The message type '%s' is invalid" % message_type)
+    return get_message(message_type)
 
 
 class TopicMessagePrototypeCompleter:
@@ -179,87 +155,62 @@ class TopicMessagePrototypeCompleter:
         return [message_to_yaml(message())]
 
 
-def profile_configure_short_keys(
-    profile: rclpy.qos.QoSProfile = None, reliability: Optional[str] = None,
-    durability: Optional[str] = None, depth: Optional[int] = None, history: Optional[str] = None,
-    liveliness: Optional[str] = None, liveliness_lease_duration_s: Optional[int] = None,
+def qos_profile_from_short_keys(
+    preset_profile: str, reliability: str = None, durability: str = None,
+    depth: int = -1, history: str = None,
 ) -> rclpy.qos.QoSProfile:
-    """Configure a QoSProfile given a profile, and optional overrides."""
+    """Construct a QoSProfile given the name of a preset, and optional overrides."""
+    # Build a QoS profile based on user-supplied arguments
+    profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(preset_profile)
     if history:
         profile.history = rclpy.qos.QoSHistoryPolicy.get_from_short_key(history)
     if durability:
         profile.durability = rclpy.qos.QoSDurabilityPolicy.get_from_short_key(durability)
     if reliability:
         profile.reliability = rclpy.qos.QoSReliabilityPolicy.get_from_short_key(reliability)
-    if liveliness:
-        profile.liveliness = rclpy.qos.QoSLivelinessPolicy.get_from_short_key(liveliness)
-    if liveliness_lease_duration_s and liveliness_lease_duration_s >= 0:
-        profile.liveliness_lease_duration = Duration(seconds=liveliness_lease_duration_s)
-    if depth and depth >= 0:
+    if depth >= 0:
         profile.depth = depth
     else:
         if (profile.durability == rclpy.qos.QoSDurabilityPolicy.TRANSIENT_LOCAL
                 and profile.depth == 0):
             profile.depth = 1
 
-
-def qos_profile_from_short_keys(
-    preset_profile: str, reliability: Optional[str] = None, durability: Optional[str] = None,
-    depth: Optional[int] = None, history: Optional[str] = None, liveliness: Optional[str] = None,
-    liveliness_lease_duration_s: Optional[float] = None,
-) -> rclpy.qos.QoSProfile:
-    """Construct a QoSProfile given the name of a preset, and optional overrides."""
-    # Build a QoS profile based on user-supplied arguments
-    profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(preset_profile)
-    profile_configure_short_keys(
-        profile, reliability, durability, depth, history, liveliness, liveliness_lease_duration_s)
     return profile
 
 
-def add_qos_arguments(parser: ArgumentParser, subscribe_or_publish: str, default_profile_str):
+def add_qos_arguments_to_argument_parser(
+    parser: argparse.ArgumentParser, is_publisher: bool = True, default_preset: str = 'sensor_data'
+) -> None:
+    """Extend an existing ArgumentParser to allow input of QoS policy overrides."""
+    verb = 'publish' if is_publisher else 'subscribe'
     parser.add_argument(
         '--qos-profile',
         choices=rclpy.qos.QoSPresetProfiles.short_keys(),
-        help=(
-            f'Quality of service preset profile to {subscribe_or_publish} with'
-            f' (default: {default_profile_str})'),
-        default=default_profile_str)
-    default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(default_profile_str)
+        default=default_preset,
+        help='Quality of service preset profile to {} with (default: {})'
+             .format(verb, default_preset))
+    default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(
+        default_preset)
     parser.add_argument(
-        '--qos-depth', metavar='N', type=int,
-        help=(
-            f'Queue size setting to {subscribe_or_publish} with '
-            '(overrides depth value of --qos-profile option)'))
+        '--qos-depth', metavar='N', type=int, default=-1,
+        help='Queue size setting to {} with '
+             '(overrides depth value of --qos-profile option)'
+             .format(verb))
     parser.add_argument(
         '--qos-history',
         choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
-        help=(
-            f'History of samples setting to {subscribe_or_publish} with '
-            '(overrides history value of --qos-profile option, default: '
-            f'{default_profile.history.short_key})'))
+        help='History of samples setting to {} with '
+             '(overrides history value of --qos-profile option, default: {})'
+             .format(verb, default_profile.history.short_key))
     parser.add_argument(
         '--qos-reliability',
         choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
-        help=(
-            f'Quality of service reliability setting to {subscribe_or_publish} with '
-            '(overrides reliability value of --qos-profile option, default: '
-            'Compatible profile with running endpoints )'))
+        help='Quality of service reliability setting to {} with '
+             '(overrides reliability value of --qos-profile option, default: {})'
+             .format(verb, default_profile.reliability.short_key))
     parser.add_argument(
         '--qos-durability',
         choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
-        help=(
-            f'Quality of service durability setting to {subscribe_or_publish} with '
-            '(overrides durability value of --qos-profile option, default: '
-            'Compatible profile with running endpoints )'))
-    parser.add_argument(
-        '--qos-liveliness',
-        choices=rclpy.qos.QoSLivelinessPolicy.short_keys(),
-        help=(
-            f'Quality of service liveliness setting to {subscribe_or_publish} with '
-            '(overrides liveliness value of --qos-profile option'))
-    parser.add_argument(
-        '--qos-liveliness-lease-duration-seconds',
-        type=float,
-        help=(
-            f'Quality of service liveliness lease duration setting to {subscribe_or_publish} '
-            'with (overrides liveliness lease duration value of --qos-profile option'))
+        help='Quality of service durability setting to {} with '
+             '(overrides durability value of --qos-profile option, default: {})'
+             .format(verb, default_profile.durability.short_key))

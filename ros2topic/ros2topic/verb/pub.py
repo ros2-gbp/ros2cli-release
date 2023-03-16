@@ -19,11 +19,9 @@ from typing import TypeVar
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
-from ros2topic.api import add_qos_arguments
-from ros2topic.api import positive_float
-from ros2topic.api import profile_configure_short_keys
+from ros2topic.api import add_qos_arguments_to_argument_parser
+from ros2topic.api import qos_profile_from_short_keys
 from ros2topic.api import TopicMessagePrototypeCompleter
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import TopicTypeCompleter
@@ -33,7 +31,6 @@ from rosidl_runtime_py.utilities import get_message
 import yaml
 
 MsgType = TypeVar('MsgType')
-DEFAULT_WAIT_TIME = 0.1
 
 
 def nonnegative_int(inval):
@@ -41,6 +38,14 @@ def nonnegative_int(inval):
     if ret < 0:
         # The error message here gets completely swallowed by argparse
         raise ValueError('Value must be positive or zero')
+    return ret
+
+
+def positive_float(inval):
+    ret = float(inval)
+    if ret <= 0.0:
+        # The error message here gets completely swallowed by argparse
+        raise ValueError('Value must be positive')
     return ret
 
 
@@ -79,42 +84,26 @@ class PubVerb(VerbExtension):
             '-t', '--times', type=nonnegative_int, default=0,
             help='Publish this number of times and then exit')
         parser.add_argument(
-            '-w', '--wait-matching-subscriptions', type=nonnegative_int, default=None,
-            help=(
-                'Wait until finding the specified number of matching subscriptions. '
-                'Defaults to 1 when using "-1"/"--once"/"--times", otherwise defaults to 0.'))
-        parser.add_argument(
-            '--max-wait-time-secs', type=positive_float, default=None,
-            help=(
-                'This sets the maximum wait time in seconds if '
-                '--wait-until-matching-subscriptions is set. '
-                'By default, this flag is not set meaning the subscriber will wait endlessly.'))
-        parser.add_argument(
             '--keep-alive', metavar='N', type=positive_float, default=0.1,
             help='Keep publishing node alive for N seconds after the last msg '
                  '(default: 0.1)')
         parser.add_argument(
             '-n', '--node-name',
             help='Name of the created publishing node')
-        add_qos_arguments(parser, 'publish', 'default')
-        add_direct_node_arguments(parser)
+        add_qos_arguments_to_argument_parser(
+            parser, is_publisher=True, default_preset='system_default')
 
     def main(self, *, args):
         return main(args)
 
 
 def main(args):
-    qos_profile_name = args.qos_profile
-    qos_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(qos_profile_name)
-    profile_configure_short_keys(
-        qos_profile, args.qos_reliability, args.qos_durability,
-        args.qos_depth, args.qos_history, args.qos_liveliness,
-        args.qos_liveliness_lease_duration_seconds)
-
+    qos_profile = qos_profile_from_short_keys(
+        args.qos_profile, reliability=args.qos_reliability, durability=args.qos_durability,
+        depth=args.qos_depth, history=args.qos_history)
     times = args.times
     if args.once:
         times = 1
-
     with DirectNode(args, node_name=args.node_name) as node:
         return publisher(
             node.node,
@@ -124,9 +113,6 @@ def main(args):
             1. / args.rate,
             args.print,
             times,
-            args.wait_matching_subscriptions
-            if args.wait_matching_subscriptions is not None else int(times != 0),
-            args.max_wait_time_secs,
             qos_profile,
             args.keep_alive)
 
@@ -139,67 +125,38 @@ def publisher(
     period: float,
     print_nth: int,
     times: int,
-    wait_matching_subscriptions: int,
-    max_wait_time: float | None,
     qos_profile: QoSProfile,
-    keep_alive: float,
+    keep_alive: float = 0.1,
 ) -> Optional[str]:
     """Initialize a node with a single publisher and run its publish loop (maybe only once)."""
-    try:
-        msg_module = get_message(message_type)
-    except (AttributeError, ModuleNotFoundError, ValueError):
-        raise RuntimeError('The passed message type is invalid')
+    msg_module = get_message(message_type)
     values_dictionary = yaml.safe_load(values)
     if not isinstance(values_dictionary, dict):
         return 'The passed value needs to be a dictionary in YAML format'
 
     pub = node.create_publisher(msg_module, topic_name, qos_profile)
 
-    if wait_matching_subscriptions == 0 and max_wait_time is not None:
-        return '--max-wait-time-secs option is only effective' \
-            ' with --wait-matching-subscriptions, --once or --times'
-
-    times_since_last_log = 0
-    total_wait_time = 0
-    while pub.get_subscription_count() < wait_matching_subscriptions:
-        # Print a message reporting we're waiting each 1s, check condition each 100ms.
-        if not times_since_last_log:
-            print(
-                f'Waiting for at least {wait_matching_subscriptions} matching subscription(s)...')
-        if max_wait_time is not None and max_wait_time <= total_wait_time:
-            return f'Timed out waiting for subscribers: Expected {wait_matching_subscriptions}' \
-                f' subcribers but only got {pub.get_subscription_count()} subscribers'
-        times_since_last_log = (times_since_last_log + 1) % 10
-        time.sleep(DEFAULT_WAIT_TIME)
-        total_wait_time += DEFAULT_WAIT_TIME
-
     msg = msg_module()
     try:
-        timestamp_fields = set_message_fields(
-            msg, values_dictionary, expand_header_auto=True, expand_time_now=True)
+        set_message_fields(msg, values_dictionary)
     except Exception as e:
         return 'Failed to populate field: {0}'.format(e)
+
     print('publisher: beginning loop')
     count = 0
 
     def timer_callback():
-        stamp_now = node.get_clock().now().to_msg()
-        for field_setter in timestamp_fields:
-            field_setter(stamp_now)
         nonlocal count
         count += 1
         if print_nth and count % print_nth == 0:
             print('publishing #%d: %r\n' % (count, msg))
         pub.publish(msg)
 
-    timer_callback()
-    if times != 1:
-        timer = node.create_timer(period, timer_callback)
-        while times == 0 or count < times:
-            rclpy.spin_once(node)
-        # give some time for the messages to reach the wire before exiting
-        time.sleep(keep_alive)
-        node.destroy_timer(timer)
-    else:
-        # give some time for the messages to reach the wire before exiting
-        time.sleep(keep_alive)
+    timer = node.create_timer(period, timer_callback)
+    while times == 0 or count < times:
+        rclpy.spin_once(node)
+
+    # give some time for the messages to reach the wire before exiting
+    time.sleep(keep_alive)
+
+    node.destroy_timer(timer)

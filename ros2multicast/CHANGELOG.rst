@@ -2,80 +2,33 @@
 Changelog for package ros2multicast
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.0 (2023-03-02)
+0.9.13 (2023-03-16)
+-------------------
+* Added changelogs
+* Contributors: Dharini Dutia
+
+0.9.12 (2022-09-12)
 -------------------
 
-0.22.0 (2023-02-14)
+0.9.11 (2022-01-31)
 -------------------
-* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
+
+0.9.10 (2021-10-05)
+-------------------
+
+0.9.9 (2021-03-24)
+------------------
+* 0.9.9
 * Contributors: Audrow Nash
 
-0.21.0 (2022-11-02)
--------------------
-* Add --group and --port options to ros2 multicast (`#770 <https://github.com/ros2/ros2cli/issues/770>`_)
-* Contributors: Shane Loretz
+0.9.8 (2020-12-08)
+------------------
 
-0.20.0 (2022-09-13)
--------------------
+0.9.7 (2020-07-07)
+------------------
 
-0.19.0 (2022-04-29)
--------------------
-
-0.18.3 (2022-04-08)
--------------------
-
-0.18.2 (2022-03-30)
--------------------
-* Add timeout to kill hanging tests (`#701 <https://github.com/ros2/ros2cli/issues/701>`_)
-* Contributors: Audrow Nash
-
-0.18.1 (2022-03-28)
--------------------
-
-0.18.0 (2022-03-01)
--------------------
-
-0.17.1 (2022-01-25)
--------------------
-
-0.17.0 (2022-01-25)
--------------------
-
-0.16.1 (2022-01-14)
--------------------
-
-0.16.0 (2022-01-14)
--------------------
-
-0.15.0 (2021-11-18)
--------------------
-* Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (`#673 <https://github.com/ros2/ros2cli/issues/673>`_)
-* Updated maintainers (`#670 <https://github.com/ros2/ros2cli/issues/670>`_)
-* Add changelogs (`#635 <https://github.com/ros2/ros2cli/issues/635>`_)
-* Contributors: Aditya Pande, Audrow Nash, Ivan Santiago Paunovic
-
-0.14.0 (2021-04-26)
--------------------
-
-0.13.0 (2021-04-06)
--------------------
-
-0.12.0 (2021-03-02)
--------------------
-* Remove maintainer. (`#597 <https://github.com/ros2/ros2cli/issues/597>`_)
-* Add Audrow as a maintainer. (`#591 <https://github.com/ros2/ros2cli/issues/591>`_)
-* Contributors: Audrow Nash, Claire Wang
-
-0.11.0 (2021-01-25)
--------------------
-
-0.10.1 (2020-12-08)
--------------------
-
-0.10.0 (2020-11-02)
--------------------
-* Update maintainers. (`#568 <https://github.com/ros2/ros2cli/issues/568>`_)
-* Contributors: Claire Wang
+0.9.6 (2020-06-23)
+------------------
 
 0.9.5 (2020-06-01)
 ------------------
@@ -94,15 +47,9 @@ Changelog for package ros2multicast
 
 0.9.0 (2020-04-29)
 ------------------
-* More verbose test_flake8 error messages (same as `ros2/launch_ros#135 <https://github.com/ros2/launch_ros/issues/135>`_)
-* Use f-string. (`#448 <https://github.com/ros2/ros2cli/issues/448>`_)
-  * Use f-string
-  * Remove unused variable
-* Only load required entry points which improves the performance. (`#436 <https://github.com/ros2/ros2cli/issues/436>`_)
-  * Extend API to exclude extensions from loading
-  * Add add_subparsers_on_demand() function
-  * Update all extensions to use the new API
-  * Deprecate old API, add deprecation warnings
+* more verbose test_flake8 error messages (same as `ros2/launch_ros#135 <https://github.com/ros2/launch_ros/issues/135>`_)
+* use f-string (`#448 <https://github.com/ros2/ros2cli/issues/448>`_)
+* only load required entry points which improves the performance (`#436 <https://github.com/ros2/ros2cli/issues/436>`_)
 * Contributors: Dirk Thomas
 
 0.8.6 (2019-11-19)
@@ -126,24 +73,20 @@ Changelog for package ros2multicast
 0.8.2 (2019-10-08)
 ------------------
 * 0.8.2
-* Fix multicast entrypoint. (`#352 <https://github.com/ros2/ros2cli/issues/352>`_)
-  * Fix multicast entrypoint
-  Otherwise, we see an error every time we run a ros2 command:
-  Failed to load entry point 'multicast': No module named 'ros2node.command.multicast'
-  * Fix extension point
+* Fix multicast entrypoint (`#352 <https://github.com/ros2/ros2cli/issues/352>`_)
 * Contributors: Dirk Thomas, Jacob Perron
 
 0.8.1 (2019-10-04)
 ------------------
 * 0.8.1
-* Use setup.py fields rather than setup.cfg. (`#346 <https://github.com/ros2/ros2cli/issues/346>`_)
+* Use setup.py fields rather than setup.cfg (`#346 <https://github.com/ros2/ros2cli/issues/346>`_)
 * Contributors: Michael Carroll
 
 0.8.0 (2019-09-26)
 ------------------
-* Install resource marker file for packages. (`#339 <https://github.com/ros2/ros2cli/issues/339>`_)
-* Install package manifest. (`#330 <https://github.com/ros2/ros2cli/issues/330>`_)
-* Add --ttl option to multicast send. (`#282 <https://github.com/ros2/ros2cli/issues/282>`_)
+* install resource marker file for packages (`#339 <https://github.com/ros2/ros2cli/issues/339>`_)
+* install package manifest (`#330 <https://github.com/ros2/ros2cli/issues/330>`_)
+* add --ttl option to multicast send (`#282 <https://github.com/ros2/ros2cli/issues/282>`_)
 * Contributors: Dirk Thomas
 
 0.7.4 (2019-05-29)
@@ -154,9 +97,7 @@ Changelog for package ros2multicast
 
 0.7.2 (2019-05-08)
 ------------------
-* Add xmllint linter test. (`#232 <https://github.com/ros2/ros2cli/issues/232>`_)
-  * Add xmllint test to ament_python packages
-  * Cover new packages as well
+* add xmllint linter test (`#232 <https://github.com/ros2/ros2cli/issues/232>`_)
 * Contributors: Mikael Arguedas
 
 0.7.1 (2019-04-17)
@@ -164,7 +105,7 @@ Changelog for package ros2multicast
 
 0.7.0 (2019-04-14)
 ------------------
-* Fixup ros2multicast version. (`#200 <https://github.com/ros2/ros2cli/issues/200>`_)
+* fixup ros2multicast version (`#200 <https://github.com/ros2/ros2cli/issues/200>`_)
 * Contributors: Mikael Arguedas
 
 0.6.3 (2019-02-08)
@@ -176,16 +117,11 @@ Changelog for package ros2multicast
 0.6.1 (2018-12-06)
 ------------------
 * 0.6.1
-  bump package.xml, setup.py and setup.cfg versions
 * Contributors: Shane Loretz
 
 0.6.0 (2018-11-19)
 ------------------
-* Add ros2 multicast commands. (`#145 <https://github.com/ros2/ros2cli/issues/145>`_)
-  * Add ros2 multicast commands
-  * Remove comments from setup.py
-  * Try to make Windows happy
-  * Remove additional tests_require from setup.cfg
+* add ros2 multicast commands (`#145 <https://github.com/ros2/ros2cli/issues/145>`_)
 * Contributors: Dirk Thomas
 
 0.5.4 (2018-08-20)

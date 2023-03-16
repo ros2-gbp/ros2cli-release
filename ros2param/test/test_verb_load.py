@@ -129,7 +129,7 @@ def generate_test_description(rmw_implementation):
     ])
 
 
-class TestVerbLoad(unittest.TestCase):
+class TestVerbDump(unittest.TestCase):
 
     @classmethod
     def setUpClass(
@@ -269,23 +269,11 @@ class TestVerbLoad(unittest.TestCase):
             strict=False
         )
 
-    def test_verb_load_timeout(self):
-        with self.launch_param_load_command(
-            arguments=['invalid_node', 'invalid_path', '--timeout', '2']
-        ) as param_load_command:
-            assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
-        assert param_load_command.exit_code != launch_testing.asserts.EXIT_OK
-        assert launch_testing.tools.expect_output(
-            expected_lines=['Node not found'],
-            text=param_load_command.output,
-            strict=False
-        )
-
     def test_verb_load(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             filepath = self._write_param_file(tmpdir, 'params.yaml')
             with self.launch_param_load_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', filepath, '--timeout', '3']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', filepath]
             ) as param_load_command:
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -296,7 +284,7 @@ class TestVerbLoad(unittest.TestCase):
             )
             # Dump with ros2 param dump and compare that output matches input file
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -312,12 +300,13 @@ class TestVerbLoad(unittest.TestCase):
             filepath = self._write_param_file(tmpdir, 'params.yaml', INPUT_WILDCARD_PARAMETER_FILE)
             with self.launch_param_load_command(
                 arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', filepath,
-                           '--no-use-wildcard', '--timeout', '3']
+                           '--no-use-wildcard']
             ) as param_load_command:
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code != launch_testing.asserts.EXIT_OK
             assert launch_testing.tools.expect_output(
-                expected_lines=['Param file does not contain selected parameters'],
+                expected_lines=['Param file does not contain parameters for '
+                                f'{TEST_NAMESPACE}/{TEST_NODE}'],
                 text=param_load_command.output,
                 strict=False
             )
@@ -334,7 +323,7 @@ class TestVerbLoad(unittest.TestCase):
             )
             # Dump with ros2 param and check that wildcard parameters are loaded
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -355,7 +344,7 @@ class TestVerbLoad(unittest.TestCase):
 
             # Dump and check that wildcard parameters were overriden if in node namespace
             with self.launch_param_dump_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK

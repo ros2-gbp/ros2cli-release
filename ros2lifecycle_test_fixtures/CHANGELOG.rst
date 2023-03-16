@@ -2,79 +2,33 @@
 Changelog for package ros2lifecycle_test_fixtures
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.0 (2023-03-02)
+0.9.13 (2023-03-16)
+-------------------
+* Added changelogs
+* Contributors: Dharini Dutia
+
+0.9.12 (2022-09-12)
 -------------------
 
-0.22.0 (2023-02-14)
--------------------
-* Update the ros2cli test fixture to C++17. (`#789 <https://github.com/ros2/ros2cli/issues/789>`_)
-* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
-* Contributors: Audrow Nash, Chris Lalancette
-
-0.21.0 (2022-11-02)
+0.9.11 (2022-01-31)
 -------------------
 
-0.20.0 (2022-09-13)
+0.9.10 (2021-10-05)
 -------------------
 
-0.19.0 (2022-04-29)
--------------------
+0.9.9 (2021-03-24)
+------------------
+* 0.9.9
+* Contributors: Audrow Nash
 
-0.18.3 (2022-04-08)
--------------------
+0.9.8 (2020-12-08)
+------------------
 
-0.18.2 (2022-03-30)
--------------------
+0.9.7 (2020-07-07)
+------------------
 
-0.18.1 (2022-03-28)
--------------------
-
-0.18.0 (2022-03-01)
--------------------
-
-0.17.1 (2022-01-25)
--------------------
-
-0.17.0 (2022-01-25)
--------------------
-
-0.16.1 (2022-01-14)
--------------------
-
-0.16.0 (2022-01-14)
--------------------
-
-0.15.0 (2021-11-18)
--------------------
-* Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (`#673 <https://github.com/ros2/ros2cli/issues/673>`_)
-* Updated maintainers (`#670 <https://github.com/ros2/ros2cli/issues/670>`_)
-* Add changelogs (`#635 <https://github.com/ros2/ros2cli/issues/635>`_)
-* Contributors: Aditya Pande, Audrow Nash, Ivan Santiago Paunovic
-
-0.14.0 (2021-04-26)
--------------------
-
-0.13.0 (2021-04-06)
--------------------
-* Depend on rclcpp::rclcpp target. (`#618 <https://github.com/ros2/ros2cli/issues/618>`_)
-  Contributors: Audrow Nash
-
-0.12.0 (2021-03-02)
--------------------
-* Remove maintainer. (`#597 <https://github.com/ros2/ros2cli/issues/597>`_)
-* Add Audrow as a maintainer. (`#591 <https://github.com/ros2/ros2cli/issues/591>`_)
-* Contributors: Audrow Nash, Claire Wang
-
-0.11.0 (2021-01-25)
--------------------
-
-0.10.1 (2020-12-08)
--------------------
-
-0.10.0 (2020-11-02)
--------------------
-* Update maintainers. (`#568 <https://github.com/ros2/ros2cli/issues/568>`_)
-* Contributors: Claire Wang
+0.9.6 (2020-06-23)
+------------------
 
 0.9.5 (2020-06-01)
 ------------------
@@ -105,13 +59,7 @@ Changelog for package ros2lifecycle_test_fixtures
 0.8.4 (2019-11-13)
 ------------------
 * 0.8.4
-* [ros2lifecycle] Add test coverage for CLI. (`#391 <https://github.com/ros2/ros2cli/issues/391>`_)
-  * Add test coverage for ros2lifecycle CLI.
-  * Add ros2lifecycle_test_fixtures package.
-  * Use ros2lifecycle_test_fixtures package instead of demo lifecycle package.
-  * Add a few more ros2lifecycle test cases.
-  * Address last few peer review comments.
-  * Rename ros2lifecycle tests fixture node.
+* [ros2lifecycle] Add test coverage for CLI (`#391 <https://github.com/ros2/ros2cli/issues/391>`_)
 * Contributors: Michael Carroll, Michel Hidalgo
 
 0.8.3 (2019-10-23)
