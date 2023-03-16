@@ -1,0 +1,12 @@
+Source: ros-foxy-ros2component
+Section: misc
+Priority: optional
+Maintainer: Michel Hidalgo <michel@ekumenlabs.com>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest <!nocheck>, ros-foxy-ament-copyright <!nocheck>, ros-foxy-ament-flake8 <!nocheck>, ros-foxy-ament-pep257 <!nocheck>, ros-foxy-ament-xmllint <!nocheck>, ros-foxy-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-foxy-ros2component
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, ros-foxy-ament-index-python, ros-foxy-composition-interfaces, ros-foxy-rcl-interfaces, ros-foxy-rclcpp-components, ros-foxy-rclpy, ros-foxy-ros2cli, ros-foxy-ros2node, ros-foxy-ros2param, ros-foxy-ros2pkg, ros-foxy-ros-workspace
+Description: The component command for ROS 2 command line tools.
