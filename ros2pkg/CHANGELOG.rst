@@ -2,10 +2,16 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.1 (2023-05-11)
+0.27.0 (2023-06-07)
 -------------------
-* Fix typo in ros2pkg warning message. (`#828 <https://github.com/ros2/ros2cli/issues/828>`_)
+
+0.26.1 (2023-05-11)
+-------------------
+* Fix typo in ros2pkg warning message. (`#827 <https://github.com/ros2/ros2cli/issues/827>`_)
 * Contributors: Tomoya Fujita
+
+0.26.0 (2023-04-28)
+-------------------
 
 0.25.0 (2023-04-18)
 -------------------

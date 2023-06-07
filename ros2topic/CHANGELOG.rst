@@ -2,7 +2,15 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.1 (2023-05-11)
+0.27.0 (2023-06-07)
+-------------------
+* [service introspection] ros2 service echo (`#745 <https://github.com/ros2/ros2cli/issues/745>`_)
+* Contributors: Brian
+
+0.26.1 (2023-05-11)
+-------------------
+
+0.26.0 (2023-04-28)
 -------------------
 
 0.25.0 (2023-04-18)
