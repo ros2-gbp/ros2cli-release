@@ -2,6 +2,9 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.2 (2023-07-14)
+-------------------
+
 0.25.1 (2023-05-11)
 -------------------
 * Fix typo in ros2pkg warning message. (`#828 <https://github.com/ros2/ros2cli/issues/828>`_)
