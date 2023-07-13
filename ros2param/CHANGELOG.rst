@@ -2,6 +2,11 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.2 (2023-07-14)
+-------------------
+* Update ros2 param dump dosctring. (`#841 <https://github.com/ros2/ros2cli/issues/841>`_)
+* Contributors: Murilo M Marinho
+
 0.25.1 (2023-05-11)
 -------------------
 
