@@ -2,20 +2,10 @@
 Changelog for package ros2service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.28.0 (2023-07-11)
--------------------
-* Fix tests with get_type_description service and param present (`#838 <https://github.com/ros2/ros2cli/issues/838>`_)
-* Contributors: Emerson Knapp
-
-0.27.0 (2023-06-07)
--------------------
-* [service introspection] ros2 service echo (`#745 <https://github.com/ros2/ros2cli/issues/745>`_)
-* Contributors: Brian
-
-0.26.1 (2023-05-11)
+0.25.2 (2023-07-14)
 -------------------
 
-0.26.0 (2023-04-28)
+0.25.1 (2023-05-11)
 -------------------
 
 0.25.0 (2023-04-18)
