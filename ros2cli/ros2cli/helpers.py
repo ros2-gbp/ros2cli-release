@@ -39,9 +39,9 @@ def wait_for(predicate, timeout, period=0.1):
     deadline = time.time() + timeout
     while not predicate():
         if time.time() > deadline:
-            return predicate()
+            break
         time.sleep(period)
-    return True
+    return predicate()
 
 
 def bind(func, *args, **kwargs):

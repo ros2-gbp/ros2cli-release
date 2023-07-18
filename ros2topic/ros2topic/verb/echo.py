@@ -12,23 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 from typing import Optional
 from typing import TypeVar
 
 import rclpy
-from rclpy.event_handler import SubscriptionEventCallbacks
-from rclpy.event_handler import UnsupportedEventTypeError
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy
 from rclpy.qos import QoSPresetProfiles
 from rclpy.qos import QoSProfile
 from rclpy.qos import QoSReliabilityPolicy
+from rclpy.qos_event import SubscriptionEventCallbacks
+from rclpy.qos_event import UnsupportedEventTypeError
 from rclpy.task import Future
 from ros2cli.node.strategy import add_arguments as add_strategy_node_arguments
 from ros2cli.node.strategy import NodeStrategy
-from ros2topic.api import add_qos_arguments
 from ros2topic.api import get_msg_class
-from ros2topic.api import positive_float
 from ros2topic.api import qos_profile_from_short_keys
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import unsigned_int
@@ -37,10 +36,9 @@ from rosidl_runtime_py import message_to_csv
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py.utilities import get_message
 
-import yaml
-
 DEFAULT_TRUNCATE_LENGTH = 128
 MsgType = TypeVar('MsgType')
+default_profile_str = 'sensor_data'
 
 
 class EchoVerb(VerbExtension):
@@ -57,17 +55,38 @@ class EchoVerb(VerbExtension):
         parser.add_argument(
             'message_type', nargs='?',
             help="Type of the ROS message (e.g. 'std_msgs/msg/String')")
-        add_qos_arguments(parser, 'subscribe', 'sensor_data')
+        parser.add_argument(
+            '--qos-profile',
+            choices=rclpy.qos.QoSPresetProfiles.short_keys(),
+            help='Quality of service preset profile to subscribe with (default: {})'
+                 .format(default_profile_str))
+        default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(default_profile_str)
+        parser.add_argument(
+            '--qos-depth', metavar='N', type=int,
+            help='Queue size setting to subscribe with '
+                 '(overrides depth value of --qos-profile option)')
+        parser.add_argument(
+            '--qos-history',
+            choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
+            help='History of samples setting to subscribe with '
+                 '(overrides history value of --qos-profile option, default: {})'
+                 .format(default_profile.history.short_key))
+        parser.add_argument(
+            '--qos-reliability',
+            choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
+            help='Quality of service reliability setting to subscribe with '
+                 '(overrides reliability value of --qos-profile option, default: '
+                 'Automatically match existing publishers )')
+        parser.add_argument(
+            '--qos-durability',
+            choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
+            help='Quality of service durability setting to subscribe with '
+                 '(overrides durability value of --qos-profile option, default: '
+                 'Automatically match existing publishers )')
         parser.add_argument(
             '--csv', action='store_true',
-            help=(
-                'Output all recursive fields separated by commas (e.g. for '
-                'plotting). '
-                'If --include-message-info is also passed, the following fields are prepended: '
-                'source_timestamp, received_timestamp, publication_sequence_number,'
-                ' reception_sequence_number.'
-            )
-        )
+            help='Output all recursive fields separated by commas (e.g. for '
+                 'plotting)')
         parser.add_argument(
             '--field', type=str, default=None,
             help='Echo a selected field of a message. '
@@ -92,6 +111,8 @@ class EchoVerb(VerbExtension):
             '--flow-style', action='store_true',
             help='Print collections in the block style (not available with csv format)')
         parser.add_argument(
+            '--lost-messages', action='store_true', help='DEPRECATED: Does nothing')
+        parser.add_argument(
             '--no-lost-messages', action='store_true', help="Don't report when a message is lost")
         parser.add_argument(
             '--raw', action='store_true', help='Echo the raw binary representation')
@@ -101,32 +122,24 @@ class EchoVerb(VerbExtension):
                                                  'as well as m (the message).')
         parser.add_argument(
             '--once', action='store_true', help='Print the first message received and then exit.')
-        parser.add_argument(
-            '--timeout', metavar='N', type=positive_float,
-            help='Set a timeout in seconds for waiting', default=None)
-        parser.add_argument(
-            '--include-message-info', '-i', action='store_true',
-            help='Shows the associated message info.')
 
     def choose_qos(self, node, args):
 
-        if (args.qos_reliability is not None or
+        if (args.qos_profile is not None or
+                args.qos_reliability is not None or
                 args.qos_durability is not None or
                 args.qos_depth is not None or
-                args.qos_history is not None or
-                args.qos_liveliness is not None or
-                args.qos_liveliness_lease_duration_seconds is not None):
+                args.qos_history is not None):
 
-            return qos_profile_from_short_keys(
-                args.qos_profile,
-                reliability=args.qos_reliability,
-                durability=args.qos_durability,
-                depth=args.qos_depth,
-                history=args.qos_history,
-                liveliness=args.qos_liveliness,
-                liveliness_lease_duration_s=args.qos_liveliness_lease_duration_seconds)
+            if args.qos_profile is None:
+                args.qos_profile = default_profile_str
+            return qos_profile_from_short_keys(args.qos_profile,
+                                               reliability=args.qos_reliability,
+                                               durability=args.qos_durability,
+                                               depth=args.qos_depth,
+                                               history=args.qos_history)
 
-        qos_profile = QoSPresetProfiles.get_from_short_key(args.qos_profile)
+        qos_profile = QoSPresetProfiles.get_from_short_key(default_profile_str)
         reliability_reliable_endpoints_count = 0
         durability_transient_local_endpoints_count = 0
 
@@ -171,7 +184,16 @@ class EchoVerb(VerbExtension):
 
     def main(self, *, args):
 
+        if args.lost_messages:
+            print(
+                "WARNING: '--lost-messages' is deprecated; lost messages are reported by default",
+                file=sys.stderr)
+
+        # Select print function
+        self.print_func = _print_yaml
         self.csv = args.csv
+        if self.csv:
+            self.print_func = _print_csv
 
         # Validate field selection
         self.field = args.field
@@ -184,17 +206,14 @@ class EchoVerb(VerbExtension):
         self.no_arr = args.no_arr
         self.no_str = args.no_str
         self.flow_style = args.flow_style
-        self.once = args.once
 
         self.filter_fn = None
         if args.filter_expr:
             self.filter_fn = _expr_eval(args.filter_expr)
 
         self.future = None
-        if args.timeout or args.once:
+        if args.once:
             self.future = Future()
-
-        self.include_message_info = args.include_message_info
 
         with NodeStrategy(args) as node:
 
@@ -213,9 +232,6 @@ class EchoVerb(VerbExtension):
                 raise RuntimeError(
                     'Could not determine the type for the passed topic')
 
-            if args.timeout is not None:
-                self.timer = node.create_timer(args.timeout, self._timed_out)
-
             self.subscribe_and_spin(
                 node,
                 args.topic_name,
@@ -231,7 +247,7 @@ class EchoVerb(VerbExtension):
         message_type: MsgType,
         qos_profile: QoSProfile,
         no_report_lost_messages: bool,
-        raw: bool,
+        raw: bool
     ) -> Optional[str]:
         """Initialize a node with a single subscription and spin."""
         event_callbacks = None
@@ -261,10 +277,7 @@ class EchoVerb(VerbExtension):
         else:
             rclpy.spin(node)
 
-    def _timed_out(self):
-        self.future.set_result(True)
-
-    def _subscriber_callback(self, msg, info):
+    def _subscriber_callback(self, msg):
         submsg = msg
         if self.field is not None:
             for field in self.field:
@@ -277,42 +290,38 @@ class EchoVerb(VerbExtension):
         if self.filter_fn is not None and not self.filter_fn(submsg):
             return
 
-        if self.future is not None and self.once:
+        if self.future is not None:
             self.future.set_result(True)
 
-        if not hasattr(submsg, '__slots__'):
-            # raw
-            if self.include_message_info:
-                print('---Got new message, message info:---')
-                print(info)
-                print('---Message data:---')
-            print(submsg, end='\n---\n')
-            return
-
         if self.csv:
-            to_print = message_to_csv(
-                submsg,
-                truncate_length=self.truncate_length,
-                no_arr=self.no_arr,
-                no_str=self.no_str)
-            if self.include_message_info:
-                to_print = f'{",".join(str(x) for x in info.values())},{to_print}'
-            print(to_print)
-            return
-        # yaml
-        if self.include_message_info:
-            print(yaml.dump(info), end='---\n')
-        print(
-            message_to_yaml(
-                submsg, truncate_length=self.truncate_length,
-                no_arr=self.no_arr, no_str=self.no_str, flow_style=self.flow_style),
-            end='---\n')
+            self.print_func(submsg, self.truncate_length, self.no_arr, self.no_str)
+        else:
+            self.print_func(
+                submsg, self.truncate_length, self.no_arr, self.no_str, self.flow_style)
 
 
 def _expr_eval(expr):
     def eval_fn(m):
         return eval(expr)
     return eval_fn
+
+
+def _print_yaml(msg, truncate_length, noarr, nostr, flowstyle):
+    if hasattr(msg, '__slots__'):
+        print(
+            message_to_yaml(
+                msg, truncate_length=truncate_length,
+                no_arr=noarr, no_str=nostr, flow_style=flowstyle),
+            end='---\n')
+    else:
+        print(msg, end='\n---\n')
+
+
+def _print_csv(msg, truncate_length, noarr, nostr):
+    if hasattr(msg, '__slots__'):
+        print(message_to_csv(msg, truncate_length=truncate_length, no_arr=noarr, no_str=nostr))
+    else:
+        print(msg)
 
 
 def _message_lost_event_callback(message_lost_status):
