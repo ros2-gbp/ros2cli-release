@@ -2,18 +2,53 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.18.7 (2023-07-18)
+0.29.0 (2023-08-21)
 -------------------
-* resolve `#790 <https://github.com/ros2/ros2cli/issues/790>`_ (`#801 <https://github.com/ros2/ros2cli/issues/801>`_) (`#832 <https://github.com/ros2/ros2cli/issues/832>`_)
-* Contributors: mergify[bot]
+* Update the package template for our new include directories. (`#847 <https://github.com/ros2/ros2cli/issues/847>`_)
+* Contributors: Chris Lalancette
 
-0.18.6 (2023-04-25)
--------------------
-
-0.18.5 (2023-01-10)
+0.28.0 (2023-07-11)
 -------------------
 
-0.18.4 (2022-11-07)
+0.27.0 (2023-06-07)
+-------------------
+
+0.26.1 (2023-05-11)
+-------------------
+* Fix typo in ros2pkg warning message. (`#827 <https://github.com/ros2/ros2cli/issues/827>`_)
+* Contributors: Tomoya Fujita
+
+0.26.0 (2023-04-28)
+-------------------
+
+0.25.0 (2023-04-18)
+-------------------
+* Make all of the dependencies in pure Python packages exec_depend. (`#823 <https://github.com/ros2/ros2cli/issues/823>`_)
+* Contributors: Chris Lalancette
+
+0.24.1 (2023-04-12)
+-------------------
+
+0.24.0 (2023-04-11)
+-------------------
+
+0.23.0 (2023-03-02)
+-------------------
+
+0.22.0 (2023-02-14)
+-------------------
+* resolve `#790 <https://github.com/ros2/ros2cli/issues/790>`_ (`#801 <https://github.com/ros2/ros2cli/issues/801>`_)
+* Add alias library targets for CMake (`#718 <https://github.com/ros2/ros2cli/issues/718>`_)
+* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
+* Contributors: Audrow Nash, Kenji Brameld, RFRIEDM-Trimble
+
+0.21.0 (2022-11-02)
+-------------------
+
+0.20.0 (2022-09-13)
+-------------------
+
+0.19.0 (2022-04-29)
 -------------------
 
 0.18.3 (2022-04-08)

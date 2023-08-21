@@ -2,16 +2,54 @@
 Changelog for package ros2node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.18.7 (2023-07-18)
+0.29.0 (2023-08-21)
 -------------------
 
-0.18.6 (2023-04-25)
+0.28.0 (2023-07-11)
 -------------------
 
-0.18.5 (2023-01-10)
+0.27.0 (2023-06-07)
 -------------------
 
-0.18.4 (2022-11-07)
+0.26.1 (2023-05-11)
+-------------------
+
+0.26.0 (2023-04-28)
+-------------------
+
+0.25.0 (2023-04-18)
+-------------------
+* Make all of the dependencies in pure Python packages exec_depend. (`#823 <https://github.com/ros2/ros2cli/issues/823>`_)
+* Contributors: Chris Lalancette
+
+0.24.1 (2023-04-12)
+-------------------
+
+0.24.0 (2023-04-11)
+-------------------
+* Enable document generation using rosdoc2 (`#811 <https://github.com/ros2/ros2cli/issues/811>`_)
+  * Fix warnings for ros2component, ros2doctor, ros2interface, and ros2node
+* Contributors: Yadu
+
+0.23.0 (2023-03-02)
+-------------------
+* Fix linters (`#808 <https://github.com/ros2/ros2cli/issues/808>`_)
+* add timeout option for ros2param to find node. (`#802 <https://github.com/ros2/ros2cli/issues/802>`_)
+* Contributors: Cristóbal Arroyo, Tomoya Fujita
+
+0.22.0 (2023-02-14)
+-------------------
+* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
+* Updated wording in list.py (`#775 <https://github.com/ros2/ros2cli/issues/775>`_)
+* Contributors: Audrow Nash, Michael Wrock
+
+0.21.0 (2022-11-02)
+-------------------
+
+0.20.0 (2022-09-13)
+-------------------
+
+0.19.0 (2022-04-29)
 -------------------
 
 0.18.3 (2022-04-08)
