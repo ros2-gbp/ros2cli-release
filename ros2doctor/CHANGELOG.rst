@@ -2,16 +2,25 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.3 (2023-09-08)
+0.29.1 (2023-10-04)
 -------------------
 
-0.25.2 (2023-07-14)
+0.29.0 (2023-08-21)
 -------------------
 
-0.25.1 (2023-05-11)
+0.28.0 (2023-07-11)
 -------------------
-* Shutdown ros2doctor hello when ctrl-c is received (`#829 <https://github.com/ros2/ros2cli/issues/829>`_)
+
+0.27.0 (2023-06-07)
+-------------------
+
+0.26.1 (2023-05-11)
+-------------------
+* Shutdown ros2doctor hello when ctrl-c is received (`#826 <https://github.com/ros2/ros2cli/issues/826>`_)
 * Contributors: Michael Carroll
+
+0.26.0 (2023-04-28)
+-------------------
 
 0.25.0 (2023-04-18)
 -------------------

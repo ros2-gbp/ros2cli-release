@@ -2,17 +2,31 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.3 (2023-09-08)
+0.29.1 (2023-10-04)
 -------------------
-* Fix tests with get_type_description service and param present (`#839 <https://github.com/ros2/ros2cli/issues/839>`_)
-* Contributors: Emerson Knapp
+* catch ExternalShutdownException ros2cli main. (`#854 <https://github.com/ros2/ros2cli/issues/854>`_)
+* Contributors: Tomoya Fujita
 
-0.25.2 (2023-07-14)
+0.29.0 (2023-08-21)
 -------------------
-* Add marshalling functions for rclpy.type_hash.TypeHash (`#835 <https://github.com/ros2/ros2cli/issues/835>`_)
-* Contributors: Hans-Joachim Krauch
+* Load a message/request/goal from standard input (`#844 <https://github.com/ros2/ros2cli/issues/844>`_)
+* Contributors: ymd-stella
 
-0.25.1 (2023-05-11)
+0.28.0 (2023-07-11)
+-------------------
+* Fix tests with get_type_description service and param present (`#838 <https://github.com/ros2/ros2cli/issues/838>`_)
+* Add marshalling functions for rclpy.type_hash.TypeHash (rep2011) (`#816 <https://github.com/ros2/ros2cli/issues/816>`_)
+* Contributors: Emerson Knapp, Hans-Joachim Krauch
+
+0.27.0 (2023-06-07)
+-------------------
+* [service introspection] ros2 service echo (`#745 <https://github.com/ros2/ros2cli/issues/745>`_)
+* Contributors: Brian
+
+0.26.1 (2023-05-11)
+-------------------
+
+0.26.0 (2023-04-28)
 -------------------
 
 0.25.0 (2023-04-18)
