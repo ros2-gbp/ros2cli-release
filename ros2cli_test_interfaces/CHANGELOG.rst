@@ -2,6 +2,9 @@
 Changelog for package ros2cli_test_interfaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.29.1 (2023-10-04)
+-------------------
+
 0.29.0 (2023-08-21)
 -------------------
 * Update to C++17 (`#848 <https://github.com/ros2/ros2cli/issues/848>`_)
