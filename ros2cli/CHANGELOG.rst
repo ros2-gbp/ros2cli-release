@@ -2,6 +2,11 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.4 (2023-11-17)
+-------------------
+* Catch ExternalShutdownException ros2cli main. (`#858 <https://github.com/ros2/ros2cli/issues/858>`_)
+* Contributors: Tomoya Fujita
+
 0.25.3 (2023-09-08)
 -------------------
 * Fix tests with get_type_description service and param present (`#839 <https://github.com/ros2/ros2cli/issues/839>`_)
