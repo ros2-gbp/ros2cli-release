@@ -2,31 +2,18 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.30.0 (2023-11-06)
+0.25.4 (2023-11-17)
 -------------------
 
-0.29.1 (2023-10-04)
+0.25.3 (2023-09-08)
 -------------------
 
-0.29.0 (2023-08-21)
+0.25.2 (2023-07-14)
 -------------------
-* Load a message/request/goal from standard input (`#844 <https://github.com/ros2/ros2cli/issues/844>`_)
-* Contributors: ymd-stella
-
-0.28.0 (2023-07-11)
--------------------
-* Add marshalling functions for rclpy.type_hash.TypeHash (rep2011) (`#816 <https://github.com/ros2/ros2cli/issues/816>`_)
+* Add marshalling functions for rclpy.type_hash.TypeHash (`#835 <https://github.com/ros2/ros2cli/issues/835>`_)
 * Contributors: Hans-Joachim Krauch
 
-0.27.0 (2023-06-07)
--------------------
-* [service introspection] ros2 service echo (`#745 <https://github.com/ros2/ros2cli/issues/745>`_)
-* Contributors: Brian
-
-0.26.1 (2023-05-11)
--------------------
-
-0.26.0 (2023-04-28)
+0.25.1 (2023-05-11)
 -------------------
 
 0.25.0 (2023-04-18)
