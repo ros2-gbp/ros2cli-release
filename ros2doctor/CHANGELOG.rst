@@ -2,19 +2,34 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.4 (2023-11-17)
+0.30.1 (2023-12-26)
 -------------------
 
-0.25.3 (2023-09-08)
+0.30.0 (2023-11-06)
+-------------------
+* (ros2doctor) fix PackageCheck (`#860 <https://github.com/ros2/ros2cli/issues/860>`_)
+  * (ros2doctor)(package) improve result string generation
+* Contributors: Matthijs van der Burgh
+
+0.29.1 (2023-10-04)
 -------------------
 
-0.25.2 (2023-07-14)
+0.29.0 (2023-08-21)
 -------------------
 
-0.25.1 (2023-05-11)
+0.28.0 (2023-07-11)
 -------------------
-* Shutdown ros2doctor hello when ctrl-c is received (`#829 <https://github.com/ros2/ros2cli/issues/829>`_)
+
+0.27.0 (2023-06-07)
+-------------------
+
+0.26.1 (2023-05-11)
+-------------------
+* Shutdown ros2doctor hello when ctrl-c is received (`#826 <https://github.com/ros2/ros2cli/issues/826>`_)
 * Contributors: Michael Carroll
+
+0.26.0 (2023-04-28)
+-------------------
 
 0.25.0 (2023-04-18)
 -------------------
