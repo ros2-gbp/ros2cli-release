@@ -2,6 +2,9 @@
 Changelog for package ros2service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.30.1 (2023-12-26)
+-------------------
+
 0.30.0 (2023-11-06)
 -------------------
 * Add ros2 service info (`#771 <https://github.com/ros2/ros2cli/issues/771>`_)
