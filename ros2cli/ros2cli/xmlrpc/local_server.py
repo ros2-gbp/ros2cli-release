@@ -18,16 +18,18 @@ import struct
 from xmlrpc.server import SimpleXMLRPCRequestHandler  # noqa
 from xmlrpc.server import SimpleXMLRPCServer
 
-import psutil
+import netifaces
 
 
 def get_local_ipaddrs():
-    return [
-        addr.address
-        for _, addrs in psutil.net_if_addrs().items()
-        for addr in addrs
-        if addr.family == socket.AF_INET
-    ]
+    iplist = []
+    interfaces = netifaces.interfaces()
+    for interface in interfaces:
+        addrs = netifaces.ifaddresses(interface)
+        if netifaces.AF_INET in addrs.keys():
+            for value in addrs[netifaces.AF_INET]:
+                iplist.append(value['addr'])
+    return iplist
 
 
 class LocalXMLRPCServer(SimpleXMLRPCServer):
