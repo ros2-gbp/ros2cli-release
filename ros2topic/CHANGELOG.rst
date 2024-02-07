@@ -2,6 +2,11 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.31.1 (2024-02-07)
+-------------------
+* Remove parentheses from assert statement. (`#878 <https://github.com/ros2/ros2cli/issues/878>`_)
+* Contributors: Chris Lalancette
+
 0.31.0 (2024-01-24)
 -------------------
 
