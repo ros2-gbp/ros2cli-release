@@ -15,15 +15,14 @@
 import sys
 
 from rcl_interfaces.msg import Parameter
-from rclpy.parameter import get_parameter_value
 from ros2cli.node.direct import DirectNode
 from ros2cli.node.strategy import add_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_absolute_node_name
+from ros2node.api import get_node_names
 from ros2node.api import NodeNameCompleter
-from ros2node.api import wait_for_node
-
 from ros2param.api import call_set_parameters
+from ros2param.api import get_parameter_value
 from ros2param.api import ParameterNameCompleter
 from ros2param.verb import VerbExtension
 
@@ -45,19 +44,19 @@ class SetVerb(VerbExtension):
         arg.completer = ParameterNameCompleter()
         parser.add_argument(
             'value', help='Value of the parameter')
-        parser.add_argument(
-            '--timeout', metavar='N', type=int, default=1,
-            help='Wait for N seconds until node becomes available (default %(default)s sec)')
 
     def main(self, *, args):  # noqa: D102
-        node_name = get_absolute_node_name(args.node_name)
         with NodeStrategy(args) as node:
-            if not wait_for_node(node, node_name, args.include_hidden_nodes, args.timeout):
-                return 'Node not found'
+            node_names = get_node_names(
+                node=node, include_hidden_nodes=args.include_hidden_nodes)
+
+        node_name = get_absolute_node_name(args.node_name)
+        if node_name not in {n.full_name for n in node_names}:
+            return 'Node not found'
 
         with DirectNode(args) as node:
             parameter = Parameter()
-            parameter.name = args.parameter_name
+            Parameter.name = args.parameter_name
             parameter.value = get_parameter_value(string_value=args.value)
 
             response = call_set_parameters(

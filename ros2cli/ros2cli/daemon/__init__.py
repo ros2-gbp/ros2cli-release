@@ -75,8 +75,7 @@ def serve(server, *, timeout=2 * 60 * 60):
         ros_domain_id = get_ros_domain_id()
         node_args = argparse.Namespace(
             node_name_suffix=f'_daemon_{ros_domain_id}_{uuid.uuid4().hex}',
-            start_parameter_services=False,
-            start_type_description_service=False)
+            start_parameter_services=False)
         with NetworkAwareNode(node_args) as node:
             functions = [
                 node.get_name,
@@ -95,9 +94,7 @@ def serve(server, *, timeout=2 * 60 * 60):
                 bind(rclpy.action.get_action_server_names_and_types_by_node, node),
                 bind(rclpy.action.get_action_client_names_and_types_by_node, node),
                 node.count_publishers,
-                node.count_subscribers,
-                node.count_clients,
-                node.count_services
+                node.count_subscribers
             ]
 
             server.register_introspection_functions()
