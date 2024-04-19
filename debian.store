@@ -1,1 +1,1 @@
-{"base": "37466d48a", "parent": "debian/rolling/ros2cli", "previous": "3db3f9cea", "trim": "", "trimbase": ""}
+{"base": "eb1e41f30", "parent": "debian/jazzy/ros2cli", "previous": "32d295750", "trim": "", "trimbase": ""}
