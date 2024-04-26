@@ -2,28 +2,50 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.6 (2024-04-19)
+0.33.0 (2024-04-26)
 -------------------
-* ros2 param dump should handle empty list as exception. (`#882 <https://github.com/ros2/ros2cli/issues/882>`_)
+
+0.32.0 (2024-04-16)
+-------------------
+
+0.31.2 (2024-03-27)
+-------------------
+* ros2 param dump should handle empty list as exception. (`#881 <https://github.com/ros2/ros2cli/issues/881>`_)
 * Contributors: Tomoya Fujita
 
-0.25.5 (2024-02-07)
+0.31.1 (2024-02-07)
 -------------------
 
-0.25.4 (2023-11-17)
+0.31.0 (2024-01-24)
 -------------------
 
-0.25.3 (2023-09-08)
+0.30.1 (2023-12-26)
 -------------------
-* Fix tests with get_type_description service and param present (`#839 <https://github.com/ros2/ros2cli/issues/839>`_)
-* Contributors: Emerson Knapp
 
-0.25.2 (2023-07-14)
+0.30.0 (2023-11-06)
 -------------------
-* Update ros2 param dump dosctring. (`#841 <https://github.com/ros2/ros2cli/issues/841>`_)
-* Contributors: Murilo M Marinho
+* Warning: get_parameter_value() is deprecated. (`#866 <https://github.com/ros2/ros2cli/issues/866>`_)
+* Contributors: Tomoya Fujita
 
-0.25.1 (2023-05-11)
+0.29.1 (2023-10-04)
+-------------------
+
+0.29.0 (2023-08-21)
+-------------------
+
+0.28.0 (2023-07-11)
+-------------------
+* Fix tests with get_type_description service and param present (`#838 <https://github.com/ros2/ros2cli/issues/838>`_)
+* Update ros2 param dump dosctring. (`#837 <https://github.com/ros2/ros2cli/issues/837>`_)
+* Contributors: Emerson Knapp, Murilo M Marinho
+
+0.27.0 (2023-06-07)
+-------------------
+
+0.26.1 (2023-05-11)
+-------------------
+
+0.26.0 (2023-04-28)
 -------------------
 
 0.25.0 (2023-04-18)
