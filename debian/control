@@ -1,0 +1,12 @@
+Source: ros-jazzy-ros2doctor
+Section: misc
+Priority: optional
+Maintainer: Audrow Nash <audrow@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), libstd-msgs-dev <!nocheck>, python3-ament-copyright <!nocheck>, python3-ament-flake8 <!nocheck>, python3-ament-pep257 <!nocheck>, python3-ament-xmllint <!nocheck>, python3-pytest <!nocheck>, python3-pytest-timeout <!nocheck>, python3-std-msgs <!nocheck>, ros-jazzy-launch <!nocheck>, ros-jazzy-launch-ros <!nocheck>, ros-jazzy-launch-testing <!nocheck>, ros-jazzy-launch-testing-ros <!nocheck>, ros-std-msgs <!nocheck>, ros-jazzy-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-jazzy-ros2doctor
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, libstd-msgs-dev, python3-ament-index, python3-catkin-pkg, python3-importlib-metadata, python3-psutil, python3-rosdistro, python3-std-msgs, ros-environment, ros-jazzy-rclpy, ros-jazzy-ros2cli, ros-std-msgs, ros-jazzy-ros-workspace
+Description: A command line tool to check potential issues in a ROS 2 system
