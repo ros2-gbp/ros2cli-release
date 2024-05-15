@@ -13,22 +13,16 @@
 # limitations under the License.
 
 from ros2multicast.api import receive
-from ros2multicast.verb import add_group_argument
-from ros2multicast.verb import add_port_argument
 from ros2multicast.verb import VerbExtension
 
 
 class ReceiveVerb(VerbExtension):
     """Receive a single UDP multicast packet."""
 
-    def add_arguments(self, parser, cli_name):
-        add_group_argument(parser)
-        add_port_argument(parser)
-
     def main(self, *, args):
         print('Waiting for UDP multicast datagram...')
         try:
-            data, (host, port) = receive(group=args.group, port=args.port)
+            data, (host, port) = receive()
         except KeyboardInterrupt:
             pass
         else:
