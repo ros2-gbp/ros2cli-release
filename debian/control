@@ -1,0 +1,12 @@
+Source: ros-iron-ros2service
+Section: misc
+Priority: optional
+Maintainer: Audrow Nash <audrow@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest <!nocheck>, python3-pytest-timeout <!nocheck>, ros-iron-ament-copyright <!nocheck>, ros-iron-ament-flake8 <!nocheck>, ros-iron-ament-pep257 <!nocheck>, ros-iron-ament-xmllint <!nocheck>, ros-iron-launch <!nocheck>, ros-iron-launch-ros <!nocheck>, ros-iron-launch-testing <!nocheck>, ros-iron-launch-testing-ros <!nocheck>, ros-iron-test-msgs <!nocheck>, ros-iron-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-iron-ros2service
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-yaml, ros-iron-rclpy, ros-iron-ros2cli, ros-iron-rosidl-runtime-py, ros-iron-ros-workspace
+Description: The service command for ROS 2 command line tools.
