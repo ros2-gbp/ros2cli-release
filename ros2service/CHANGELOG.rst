@@ -2,54 +2,27 @@
 Changelog for package ros2service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.34.0 (2024-06-17)
+0.25.7 (2024-07-11)
 -------------------
 
-0.33.0 (2024-04-26)
+0.25.6 (2024-04-19)
 -------------------
 
-0.32.0 (2024-04-16)
+0.25.5 (2024-02-07)
 -------------------
 
-0.31.2 (2024-03-27)
+0.25.4 (2023-11-17)
 -------------------
 
-0.31.1 (2024-02-07)
+0.25.3 (2023-09-08)
 -------------------
-
-0.31.0 (2024-01-24)
--------------------
-
-0.30.1 (2023-12-26)
--------------------
-
-0.30.0 (2023-11-06)
--------------------
-* Add ros2 service info (`#771 <https://github.com/ros2/ros2cli/issues/771>`_)
-* Contributors: Minju, Lee
-
-0.29.1 (2023-10-04)
--------------------
-
-0.29.0 (2023-08-21)
--------------------
-* Load a message/request/goal from standard input (`#844 <https://github.com/ros2/ros2cli/issues/844>`_)
-* Contributors: ymd-stella
-
-0.28.0 (2023-07-11)
--------------------
-* Fix tests with get_type_description service and param present (`#838 <https://github.com/ros2/ros2cli/issues/838>`_)
+* Fix tests with get_type_description service and param present (`#839 <https://github.com/ros2/ros2cli/issues/839>`_)
 * Contributors: Emerson Knapp
 
-0.27.0 (2023-06-07)
--------------------
-* [service introspection] ros2 service echo (`#745 <https://github.com/ros2/ros2cli/issues/745>`_)
-* Contributors: Brian
-
-0.26.1 (2023-05-11)
+0.25.2 (2023-07-14)
 -------------------
 
-0.26.0 (2023-04-28)
+0.25.1 (2023-05-11)
 -------------------
 
 0.25.0 (2023-04-18)

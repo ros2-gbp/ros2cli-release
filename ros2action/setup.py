@@ -5,7 +5,7 @@ package_name = 'ros2action'
 
 setup(
     name=package_name,
-    version='0.34.0',
+    version='0.25.7',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -40,10 +40,10 @@ The package provides the action command for the ROS 2 command line tools.""",
             'ros2action.verb = ros2action.verb:VerbExtension',
         ],
         'ros2action.verb': [
+            # 'echo = ros2action.verb.echo:EchoVerb',
             'info = ros2action.verb.info:InfoVerb',
             'list = ros2action.verb.list:ListVerb',
             'send_goal = ros2action.verb.send_goal:SendGoalVerb',
-            'type = ros2action.verb.type:TypeVerb',
         ],
     }
 )
