@@ -2,6 +2,11 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.7 (2024-07-11)
+-------------------
+* ros2cli.node.daemon : try getting fdsize from /proc for open fd limit (`#907 <https://github.com/ros2/ros2cli/issues/907>`_)
+* Contributors: akssri-sony
+
 0.25.6 (2024-04-19)
 -------------------
 
