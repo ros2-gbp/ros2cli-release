@@ -2,65 +2,30 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.7 (2024-07-11)
+0.18.11 (2024-07-26)
+--------------------
+
+0.18.10 (2024-05-15)
+--------------------
+
+0.18.9 (2024-02-16)
 -------------------
 
-0.25.6 (2024-04-19)
--------------------
-* ros2 param dump should handle empty list as exception. (`#882 <https://github.com/ros2/ros2cli/issues/882>`_)
-* Contributors: Tomoya Fujita
-
-0.25.5 (2024-02-07)
+0.18.8 (2024-01-24)
 -------------------
 
-0.25.4 (2023-11-17)
+0.18.7 (2023-07-18)
+-------------------
+* Update ros2 param dump dosctring. (`#837 <https://github.com/ros2/ros2cli/issues/837>`_) (`#840 <https://github.com/ros2/ros2cli/issues/840>`_)
+* Contributors: mergify[bot]
+
+0.18.6 (2023-04-25)
 -------------------
 
-0.25.3 (2023-09-08)
--------------------
-* Fix tests with get_type_description service and param present (`#839 <https://github.com/ros2/ros2cli/issues/839>`_)
-* Contributors: Emerson Knapp
-
-0.25.2 (2023-07-14)
--------------------
-* Update ros2 param dump dosctring. (`#841 <https://github.com/ros2/ros2cli/issues/841>`_)
-* Contributors: Murilo M Marinho
-
-0.25.1 (2023-05-11)
+0.18.5 (2023-01-10)
 -------------------
 
-0.25.0 (2023-04-18)
--------------------
-* remove deprecated options (`#824 <https://github.com/ros2/ros2cli/issues/824>`_)
-* Make all of the dependencies in pure Python packages exec_depend. (`#823 <https://github.com/ros2/ros2cli/issues/823>`_)
-* Contributors: Chris Lalancette, Tomoya Fujita
-
-0.24.1 (2023-04-12)
--------------------
-
-0.24.0 (2023-04-11)
--------------------
-
-0.23.0 (2023-03-02)
--------------------
-* add timeout option for ros2param to find node. (`#802 <https://github.com/ros2/ros2cli/issues/802>`_)
-* Contributors: Tomoya Fujita
-
-0.22.0 (2023-02-14)
--------------------
-* Fix printing of integer and double arrays. (`#804 <https://github.com/ros2/ros2cli/issues/804>`_)
-* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
-* Contributors: Audrow Nash, Chris Lalancette
-
-0.21.0 (2022-11-02)
--------------------
-
-0.20.0 (2022-09-13)
--------------------
-* refactor: make ros2param use rclpy.parameter_client (`#716 <https://github.com/ros2/ros2cli/issues/716>`_)
-* Contributors: Brian
-
-0.19.0 (2022-04-29)
+0.18.4 (2022-11-07)
 -------------------
 
 0.18.3 (2022-04-08)

@@ -2,73 +2,43 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.25.7 (2024-07-11)
--------------------
-* ros2cli.node.daemon : try getting fdsize from /proc for open fd limit (`#907 <https://github.com/ros2/ros2cli/issues/907>`_)
-* Contributors: akssri-sony
+0.18.11 (2024-07-26)
+--------------------
+* Update daemon.py for Python 3.8 compatibility (`#912 <https://github.com/ros2/ros2cli/issues/912>`_)
+* ros2cli.node.daemon : try getting fdsize from /proc for open fd limit (`#888 <https://github.com/ros2/ros2cli/issues/888>`_) (`#908 <https://github.com/ros2/ros2cli/issues/908>`_)
+* Contributors: AhmedMoaz, mergify[bot]
 
-0.25.6 (2024-04-19)
--------------------
+0.18.10 (2024-05-15)
+--------------------
 
-0.25.5 (2024-02-07)
--------------------
-* Make handles not inheritable to prevent from blocking durning tab-completion (`#872 <https://github.com/ros2/ros2cli/issues/872>`_)
-* Contributors: Chen Lihui, Chris Lalancette
-
-0.25.4 (2023-11-17)
--------------------
-* Catch ExternalShutdownException ros2cli main. (`#858 <https://github.com/ros2/ros2cli/issues/858>`_)
-* Contributors: Tomoya Fujita
-
-0.25.3 (2023-09-08)
--------------------
-* Fix tests with get_type_description service and param present (`#839 <https://github.com/ros2/ros2cli/issues/839>`_)
-* Contributors: Emerson Knapp
-
-0.25.2 (2023-07-14)
--------------------
-* Add marshalling functions for rclpy.type_hash.TypeHash (`#835 <https://github.com/ros2/ros2cli/issues/835>`_)
-* Contributors: Hans-Joachim Krauch
-
-0.25.1 (2023-05-11)
+0.18.9 (2024-02-16)
 -------------------
 
-0.25.0 (2023-04-18)
+0.18.8 (2024-01-24)
 -------------------
+* make handles not inheritable to prevent from blocking durning tab-completion (`#852 <https://github.com/ros2/ros2cli/issues/852>`_) (`#873 <https://github.com/ros2/ros2cli/issues/873>`_)
+* catch ExternalShutdownException ros2cli main. (`#854 <https://github.com/ros2/ros2cli/issues/854>`_) (`#859 <https://github.com/ros2/ros2cli/issues/859>`_)
+* Contributors: mergify[bot]
 
-0.24.1 (2023-04-12)
+0.18.7 (2023-07-18)
 -------------------
+* Set automatically_declare_parameters_from_overrides in DirectNode. (`#813 <https://github.com/ros2/ros2cli/issues/813>`_) (`#815 <https://github.com/ros2/ros2cli/issues/815>`_)
+* Contributors: mergify[bot]
 
-0.24.0 (2023-04-11)
+0.18.6 (2023-04-25)
 -------------------
-* Set automatically_declare_parameters_from_overrides in DirectNode. (`#813 <https://github.com/ros2/ros2cli/issues/813>`_)
-* Enable document generation using rosdoc2 (`#811 <https://github.com/ros2/ros2cli/issues/811>`_)
-* Contributors: Chris Lalancette, Yadu
+* Save method list via connection check to XMLRPC server. (`#796 <https://github.com/ros2/ros2cli/issues/796>`_) (`#798 <https://github.com/ros2/ros2cli/issues/798>`_)
+* Contributors: mergify[bot]
 
-0.23.0 (2023-03-02)
+0.18.5 (2023-01-10)
 -------------------
-* Fix linters (`#808 <https://github.com/ros2/ros2cli/issues/808>`_)
-* add timeout option for ros2param to find node. (`#802 <https://github.com/ros2/ros2cli/issues/802>`_)
-* Contributors: Cristóbal Arroyo, Tomoya Fujita
+* Fix network aware node issue (`#785 <https://github.com/ros2/ros2cli/issues/785>`_) (`#786 <https://github.com/ros2/ros2cli/issues/786>`_)
+* Contributors: mergify[bot]
 
-0.22.0 (2023-02-14)
+0.18.4 (2022-11-07)
 -------------------
-* Save method list via connection check to XMLRPC server. (`#796 <https://github.com/ros2/ros2cli/issues/796>`_)
-* ZSH argcomplete: call compinit only if needed (`#750 <https://github.com/ros2/ros2cli/issues/750>`_)
-* Fix network aware node issue (`#785 <https://github.com/ros2/ros2cli/issues/785>`_)
-* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
-* Contributors: Audrow Nash, Ivan Santiago Paunovic, Tomoya Fujita, mjbogusz
-
-0.21.0 (2022-11-02)
--------------------
-
-0.20.0 (2022-09-13)
--------------------
-* XMLRPC server accepts request from all local IP addresses. (`#729 <https://github.com/ros2/ros2cli/issues/729>`_)
-* Contributors: Tomoya Fujita
-
-0.19.0 (2022-04-29)
--------------------
+* XMLRPC server accepts request from all local IP addresses. (`#729 <https://github.com/ros2/ros2cli/issues/729>`_) (`#733 <https://github.com/ros2/ros2cli/issues/733>`_)
+* Contributors: mergify[bot]
 
 0.18.3 (2022-04-08)
 -------------------
