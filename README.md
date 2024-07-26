@@ -1,3 +1,41 @@
+## ros2cli (humble) - 0.18.11-1
+
+The packages in the `ros2cli` repository were released into the `humble` distro by running `/usr/bin/bloom-release -r humble -y ros2cli` on `Fri, 26 Jul 2024 15:22:59 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2cli_test_interfaces`
+- `ros2component`
+- `ros2doctor`
+- `ros2interface`
+- `ros2lifecycle`
+- `ros2lifecycle_test_fixtures`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.18.10-1`
+- old version: `0.18.10-1`
+- new version: `0.18.11-1`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.24.0`
+- rosdistro version: `0.9.1`
+- vcstools version: `0.1.42`
+
+
 ## ros2cli (iron) - 0.25.7-1
 
 The packages in the `ros2cli` repository were released into the `iron` distro by running `/usr/bin/bloom-release --rosdistro iron ros2cli` on `Thu, 11 Jul 2024 06:35:02 -0000`
