@@ -2,6 +2,11 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.35.0 (2024-10-03)
+-------------------
+* node name print bug fix with ros2 action info. (`#926 <https://github.com/ros2/ros2cli/issues/926>`_)
+* Contributors: Tomoya Fujita
+
 0.34.1 (2024-07-29)
 -------------------
 * Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
