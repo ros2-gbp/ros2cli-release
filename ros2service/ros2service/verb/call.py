@@ -16,7 +16,6 @@ import importlib
 import time
 
 import rclpy
-from ros2cli.helpers import collect_stdin
 from ros2cli.node import NODE_NAME_PREFIX
 from ros2service.api import ServiceNameCompleter
 from ros2service.api import ServicePrototypeCompleter
@@ -40,17 +39,13 @@ class CallVerb(VerbExtension):
             help="Type of the ROS service (e.g. 'std_srvs/srv/Empty')")
         arg.completer = ServiceTypeCompleter(
             service_name_key='service_name')
-        group = parser.add_mutually_exclusive_group()
-        arg = group.add_argument(
+        arg = parser.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the service request with in YAML format ' +
                  "(e.g. '{a: 1, b: 2}'), " +
                  'otherwise the service request will be published with default values')
         arg.completer = ServicePrototypeCompleter(
             service_type_key='service_type')
-        group.add_argument(
-            '--stdin', action='store_true',
-            help='Read values from standard input')
         parser.add_argument(
             '-r', '--rate', metavar='N', type=float,
             help='Repeat the call at a specific rate in Hz')
@@ -60,13 +55,8 @@ class CallVerb(VerbExtension):
             raise RuntimeError('rate must be greater than zero')
         period = 1. / args.rate if args.rate else None
 
-        if args.stdin:
-            values = collect_stdin()
-        else:
-            values = args.values
-
         return requester(
-            args.service_type, args.service_name, values, period)
+            args.service_type, args.service_name, args.values, period)
 
 
 def requester(service_type, service_name, values, period):
@@ -89,33 +79,37 @@ def requester(service_type, service_name, values, period):
 
     values_dictionary = yaml.safe_load(values)
 
-    with rclpy.init():
-        node = rclpy.create_node(NODE_NAME_PREFIX + '_requester_%s_%s' % (package_name, srv_name))
+    rclpy.init()
 
-        cli = node.create_client(srv_module, service_name)
+    node = rclpy.create_node(NODE_NAME_PREFIX + '_requester_%s_%s' % (package_name, srv_name))
 
-        request = srv_module.Request()
+    cli = node.create_client(srv_module, service_name)
 
-        try:
-            set_message_fields(request, values_dictionary)
-        except Exception as e:
-            return 'Failed to populate field: {0}'.format(e)
+    request = srv_module.Request()
 
-        if not cli.service_is_ready():
-            print('waiting for service to become available...')
-            cli.wait_for_service()
+    try:
+        set_message_fields(request, values_dictionary)
+    except Exception as e:
+        return 'Failed to populate field: {0}'.format(e)
 
-        while True:
-            print('requester: making request: %r\n' % request)
-            last_call = time.time()
-            future = cli.call_async(request)
-            rclpy.spin_until_future_complete(node, future)
-            if future.result() is not None:
-                print('response:\n%r\n' % future.result())
-            else:
-                raise RuntimeError('Exception while calling service: %r' % future.exception())
-            if period is None or not rclpy.ok():
-                break
-            time_until_next_period = (last_call + period) - time.time()
-            if time_until_next_period > 0:
-                time.sleep(time_until_next_period)
+    if not cli.service_is_ready():
+        print('waiting for service to become available...')
+        cli.wait_for_service()
+
+    while True:
+        print('requester: making request: %r\n' % request)
+        last_call = time.time()
+        future = cli.call_async(request)
+        rclpy.spin_until_future_complete(node, future)
+        if future.result() is not None:
+            print('response:\n%r\n' % future.result())
+        else:
+            raise RuntimeError('Exception while calling service: %r' % future.exception())
+        if period is None or not rclpy.ok():
+            break
+        time_until_next_period = (last_call + period) - time.time()
+        if time_until_next_period > 0:
+            time.sleep(time_until_next_period)
+
+    node.destroy_node()
+    rclpy.shutdown()
