@@ -24,6 +24,7 @@ from rclpy.qos import QoSPresetProfiles
 from rclpy.qos import QoSProfile
 from rclpy.qos import QoSReliabilityPolicy
 from rclpy.task import Future
+from ros2cli.helpers import unsigned_int
 from ros2cli.node.strategy import add_arguments as add_strategy_node_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2topic.api import add_qos_arguments
@@ -31,7 +32,6 @@ from ros2topic.api import get_msg_class
 from ros2topic.api import positive_float
 from ros2topic.api import qos_profile_from_short_keys
 from ros2topic.api import TopicNameCompleter
-from ros2topic.api import unsigned_int
 from ros2topic.verb import VerbExtension
 from rosidl_runtime_py import message_to_csv
 from rosidl_runtime_py import message_to_yaml
@@ -107,6 +107,12 @@ class EchoVerb(VerbExtension):
         parser.add_argument(
             '--include-message-info', '-i', action='store_true',
             help='Shows the associated message info.')
+        parser.add_argument(
+            '--clear', '-c', action='store_true',
+            help='Clear screen before printing next message')
+        parser.add_argument(
+            '-n', '--node-name', type=str, default=None,
+            help='The name of the echoing node; by default, will be a hidden node name')
 
     def choose_qos(self, node, args):
 
@@ -185,6 +191,7 @@ class EchoVerb(VerbExtension):
         self.no_str = args.no_str
         self.flow_style = args.flow_style
         self.once = args.once
+        self.clear_screen = args.clear
 
         self.filter_fn = None
         if args.filter_expr:
@@ -196,7 +203,7 @@ class EchoVerb(VerbExtension):
 
         self.include_message_info = args.include_message_info
 
-        with NodeStrategy(args) as node:
+        with NodeStrategy(args, node_name=args.node_name) as node:
 
             qos_profile = self.choose_qos(node, args)
 
@@ -280,6 +287,10 @@ class EchoVerb(VerbExtension):
         if self.future is not None and self.once:
             self.future.set_result(True)
 
+        # Clear terminal screen before print
+        if self.clear_screen:
+            clear_terminal()
+
         if not hasattr(submsg, '__slots__'):
             # raw
             if self.include_message_info:
@@ -322,3 +333,7 @@ def _message_lost_event_callback(message_lost_status):
         f'\n\ttotal count: {message_lost_status.total_count}',
         end='---\n'
     )
+
+
+def clear_terminal():
+    print('\x1b[H\x1b[2J')
