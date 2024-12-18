@@ -89,33 +89,37 @@ def requester(service_type, service_name, values, period):
 
     values_dictionary = yaml.safe_load(values)
 
-    with rclpy.init():
-        node = rclpy.create_node(NODE_NAME_PREFIX + '_requester_%s_%s' % (package_name, srv_name))
+    rclpy.init()
 
-        cli = node.create_client(srv_module, service_name)
+    node = rclpy.create_node(NODE_NAME_PREFIX + '_requester_%s_%s' % (package_name, srv_name))
 
-        request = srv_module.Request()
+    cli = node.create_client(srv_module, service_name)
 
-        try:
-            set_message_fields(request, values_dictionary)
-        except Exception as e:
-            return 'Failed to populate field: {0}'.format(e)
+    request = srv_module.Request()
 
-        if not cli.service_is_ready():
-            print('waiting for service to become available...')
-            cli.wait_for_service()
+    try:
+        set_message_fields(request, values_dictionary)
+    except Exception as e:
+        return 'Failed to populate field: {0}'.format(e)
 
-        while True:
-            print('requester: making request: %r\n' % request)
-            last_call = time.time()
-            future = cli.call_async(request)
-            rclpy.spin_until_future_complete(node, future)
-            if future.result() is not None:
-                print('response:\n%r\n' % future.result())
-            else:
-                raise RuntimeError('Exception while calling service: %r' % future.exception())
-            if period is None or not rclpy.ok():
-                break
-            time_until_next_period = (last_call + period) - time.time()
-            if time_until_next_period > 0:
-                time.sleep(time_until_next_period)
+    if not cli.service_is_ready():
+        print('waiting for service to become available...')
+        cli.wait_for_service()
+
+    while True:
+        print('requester: making request: %r\n' % request)
+        last_call = time.time()
+        future = cli.call_async(request)
+        rclpy.spin_until_future_complete(node, future)
+        if future.result() is not None:
+            print('response:\n%r\n' % future.result())
+        else:
+            raise RuntimeError('Exception while calling service: %r' % future.exception())
+        if period is None or not rclpy.ok():
+            break
+        time_until_next_period = (last_call + period) - time.time()
+        if time_until_next_period > 0:
+            time.sleep(time_until_next_period)
+
+    node.destroy_node()
+    rclpy.shutdown()

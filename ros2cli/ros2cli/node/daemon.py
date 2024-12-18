@@ -46,7 +46,7 @@ class DaemonNode:
                 for method in self._proxy.system.listMethods()
                 if not method.startswith('system.')
             ]
-        except (ConnectionRefusedError, ConnectionResetError):
+        except ConnectionRefusedError:
             return False
         return True
 
@@ -145,7 +145,7 @@ def spawn_daemon(args, timeout=None, debug=False):
             with open('/proc/self/status', 'r') as f:
                 for line in f:
                     if line.startswith(string_to_find):
-                        fdlimit = int(line.removeprefix(string_to_find).strip())
+                        fdlimit = int(line[len(string_to_find):].strip())
                         break
         except (FileNotFoundError, ValueError):
             pass
@@ -168,7 +168,7 @@ def spawn_daemon(args, timeout=None, debug=False):
             'rmw_implementation': rclpy.get_rmw_implementation_identifier()}
 
         daemonize(
-            functools.partial(daemon.serve_and_close, server),
+            functools.partial(daemon.serve, server),
             tags=tags, timeout=timeout, debug=debug)
     finally:
         server.server_close()

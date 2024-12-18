@@ -2,27 +2,15 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.36.0 (2024-11-20)
+0.32.2 (2024-12-18)
 -------------------
 
-0.35.0 (2024-10-03)
+0.32.1 (2024-05-13)
 -------------------
-* node name print bug fix with ros2 action info. (`#926 <https://github.com/ros2/ros2cli/issues/926>`_)
-* Contributors: Tomoya Fujita
-
-0.34.1 (2024-07-29)
--------------------
-* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
-* support 'ros2 action find'. (`#917 <https://github.com/ros2/ros2cli/issues/917>`_)
-* Contributors: Chris Lalancette, Tomoya Fujita
-
-0.34.0 (2024-06-17)
--------------------
-
-0.33.0 (2024-04-26)
--------------------
-* call get_action_interfaces() properly. (`#898 <https://github.com/ros2/ros2cli/issues/898>`_)
-* Contributors: Tomoya Fujita
+* call get_action_interfaces() properly. (`#898 <https://github.com/ros2/ros2cli/issues/898>`_) (`#900 <https://github.com/ros2/ros2cli/issues/900>`_)
+  (cherry picked from commit 305ef763b83e42ebddc4802ac788869d178b6e93)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
 
 0.32.0 (2024-04-16)
 -------------------
