@@ -2,10 +2,30 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.2 (2024-12-18)
+0.36.1 (2024-12-20)
 -------------------
 
-0.32.1 (2024-05-13)
+0.36.0 (2024-11-20)
+-------------------
+* NodeStrategy supports node name argument. (`#941 <https://github.com/ros2/ros2cli/issues/941>`_)
+* feat(echo --clear): add --clear option to echo (`#819 <https://github.com/ros2/ros2cli/issues/819>`_)
+* Contributors: Guillaume Beuzeboc, Tomoya Fujita
+
+0.35.0 (2024-10-03)
+-------------------
+* Support multiple topics via ros2 topic hz. (`#929 <https://github.com/ros2/ros2cli/issues/929>`_)
+* Remove TODO for OpenSplice DDS issue. (`#928 <https://github.com/ros2/ros2cli/issues/928>`_)
+* Contributors: Tomoya Fujita
+
+0.34.1 (2024-07-29)
+-------------------
+* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
+* Contributors: Chris Lalancette
+
+0.34.0 (2024-06-17)
+-------------------
+
+0.33.0 (2024-04-26)
 -------------------
 
 0.32.0 (2024-04-16)
