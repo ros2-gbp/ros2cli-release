@@ -2,6 +2,12 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.37.0 (2025-02-02)
+-------------------
+* Maintaining consistency of automatically putting time stamps in the service and action calls similiar to publishing in rostopics. (`#961 <https://github.com/ros2/ros2cli/issues/961>`_)
+* ros2action: add SIGINT handler to manage cancel request. (`#956 <https://github.com/ros2/ros2cli/issues/956>`_)
+* Contributors: Sukhvansh Jain, Tomoya Fujita
+
 0.36.1 (2024-12-20)
 -------------------
 
