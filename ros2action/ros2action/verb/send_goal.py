@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import signal
+
 from action_msgs.msg import GoalStatus
 import rclpy
 from rclpy.action import ActionClient
@@ -107,19 +109,51 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
 
         goal = action_module.Goal()
 
+        timestamp_fields = []
         try:
-            set_message_fields(goal, goal_dict)
+            timestamp_fields = set_message_fields(
+                goal, goal_dict, expand_header_auto=True, expand_time_now=True)
         except Exception as ex:
             return 'Failed to populate message fields: {!r}'.format(ex)
 
         print('Waiting for an action server to become available...')
         action_client.wait_for_server()
 
+        stamp_now = node.get_clock().now().to_msg()
+        for field_setter in timestamp_fields:
+            field_setter(stamp_now)
+
         print('Sending goal:\n     {}'.format(message_to_yaml(goal)))
         goal_future = action_client.send_goal_async(goal, feedback_callback)
         rclpy.spin_until_future_complete(node, goal_future)
 
         goal_handle = goal_future.result()
+
+        # install signal handler to cancel the goal on SIGINT
+        def _sigint_cancel_handler(sig, frame):
+            nonlocal goal_handle
+            # Cancel the goal if it's still active
+            if (goal_handle is not None and
+                (GoalStatus.STATUS_ACCEPTED == goal_handle.status or
+                 GoalStatus.STATUS_EXECUTING == goal_handle.status)):
+                print('Canceling goal...')
+                cancel_future = goal_handle.cancel_goal_async()
+                rclpy.spin_until_future_complete(node, cancel_future)
+
+                cancel_response = cancel_future.result()
+
+                if cancel_response is None:
+                    raise RuntimeError(
+                        'Exception while canceling goal: {!r}'.format(cancel_future.exception()))
+
+                if len(cancel_response.goals_canceling) == 0:
+                    raise RuntimeError('Failed to cancel goal')
+                if len(cancel_response.goals_canceling) > 1:
+                    raise RuntimeError('More than one goal canceled')
+                if cancel_response.goals_canceling[0].goal_id != goal_handle.goal_id:
+                    raise RuntimeError('Canceled goal with incorrect goal ID')
+                print('Goal canceled.')
+        signal.signal(signal.SIGINT, _sigint_cancel_handler)
 
         if goal_handle is None:
             raise RuntimeError(
@@ -147,29 +181,8 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
 
         print('Result:\n    {}'.format(message_to_yaml(result.result)))
         print('Goal finished with status: {}'.format(_goal_status_to_string(result.status)))
+
     finally:
-        # Cancel the goal if it's still active
-        if (goal_handle is not None and
-            (GoalStatus.STATUS_ACCEPTED == goal_handle.status or
-             GoalStatus.STATUS_EXECUTING == goal_handle.status)):
-            print('Canceling goal...')
-            cancel_future = goal_handle.cancel_goal_async()
-            rclpy.spin_until_future_complete(node, cancel_future)
-
-            cancel_response = cancel_future.result()
-
-            if cancel_response is None:
-                raise RuntimeError(
-                    'Exception while canceling goal: {!r}'.format(cancel_future.exception()))
-
-            if len(cancel_response.goals_canceling) == 0:
-                raise RuntimeError('Failed to cancel goal')
-            if len(cancel_response.goals_canceling) > 1:
-                raise RuntimeError('More than one goal canceled')
-            if cancel_response.goals_canceling[0].goal_id != goal_handle.goal_id:
-                raise RuntimeError('Canceled goal with incorrect goal ID')
-            print('Goal canceled.')
-
         if action_client is not None:
             action_client.destroy()
         if node is not None:
