@@ -2,6 +2,11 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.37.0 (2025-02-02)
+-------------------
+* Add ament_xmllint test by default to ament_python packages. (`#957 <https://github.com/ros2/ros2cli/issues/957>`_)
+* Contributors: Chris Lalancette
+
 0.36.1 (2024-12-20)
 -------------------
 
