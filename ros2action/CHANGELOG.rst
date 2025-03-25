@@ -2,6 +2,12 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.18.12 (2025-03-25)
+--------------------
+* Correct the license content (`#979 <https://github.com/ros2/ros2cli/issues/979>`_) (`#981 <https://github.com/ros2/ros2cli/issues/981>`_)
+* ros2action: add SIGINT handler to manage cancel request. (`#956 <https://github.com/ros2/ros2cli/issues/956>`_) (`#963 <https://github.com/ros2/ros2cli/issues/963>`_)
+* Contributors: mergify[bot]
+
 0.18.11 (2024-07-26)
 --------------------
 

@@ -36,6 +36,8 @@ from ros2param.api import get_parameter_value
         ('1.1234', ParameterType.PARAMETER_DOUBLE, 'double_value', 1.1234),
 
         ('foo', ParameterType.PARAMETER_STRING, 'string_value', 'foo'),
+        (' ', ParameterType.PARAMETER_STRING, 'string_value', ' '),
+        ('', ParameterType.PARAMETER_STRING, 'string_value', ''),
         (
             '[false, true]',
             ParameterType.PARAMETER_BOOL_ARRAY,
