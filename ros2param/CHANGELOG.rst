@@ -2,6 +2,11 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.18.12 (2025-03-25)
+--------------------
+* Allow space or empty strings when using ros2 param set. (`#984 <https://github.com/ros2/ros2cli/issues/984>`_)
+* Contributors: Tomoya Fujita
+
 0.18.11 (2024-07-26)
 --------------------
 
