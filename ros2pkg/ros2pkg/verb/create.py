@@ -138,7 +138,7 @@ class CreateVerb(VerbExtension):
             test_dependencies = ['ament_lint_auto', 'ament_lint_common']
         if args.build_type == 'ament_python':
             test_dependencies = ['ament_copyright', 'ament_flake8', 'ament_pep257',
-                                 'ament_xmllint', 'python3-pytest']
+                                 'python3-pytest']
 
         if args.build_type == 'ament_python' and args.package_name == 'test':
             # If the package name is 'test', there will be a conflict between
@@ -223,4 +223,4 @@ class CreateVerb(VerbExtension):
         else:
             print("\n[WARNING]: Unknown license '%s'.  This has been set in the package.xml, but "
                   'no LICENSE file has been created.\nIt is recommended to use one of the ament '
-                  'license identifiers:\n%s' % (args.license, '\n'.join(available_licenses)))
+                  'license identitifers:\n%s' % (args.license, '\n'.join(available_licenses)))

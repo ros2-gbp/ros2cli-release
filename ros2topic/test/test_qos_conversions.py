@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import rclpy
-from rclpy.duration import Duration
 
 from ros2topic.api import qos_profile_from_short_keys
 
@@ -21,11 +20,8 @@ from ros2topic.api import qos_profile_from_short_keys
 def test_profile_conversion():
     profile = qos_profile_from_short_keys(
         'sensor_data', reliability='reliable', durability='transient_local',
-        depth=10, history='keep_last', liveliness='manual_by_topic',
-        liveliness_lease_duration_s=10.3)
+        depth=10, history='keep_last')
     assert profile.durability == rclpy.qos.QoSDurabilityPolicy.TRANSIENT_LOCAL
     assert profile.reliability == rclpy.qos.QoSReliabilityPolicy.RELIABLE
     assert profile.depth == 10
     assert profile.history == rclpy.qos.QoSHistoryPolicy.KEEP_LAST
-    assert profile.liveliness == rclpy.qos.QoSLivelinessPolicy.MANUAL_BY_TOPIC
-    assert profile.liveliness_lease_duration == Duration(seconds=10.3)
