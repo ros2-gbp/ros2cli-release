@@ -2,6 +2,12 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.18.12 (2025-03-25)
+--------------------
+* Adjust topic hz and bw command description. (`#987 <https://github.com/ros2/ros2cli/issues/987>`_) (`#989 <https://github.com/ros2/ros2cli/issues/989>`_)
+* start the simulation from 1 second for the test. (`#975 <https://github.com/ros2/ros2cli/issues/975>`_) (`#977 <https://github.com/ros2/ros2cli/issues/977>`_)
+* Contributors: mergify[bot]
+
 0.18.11 (2024-07-26)
 --------------------
 

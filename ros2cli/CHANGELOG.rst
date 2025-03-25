@@ -2,6 +2,9 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.18.12 (2025-03-25)
+--------------------
+
 0.18.11 (2024-07-26)
 --------------------
 * Update daemon.py for Python 3.8 compatibility (`#912 <https://github.com/ros2/ros2cli/issues/912>`_)
