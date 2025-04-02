@@ -2,6 +2,16 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.3 (2025-04-02)
+-------------------
+* Correct the license content (`#979 <https://github.com/ros2/ros2cli/issues/979>`_) (`#980 <https://github.com/ros2/ros2cli/issues/980>`_)
+  (cherry picked from commit 1760f4adad4d3b3cb3173ec951c5324def833c16)
+  Co-authored-by: Barry Xu <barry.xu@sony.com>
+* ros2action: add SIGINT handler to manage cancel request. (`#956 <https://github.com/ros2/ros2cli/issues/956>`_) (`#962 <https://github.com/ros2/ros2cli/issues/962>`_)
+  (cherry picked from commit d930a74491b836bea2e6a8223a95259890676adb)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
+
 0.32.2 (2024-12-18)
 -------------------
 
