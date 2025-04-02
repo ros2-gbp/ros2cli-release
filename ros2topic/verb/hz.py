@@ -51,9 +51,16 @@ DEFAULT_WINDOW_SIZE = 10000
 
 
 class HzVerb(VerbExtension):
-    """Print the average publishing rate to screen."""
+    """Print the average receiving rate to screen."""
 
     def add_arguments(self, parser, cli_name):
+        parser.description = (
+            'Print the average receiving rate to screen.\n\n'
+            'note:\n'
+            '  This rate reflects the receiving rate on subscription, '
+            'which might be affected by platform resources and QoS configuration, '
+            "and may not exactly match the publisher's rate."
+        )
         arg = parser.add_argument(
             'topic_name',
             help="Name of the ROS topic to listen to (e.g. '/chatter')")
