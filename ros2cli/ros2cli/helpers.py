@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from argparse import ArgumentTypeError
 import functools
 import inspect
 import os
+import sys
 import time
 
 
@@ -39,9 +41,9 @@ def wait_for(predicate, timeout, period=0.1):
     deadline = time.time() + timeout
     while not predicate():
         if time.time() > deadline:
-            break
+            return predicate()
         time.sleep(period)
-    return predicate()
+    return True
 
 
 def bind(func, *args, **kwargs):
@@ -96,3 +98,23 @@ def before_invocation(func, hook):
             return func(*args, **kwargs)
     wrapper.__signature__ = inspect.signature(func)
     return wrapper
+
+
+def unsigned_int(string):
+    try:
+        value = int(string)
+    except ValueError:
+        value = -1
+    if value < 0:
+        raise ArgumentTypeError('value must be non-negative integer')
+    return value
+
+
+def collect_stdin():
+    lines = b''
+    while True:
+        line = sys.stdin.buffer.readline()
+        if not line:
+            break
+        lines += line
+    return lines

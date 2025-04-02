@@ -66,6 +66,7 @@ INPUT_PARAMETER_FILE = (
     '    - 3\n'
     '    - 3\n'
     '    int_param: -42\n'
+    '    start_type_description_service: true\n'
     '    str_array_param:\n'
     '    - a_foo\n'
     '    - a_bar\n'
@@ -129,7 +130,7 @@ def generate_test_description(rmw_implementation):
     ])
 
 
-class TestVerbDump(unittest.TestCase):
+class TestVerbLoad(unittest.TestCase):
 
     @classmethod
     def setUpClass(
@@ -269,11 +270,23 @@ class TestVerbDump(unittest.TestCase):
             strict=False
         )
 
+    def test_verb_load_timeout(self):
+        with self.launch_param_load_command(
+            arguments=['invalid_node', 'invalid_path', '--timeout', '2']
+        ) as param_load_command:
+            assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
+        assert param_load_command.exit_code != launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=['Node not found'],
+            text=param_load_command.output,
+            strict=False
+        )
+
     def test_verb_load(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             filepath = self._write_param_file(tmpdir, 'params.yaml')
             with self.launch_param_load_command(
-                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', filepath]
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', filepath, '--timeout', '3']
             ) as param_load_command:
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -300,13 +313,12 @@ class TestVerbDump(unittest.TestCase):
             filepath = self._write_param_file(tmpdir, 'params.yaml', INPUT_WILDCARD_PARAMETER_FILE)
             with self.launch_param_load_command(
                 arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', filepath,
-                           '--no-use-wildcard']
+                           '--no-use-wildcard', '--timeout', '3']
             ) as param_load_command:
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code != launch_testing.asserts.EXIT_OK
             assert launch_testing.tools.expect_output(
-                expected_lines=['Param file does not contain parameters for '
-                                f'{TEST_NAMESPACE}/{TEST_NODE}'],
+                expected_lines=['Param file does not contain selected parameters'],
                 text=param_load_command.output,
                 strict=False
             )
