@@ -2,6 +2,19 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.3 (2025-04-02)
+-------------------
+* Adapt tests to Zenoh (backport `#988 <https://github.com/ros2/ros2cli/issues/988>`_) (`#991 <https://github.com/ros2/ros2cli/issues/991>`_)
+  * Adapt tests to Zenoh (`#988 <https://github.com/ros2/ros2cli/issues/988>`_)
+  (cherry picked from commit 31d814d1c9e7cbe1bab9180ffb5f101707e02df4)
+* Adjust topic hz and bw command description. (`#987 <https://github.com/ros2/ros2cli/issues/987>`_) (`#990 <https://github.com/ros2/ros2cli/issues/990>`_)
+  (cherry picked from commit 9a0c044ff08c89795fdfc66feb6cfe5fd3842f3a)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* start the simulation from 1 second for the test. (`#975 <https://github.com/ros2/ros2cli/issues/975>`_) (`#976 <https://github.com/ros2/ros2cli/issues/976>`_)
+  (cherry picked from commit 2c9c1933af37ae8a502a1c3abf2acf4ea810dc9e)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
+
 0.32.2 (2024-12-18)
 -------------------
 
