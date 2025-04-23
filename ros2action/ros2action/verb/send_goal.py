@@ -109,13 +109,19 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
 
         goal = action_module.Goal()
 
+        timestamp_fields = []
         try:
-            set_message_fields(goal, goal_dict)
+            timestamp_fields = set_message_fields(
+                goal, goal_dict, expand_header_auto=True, expand_time_now=True)
         except Exception as ex:
             return 'Failed to populate message fields: {!r}'.format(ex)
 
         print('Waiting for an action server to become available...')
         action_client.wait_for_server()
+
+        stamp_now = node.get_clock().now().to_msg()
+        for field_setter in timestamp_fields:
+            field_setter(stamp_now)
 
         print('Sending goal:\n     {}'.format(message_to_yaml(goal)))
         goal_future = action_client.send_goal_async(goal, feedback_callback)
@@ -175,6 +181,7 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
 
         print('Result:\n    {}'.format(message_to_yaml(result.result)))
         print('Goal finished with status: {}'.format(_goal_status_to_string(result.status)))
+
     finally:
         if action_client is not None:
             action_client.destroy()
