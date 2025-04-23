@@ -1,0 +1,785 @@
+ros-kilted-ros2topic (0.37.0-2noble) noble; urgency=high
+
+  * support multiple fields in ros2topic echo (#964 <https://github.com/ros2/ros2cli/issues/964>)
+  * Contributors: SangtaekLee
+
+ -- Audrow Nash <audrow@openrobotics.org>  Sun, 02 Feb 2025 06:00:00 -0000
+
+ros-kilted-ros2topic (0.36.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 20 Dec 2024 06:00:00 -0000
+
+ros-kilted-ros2topic (0.36.0-2noble) noble; urgency=high
+
+  * NodeStrategy supports node name argument. (#941 <https://github.com/ros2/ros2cli/issues/941>)
+  * feat(echo --clear): add --clear option to echo (#819 <https://github.com/ros2/ros2cli/issues/819>)
+  * Contributors: Guillaume Beuzeboc, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 20 Nov 2024 06:00:00 -0000
+
+ros-kilted-ros2topic (0.35.0-2noble) noble; urgency=high
+
+  * Support multiple topics via ros2 topic hz. (#929 <https://github.com/ros2/ros2cli/issues/929>)
+  * Remove TODO for OpenSplice DDS issue. (#928 <https://github.com/ros2/ros2cli/issues/928>)
+  * Contributors: Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 03 Oct 2024 05:00:00 -0000
+
+ros-kilted-ros2topic (0.34.1-2noble) noble; urgency=high
+
+  * Switch to using rclpy.init context manager. (#918 <https://github.com/ros2/ros2cli/issues/918>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 29 Jul 2024 05:00:00 -0000
+
+ros-kilted-ros2topic (0.34.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 17 Jun 2024 05:00:00 -0000
+
+ros-kilted-ros2topic (0.33.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 26 Apr 2024 05:00:00 -0000
+
+ros-kilted-ros2topic (0.32.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 16 Apr 2024 05:00:00 -0000
+
+ros-kilted-ros2topic (0.31.2-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Mar 2024 05:00:00 -0000
+
+ros-kilted-ros2topic (0.31.1-2noble) noble; urgency=high
+
+  * Remove parentheses from assert statement. (#878 <https://github.com/ros2/ros2cli/issues/878>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Feb 2024 06:00:00 -0000
+
+ros-kilted-ros2topic (0.31.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 24 Jan 2024 06:00:00 -0000
+
+ros-kilted-ros2topic (0.30.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 Dec 2023 06:00:00 -0000
+
+ros-kilted-ros2topic (0.30.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 06 Nov 2023 06:00:00 -0000
+
+ros-kilted-ros2topic (0.29.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 04 Oct 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.29.0-2noble) noble; urgency=high
+
+  * Load a message/request/goal from standard input (#844 <https://github.com/ros2/ros2cli/issues/844>)
+  * Contributors: ymd-stella
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 21 Aug 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.28.0-2noble) noble; urgency=high
+
+  * Add marshalling functions for rclpy.type_hash.TypeHash (rep2011) (#816 <https://github.com/ros2/ros2cli/issues/816>)
+  * Contributors: Hans-Joachim Krauch
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Jul 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.27.0-2noble) noble; urgency=high
+
+  * [service introspection] ros2 service echo (#745 <https://github.com/ros2/ros2cli/issues/745>)
+  * Contributors: Brian
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Jun 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.26.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 11 May 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.26.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 28 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.25.0-2noble) noble; urgency=high
+
+  * remove deprecated options (#824 <https://github.com/ros2/ros2cli/issues/824>)
+  * Make all of the dependencies in pure Python packages exec_depend. (#823 <https://github.com/ros2/ros2cli/issues/823>)
+  * Contributors: Chris Lalancette, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 18 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.24.1-2noble) noble; urgency=high
+
+  * Expect type hash cli output in test (#822 <https://github.com/ros2/ros2cli/issues/822>)
+  * Contributors: Emerson Knapp
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.24.0-2noble) noble; urgency=high
+
+  * Fix the type annotation in pub.py. (#814 <https://github.com/ros2/ros2cli/issues/814>)
+  * Switch to using new event_handler instead of qos_event. (#787 <https://github.com/ros2/ros2cli/issues/787>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2topic (0.23.0-2noble) noble; urgency=high
+
+  * avoid flaky test that subscriber might not receive the message (#810 <https://github.com/ros2/ros2cli/issues/810>)
+  * Adds a --max-wait-time option to ros2 topic pub  (#800 <https://github.com/ros2/ros2cli/issues/800>)
+  * Contributors: Arjo Chakravarty, Chen Lihui
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 02 Mar 2023 06:00:00 -0000
+
+ros-kilted-ros2topic (0.22.0-2noble) noble; urgency=high
+
+  * Fix some flake8 warnings related to style. (#805 <https://github.com/ros2/ros2cli/issues/805>)
+  * Adds a timeout feature to rostopic echo (#792 <https://github.com/ros2/ros2cli/issues/792>)
+  * Refactor common types (#791 <https://github.com/ros2/ros2cli/issues/791>)
+  * Allow configuring liveliness in ros2 topic echo and pub (#788 <https://github.com/ros2/ros2cli/issues/788>)
+  * Extend timeout to shutdown the command line process. (#783 <https://github.com/ros2/ros2cli/issues/783>)
+  * [rolling] Update maintainers - 2022-11-07 (#776 <https://github.com/ros2/ros2cli/issues/776>)
+  * a couple of typo fixes. (#774 <https://github.com/ros2/ros2cli/issues/774>)
+  * Contributors: Arjo Chakravarty, Audrow Nash, Chris Lalancette, Ivan Santiago Paunovic, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 14 Feb 2023 06:00:00 -0000
+
+ros-kilted-ros2topic (0.21.0-2noble) noble; urgency=high
+
+  * Add support use_sim_time for ros2 topic hz/bw/pub. (#754 <https://github.com/ros2/ros2cli/issues/754>)
+  * Use set_message_fields from rosidl_runtime_py (#761 <https://github.com/ros2/ros2cli/issues/761>)
+  * Contributors: Esteve Fernandez, Lei Liu
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 02 Nov 2022 05:00:00 -0000
+
+ros-kilted-ros2topic (0.20.0-2noble) noble; urgency=high
+
+  * Expand auto to the current time when passed to a Header field (#749 <https://github.com/ros2/ros2cli/issues/749>)
+  * Add verbose option to echo that also prints the associated message info (#707 <https://github.com/ros2/ros2cli/issues/707>)
+  * Contributors: Esteve Fernandez, Ivan Santiago Paunovic
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 13 Sep 2022 05:00:00 -0000
+
+ros-kilted-ros2topic (0.19.0-2noble) noble; urgency=high
+
+  * update docs for bandwidth functions. (#709 <https://github.com/ros2/ros2cli/issues/709>)
+  * Split the bandwidth functions into a get and print. (#708 <https://github.com/ros2/ros2cli/issues/708>)
+  * Contributors: Chris Lalancette, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 29 Apr 2022 05:00:00 -0000
+
+ros-kilted-ros2topic (0.18.3-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Apr 2022 05:00:00 -0000
+
+ros-kilted-ros2topic (0.18.2-2noble) noble; urgency=high
+
+  * Add timeout to kill hanging tests (#701 <https://github.com/ros2/ros2cli/issues/701>)
+  * Contributors: Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 30 Mar 2022 05:00:00 -0000
+
+ros-kilted-ros2topic (0.18.1-2noble) noble; urgency=high
+
+  * Add yaml dump flow style. (#698 <https://github.com/ros2/ros2cli/issues/698>)
+  * Contributors: Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 28 Mar 2022 05:00:00 -0000
+
+ros-kilted-ros2topic (0.18.0-2noble) noble; urgency=high
+
+  * support ros2topic echo once option. (#695 <https://github.com/ros2/ros2cli/issues/695>)
+  * Fix special case for fastrtps incompatible QoS. (#694 <https://github.com/ros2/ros2cli/issues/694>)
+  * Contributors: Chris Lalancette, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 01 Mar 2022 06:00:00 -0000
+
+ros-kilted-ros2topic (0.17.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2topic (0.17.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2topic (0.16.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2topic (0.16.0-2noble) noble; urgency=high
+
+  * Depend on launch packages instead of ros_testing to avoid circular dependency (#685 <https://github.com/ros2/ros2cli/issues/685>)
+  * Add QoS history and depth information if available. (#678 <https://github.com/ros2/ros2cli/issues/678>)
+  * Cleanup mislabeled BSD license (#447 <https://github.com/ros2/ros2cli/issues/447>)
+  * Contributors: Shane Loretz, Tomoya Fujita, Tully Foote
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2topic (0.15.0-2noble) noble; urgency=high
+
+  * Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (#673 <https://github.com/ros2/ros2cli/issues/673>)
+  * Updated maintainers (#670 <https://github.com/ros2/ros2cli/issues/670>)
+  * Update lost messages test case (#669 <https://github.com/ros2/ros2cli/issues/669>)
+  * Implementation of message filtering for ros2 (#654 <https://github.com/ros2/ros2cli/issues/654>)
+  * Change default QoSProfile for pub (#653 <https://github.com/ros2/ros2cli/issues/653>)
+  * Add option in ros2 topic pub to wait for N matching subscriptions, use N=1 by default when combined with --times (#642 <https://github.com/ros2/ros2cli/issues/642>)
+  * ros2 topic pub starts publishing right away. (#626 <https://github.com/ros2/ros2cli/issues/626>)
+  * Fix Topic Info Test with "Infinite" printing (#616 <https://github.com/ros2/ros2cli/issues/616>)
+  * Add changelogs (#635 <https://github.com/ros2/ros2cli/issues/635>)
+  * QoS autodetection (#613 <https://github.com/ros2/ros2cli/issues/613>)
+  * Make Lost Messages option ON by default (#633 <https://github.com/ros2/ros2cli/issues/633>)
+  * Contributors: Aditya Pande, Audrow Nash, Emerson Knapp, Gonzo, Ivan Santiago Paunovic, Jorge Perez, Tomoya Fujita, matthews-jca
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 18 Nov 2021 06:00:00 -0000
+
+ros-kilted-ros2topic (0.14.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 26 Apr 2021 05:00:00 -0000
+
+ros-kilted-ros2topic (0.13.0-2noble) noble; urgency=high
+
+  * Add verbose info for topic list. (#351 <https://github.com/ros2/ros2cli/issues/351>)
+  * Contributors: ChenYing Kuo
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 06 Apr 2021 05:00:00 -0000
+
+ros-kilted-ros2topic (0.12.0-2noble) noble; urgency=high
+
+  * Remove maintainer. (#597 <https://github.com/ros2/ros2cli/issues/597>)
+  * Add option to support use_sim_time. (#581 <https://github.com/ros2/ros2cli/issues/581>)
+  * Add Audrow as a maintainer. (#591 <https://github.com/ros2/ros2cli/issues/591>)
+  * Contributors: Audrow Nash, Claire Wang, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 02 Mar 2021 06:00:00 -0000
+
+ros-kilted-ros2topic (0.11.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 25 Jan 2021 06:00:00 -0000
+
+ros-kilted-ros2topic (0.10.1-2noble) noble; urgency=high
+
+  * Add filter option to ros2topic . (#575 <https://github.com/ros2/ros2cli/issues/575>)
+  * Contributors: Jacob Perron
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Dec 2020 06:00:00 -0000
+
+ros-kilted-ros2topic (0.10.0-2noble) noble; urgency=high
+
+  * Update deprecated qos policy value names. (#571 <https://github.com/ros2/ros2cli/issues/571>)
+  * Update maintainers. (#568 <https://github.com/ros2/ros2cli/issues/568>)
+  * Fix the test to use the topic name. (#566 <https://github.com/ros2/ros2cli/issues/566>)
+  * Improve the error message for invalid message types. (#558 <https://github.com/ros2/ros2cli/issues/558>)
+  * Use reliable QoS for ros2topic tests. (#555 <https://github.com/ros2/ros2cli/issues/555>)
+  * Add option to echo serialized messages. (#470 <https://github.com/ros2/ros2cli/issues/470>)
+  * Enable --no-daemon flag for some cli tools. (#514 <https://github.com/ros2/ros2cli/issues/514>)
+  * Use transient_local and longer keep-alive for pub tests. (#546 <https://github.com/ros2/ros2cli/issues/546>)
+  * Add --keep-alive option to 'topic pub'. (#544 <https://github.com/ros2/ros2cli/issues/544>)
+  * Add option to ros2 topic echo to report lost messages. (#542 <https://github.com/ros2/ros2cli/issues/542>)
+  * Support QoS Depth and History via ros2 topic pub/echo. (#528 <https://github.com/ros2/ros2cli/issues/528>)
+  * Contributors: Chris Lalancette, Claire Wang, Dereck Wonnacott, Dirk Thomas, Ivan Santiago Paunovic, Jacob Perron, Scott K Logan, tomoya
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 02 Nov 2020 06:00:00 -0000
+
+ros-kilted-ros2topic (0.9.5-2noble) noble; urgency=high
+
+  * Guard against passing None to rclpy subscriber. (#520 <https://github.com/ros2/ros2cli/issues/520>)
+    * Guard against passing None to rclpy subscriber
+    Fixes #519 <https://github.com/ros2/ros2cli/issues/519>
+    * Add regression test
+  * Contributors: Jacob Perron
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 01 Jun 2020 05:00:00 -0000
+
+ros-kilted-ros2topic (0.9.4-2noble) noble; urgency=high
+
+  * Use consistent quotes in help messages. (#517 <https://github.com/ros2/ros2cli/issues/517>)
+    Using single quotes inside double quotes is consistent with the other CLI help messages.
+  * Fix typo in ros2 topic delay help. (#510 <https://github.com/ros2/ros2cli/issues/510>)
+  * Contributors: Audrow Nash, Jacob Perron
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 May 2020 05:00:00 -0000
+
+ros-kilted-ros2topic (0.9.3-2noble) noble; urgency=high
+
+  * Make CLI more robust to discovery latency. (#494 <https://github.com/ros2/ros2cli/issues/494>)
+  * Contributors: Michel Hidalgo
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 May 2020 05:00:00 -0000
+
+ros-kilted-ros2topic (0.9.2-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 May 2020 05:00:00 -0000
+
+ros-kilted-ros2topic (0.9.1-2noble) noble; urgency=high
+
+  * Fix expectation of "Incompatible QoS" messages in unit test. (#496 <https://github.com/ros2/ros2cli/issues/496>)
+  * Contributors: Miaofei Mei
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 06 May 2020 05:00:00 -0000
+
+ros-kilted-ros2topic (0.9.0-2noble) noble; urgency=high
+
+  * Implement times for ros2 topic pub. (#491 <https://github.com/ros2/ros2cli/issues/491>)
+    * Implement times for ros2 topic pub
+  * Stop using 'node_name' and 'node_namespace' in tests. (#498 <https://github.com/ros2/ros2cli/issues/498>)
+    They are both deprecated, and print warnings in CI like:
+    Warning: The parameter 'node_name' is deprecated, use 'name' instead
+  * [ros2topic bw] Monotonic clock, units, fstring. (#455 <https://github.com/ros2/ros2cli/issues/455>)
+    * Use monotonic clock to avoid system time jumps
+    * Fix units on message sizes
+    * Make bw message easier to understand
+    * Use f strings
+    * Add back []
+    * Update BW test regex
+  * Replace deprecated launch_ros usage. (#487 <https://github.com/ros2/ros2cli/issues/487>)
+    The Node parameter 'node_executable' has been deprecated and replaced
+    with the parameter 'executable'.
+  * Skip CLI tests on Windows until we resolve the blocking/hanging isuse. (#489 <https://github.com/ros2/ros2cli/issues/489>)
+  * Fix formatting of "ros2 topic info -v" output. (#473 <https://github.com/ros2/ros2cli/issues/473>)
+    * Fix formatting of "ros2 topic info -v" output
+    * Improve test strictness vertical spacing of "ros2 topic info -v" output
+  * Added incompatible event support to ros2 topic echo and ros2 topic pub. (#410 <https://github.com/ros2/ros2cli/issues/410>)
+    Co-authored-by: Miaofei <mailto:miaofei@amazon.com>
+  * More verbose test_flake8 error messages (same as ros2/launch_ros#135 <https://github.com/ros2/launch_ros/issues/135>)
+  * Remove ready_fn from test descriptions. (#376 <https://github.com/ros2/ros2cli/issues/376>)
+  * Used get_available_rmw_implementations from rclpy. (#461 <https://github.com/ros2/ros2cli/issues/461>)
+  * Add delay when retrying tests involving the CLI daemon. (#459 <https://github.com/ros2/ros2cli/issues/459>)
+    This is to give time for discovery to happen between the daemon node and the test fixture nodes.
+  * Enhanced ros2 topic info to display node name, node namespace, topic type and qos profile of the publishers and subscribers. (#385 <https://github.com/ros2/ros2cli/issues/385>)
+    Co-authored-by: Miaofei Mei <mailto:ameision@hotmail.com>
+  * Use f-string. (#448 <https://github.com/ros2/ros2cli/issues/448>)
+    * Use f-string
+    * Remove unused variable
+  * Only load required entry points which improves the performance. (#436 <https://github.com/ros2/ros2cli/issues/436>)
+    * Extend API to exclude extensions from loading
+    * Add add_subparsers_on_demand() function
+    * Update all extensions to use the new API
+    * Deprecate old API, add deprecation warnings
+  * Add support for showing info of hidden topic. (#423 <https://github.com/ros2/ros2cli/issues/423>)
+  * [ros2topic] Use import message logic provided by rosidl_runtime_py. (#415 <https://github.com/ros2/ros2cli/issues/415>)
+    Connects to #218 <https://github.com/ros2/ros2cli/issues/218>.
+    Note that the action feedback logic in the echo verb was incorrect, resulting in a ModuleImportError.
+    The new logic added in https://github.com/ros2/rosidl_runtime_py/pull/9 should fix the error.
+  * Use imperative mood in constructor docstring. (#422 <https://github.com/ros2/ros2cli/issues/422>)
+  * Add timestamp to ros2topic test where needed. (#416 <https://github.com/ros2/ros2cli/issues/416>)
+  * Contributors: Alejandro Hernández Cordero, ChenYing Kuo, Chris Lalancette, Dirk Thomas, Ivan Santiago Paunovic, Jacob Perron, Jaison Titus, Miaofei Mei, Peter Baughman, Shane Loretz, Steven! Ragnarök
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 Apr 2020 05:00:00 -0000
+
+ros-kilted-ros2topic (0.8.6-2noble) noble; urgency=high
+
+  * [ros2topic] show default values for --qos-* Options. (#400 <https://github.com/ros2/ros2cli/issues/400>)
+  * Fix new linter warnings as of flake8-comprehensions 3.1.0. (#399 <https://github.com/ros2/ros2cli/issues/399>)
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 19 Nov 2019 06:00:00 -0000
+
+ros-kilted-ros2topic (0.8.5-2noble) noble; urgency=high
+
+  * 0.8.5
+  * Fix ros2 topic pub --node-name. (#398 <https://github.com/ros2/ros2cli/issues/398>)
+    * Fix ros2 topic pub --node-name
+    * Give DirectNode node_name kwarg
+    * Not node_name -> node_name is None
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 14 Nov 2019 06:00:00 -0000
+
+ros-kilted-ros2topic (0.8.4-2noble) noble; urgency=high
+
+  * 0.8.4
+  * Merge pull request #396 <https://github.com/ros2/ros2cli/issues/396> from ros2/BMarchi/assert_from_output_tests
+    [ros2topic] Assert on listener node output for ros2topic cli test
+  * Assert on listener node output for ros2topic cli test
+  * Fix ros2topic test_echo_pub.py test suite. (#384 <https://github.com/ros2/ros2cli/issues/384>)
+  * [ros2topic] make info verb display the type of the topic. (#379 <https://github.com/ros2/ros2cli/issues/379>)
+  * Contributors: Brian Ezequiel Marchi, Brian Marchi, Michael Carroll, Michel Hidalgo, Mikael Arguedas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 Nov 2019 06:00:00 -0000
+
+ros-kilted-ros2topic (0.8.3-2noble) noble; urgency=high
+
+  * 0.8.3
+  * Refactor test_echo_pub.py pytest into a launch test. (#377 <https://github.com/ros2/ros2cli/issues/377>)
+  * End-to-end test coverage for CLI commands output. (#304 <https://github.com/ros2/ros2cli/issues/304>)
+    * Add end-to-end CLI output tests for ros2:
+    - ros2action
+    - ros2service
+    - ros2topic
+    - ros2msg
+    - ros2srv
+    - ros2interface
+    - ros2node
+    - ros2pkg
+  * [ros2topic] Add test timeout for tests using subprocess. (#374 <https://github.com/ros2/ros2cli/issues/374>)
+    In case a subprocess hangs, then we are not waiting forever.
+  * Move rosidl implementation details to rosidl_runtime_py. (#371 <https://github.com/ros2/ros2cli/issues/371>)
+    * Move rosidl implementation details to rosidl_runtime_py
+    This resolves several TODOs.
+    Here is the PR moving the related functions to their new home: https://github.com/ros2/rosidl_runtime_py/pull/3
+    * Remove dependencies on deprecated packages
+    * Remove obsolete test
+    * Make linters happy :)
+  * Expose qos durability and reliability to ros2topic echo. (#283 <https://github.com/ros2/ros2cli/issues/283>)
+    * Expose durability, reliability, and preset profile QoS options to 'topic echo'.
+    Also add pytests for 'topic echo' and 'topic pub' to prevent future regressions against these new features
+    * Simplify echo and pub tests to not use a timer, explicitly specify timeout parameter for subprocess calls
+    * Patch stdin for windows test, and increase echo timeout for arm build
+    * Disable tests for now on Windows until we figure out a proper workaround
+  * Contributors: Emerson Knapp, Jacob Perron, Michel Hidalgo, Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 23 Oct 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.8.2-2noble) noble; urgency=high
+
+  * 0.8.2
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Oct 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.8.1-2noble) noble; urgency=high
+
+  * 0.8.1
+  * Contributors: Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 04 Oct 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.8.0-2noble) noble; urgency=high
+
+  * Install resource marker file for packages. (#339 <https://github.com/ros2/ros2cli/issues/339>)
+  * Update setup.py version. (#331 <https://github.com/ros2/ros2cli/issues/331>)
+    Versions now match latest tag and package.xml.
+  * Install package manifest. (#330 <https://github.com/ros2/ros2cli/issues/330>)
+  * Pass keyword arguments by name. (#317 <https://github.com/ros2/ros2cli/issues/317>)
+  * Add topic pub prototype completer. (#299 <https://github.com/ros2/ros2cli/issues/299>)
+  * Fix ros2 topic bw output units. (#306 <https://github.com/ros2/ros2cli/issues/306>)
+  * Add no_str and no_arr options for ros2 topic echo. (#216 <https://github.com/ros2/ros2cli/issues/216>)
+    * Add no_str and no_arr options for ros2 topic echo
+    * Modify argument help
+  * Print all types. (#275 <https://github.com/ros2/ros2cli/issues/275>)
+  * Add 'topic find' verb. (#271 <https://github.com/ros2/ros2cli/issues/271>)
+    * Add 'topic find' verb
+    * Alphabetical order
+    * Use TopicTypeCompleter
+    * Replace TopicTypeCompleter with message_type_completer
+  * Add 'topic type' verb. (#272 <https://github.com/ros2/ros2cli/issues/272>)
+    * Add 'topic type' verb
+    * Fix doc
+    * Add func return code
+  * Contributors: Dirk Thomas, Jacob Perron, Jeremie Deray, Michel Hidalgo, Vinnam Kim
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 26 Sep 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.7.4-2noble) noble; urgency=high
+
+  * Only allow window sizes of 1 and higher. (#252 <https://github.com/ros2/ros2cli/issues/252>)
+  * Use system_default as qos for ros2 topic pub. (#245 <https://github.com/ros2/ros2cli/issues/245>)
+  * Contributors: Dirk Thomas, Karsten Knese
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 May 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.7.3-2noble) noble; urgency=high
+
+  * Use rclpy qos name translations instead of defining here. (#240 <https://github.com/ros2/ros2cli/issues/240>)
+    * Use rclpy qos name translations instead of defining here
+    * Use revised name mapping APIs
+  * [ros2topic] Update pub to use qos command line settings. (#238 <https://github.com/ros2/ros2cli/issues/238>)
+    * Update pub to use qos command line settings.
+    * Clean up logic, remove type=str, add comment.
+    * Address deprecation warnings.
+  * [ros2topic] Handle multiple namespace parts in message type. (#237 <https://github.com/ros2/ros2cli/issues/237>)
+    Fixes #235 <https://github.com/ros2/ros2cli/issues/235>.
+    Now the 'bw', 'hz', and 'delay' verbs work again.
+  * Fix deprecation warnings. (#234 <https://github.com/ros2/ros2cli/issues/234>)
+  * Contributors: Emerson Knapp, Jacob Perron, Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 May 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.7.2-2noble) noble; urgency=high
+
+  * Separate the yaml of messages with three dashes. (#230 <https://github.com/ros2/ros2cli/issues/230>)
+  * Add xmllint linter test. (#232 <https://github.com/ros2/ros2cli/issues/232>)
+    * Add xmllint test to ament_python packages
+    * Cover new packages as well
+  * Remove unused test dependency
+  * Contributors: Dirk Thomas, Jacob Perron, Mikael Arguedas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 08 May 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.7.1-2noble) noble; urgency=high
+
+  * Port rostopic bw. (#190 <https://github.com/ros2/ros2cli/issues/190>)
+    * Copy original file for ros2topic bw porting
+    This file is originally copied from: https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
+    * Add rostopic bw original file link
+    * Port rostopic bw to ros2topic
+    enable ros2topic bw to display bandwidth used by topic.
+  * Contributors: Chris Ye
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 17 Apr 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.7.0-2noble) noble; urgency=high
+
+  * Use migrated message utility functions
+    These functions are more generally useful outside of ros2topic and so they have been moved to rosidl_runtime_py.
+  * Use safe_load instead of deprecated load. (#212 <https://github.com/ros2/ros2cli/issues/212>)
+  * Support array.array and numpy.ndarray field types. (#211 <https://github.com/ros2/ros2cli/issues/211>)
+  * Duplicate --include-hidden-topics in list verb. (#196 <https://github.com/ros2/ros2cli/issues/196>)
+  * Contributors: Dirk Thomas, Jacob Perron, Mikael Arguedas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Sun, 14 Apr 2019 05:00:00 -0000
+
+ros-kilted-ros2topic (0.6.3-2noble) noble; urgency=high
+
+  * Fix overindentation flake8 error. (#192 <https://github.com/ros2/ros2cli/issues/192>)
+  * Consistent node naming. (#158 <https://github.com/ros2/ros2cli/issues/158>)
+    * Support for easy integration with ros2 security features by starting CLI nodes with a consistent prefix.
+    * Removing unneeded comment
+    * Making DirectNode visible (removing hidden node prefix) to have consistent node naming for ros2cli.
+    * Start all CLI nodes as hidden.
+    * Shortening the default CLI node name prefix from '_ros2cli_node' to '_ros2cli'
+    * Importing HIDDEN_NODE_PREFIX from rclpy, renaming CLI_NODE_NAME_PREFIX -> NODE_NAME_PREFIX.
+    * Ros2node - Importing HIDDEN_NODE_PREFIX from rclpy
+    * Linter fixes.
+  * Contributors: AAlon, Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Feb 2019 06:00:00 -0000
+
+ros-kilted-ros2topic (0.6.2-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Dec 2018 06:00:00 -0000
+
+ros-kilted-ros2topic (0.6.1-2noble) noble; urgency=high
+
+  * 0.6.1
+    bump package.xml, setup.py and setup.cfg versions
+  * Delay/hz/pub/echo work with action feedback topic
+  * Fix delay/echo/hz with hidden topics
+    hz, delay, echo always check hidden topics
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 06 Dec 2018 06:00:00 -0000
+
+ros-kilted-ros2topic (0.6.0-2noble) noble; urgency=high
+
+  * Move get_msg_class to API module
+    The two methods get_msg_class and _get_msg_class are both used in delay and hz module, avoid cop-n-paste the code but move it into the api module and reuse it in both locations.
+  * Small changes to optimize code
+    * Remove confused "string to" on help
+    * Move import to the top of the file
+    * Use local variable instead of multiple funcion call.
+  * Major function changes for hz cmd porting
+    * Remove irrelevant code and reserve hz related code
+    * Port rostopic hz to ros2topic based on ROS2 API format
+  * Add ros2topic hz original file link
+  * Copy original code for ros2topic hz porting
+    Copy file from ROS1 and port to ros2. This file is originally from: https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
+  * Port rostopic delay to ros2topic
+    * Remove irrelevant code and reserve hz code (ros has only one __init__.py file include all topic commands, ros2 has splitted commands to isolated file)
+    * Major functional changes of delay cmd with ROS2 API
+    * Update license format to pass test_copyright
+    * Use Time duration to compute the delay
+    * Check window_size as non-negative integer, fix no print when set window as 1
+  * Add rostopic delay original file link
+  * Copy original file for ros2topic delay porting
+    This file is originally copied from: https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
+  * [ros2topic] use a timer instead of time.sleep. (#141 <https://github.com/ros2/ros2cli/issues/141>)
+    time.sleep will add the time the publish call takes to each cycle. Use a timer to avoid pub rate loss.
+  * Contributors: Chris Ye
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 19 Nov 2018 06:00:00 -0000
+
+ros-kilted-ros2topic (0.5.4-2noble) noble; urgency=high
+
+  * Don't truncate dictionary keys. (#137 <https://github.com/ros2/ros2cli/issues/137>)
+  * Fix echo sometimes printing ..... (#135 <https://github.com/ros2/ros2cli/issues/135>)
+  * [ros2topic] add missing rclpy dependency. (#134 <https://github.com/ros2/ros2cli/issues/134>)
+  * Fix echo for big array messages. (#126 <https://github.com/ros2/ros2cli/issues/126>)
+    Issue1: ros2 topic echo pointcould2(big arrays), has no response, updated the logical to make more sensible.
+    a. (by default) full_length=false, truncate_length=128, then print max 128 (fix big arrays issue)
+    b. pass truncate_length=X, then print max X.
+    c. pass full_length=true (whatever truncate_length), then set truncate_length=None and print full_length.
+    Issue2: missed truncate_length to _convert_value().
+    Since truncate_length is a key argument, pass it explicitly to _convert_value()
+  * Contributors: Chris Ye, Mikael Arguedas, Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 Aug 2018 05:00:00 -0000
+
+ros-kilted-ros2topic (0.5.3-2noble) noble; urgency=high
+
+  * Merge pull request #123 <https://github.com/ros2/ros2cli/issues/123> from ros2/limit_printing
+    [topic pub] add option to limit printing published msgs
+  * Remove default node name
+  * [topic pub] add option to limit printing published msgs
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 17 Jul 2018 05:00:00 -0000
+
+ros-kilted-ros2topic (0.5.2-2noble) noble; urgency=high
+
+  * Fix echo for nested messages. (#119 <https://github.com/ros2/ros2cli/issues/119>)
+    * Fix echo for nested messages
+    * Use string representation for bytes
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 28 Jun 2018 05:00:00 -0000
+
+ros-kilted-ros2topic (0.5.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 17:27:00 -0000
+
+ros-kilted-ros2topic (0.5.0-2noble) noble; urgency=high
+
+  * Pass actual node object to subscriber function. (#116 <https://github.com/ros2/ros2cli/issues/116>)
+  * Add pytest markers to linter tests
+  * Ignore F841 from latest Pyflakes release. (#93 <https://github.com/ros2/ros2cli/issues/93>)
+  * Info verb for ros2topic. (#88 <https://github.com/ros2/ros2cli/issues/88>)
+    * Info verb for ros2 topic
+    * Fix flake8 issues with the existing code in info.py
+    * Add unit test for test_info()
+    * Count publishers and subscribers in topic into
+    * Add test for topic info
+    * Fix flake8 issues.
+    * Address PR feedback:
+    - Update the output text
+    - Rename the test topic name
+    - Delete obsolete code
+    * Use contextlib.redirect_stdout instead of a custom decorator
+    * Remove single use vars
+  * Set zip_safe to avoid warning during installation. (#83 <https://github.com/ros2/ros2cli/issues/83>)
+  * Allow to pass a node name to ros2 topic pub. (#82 <https://github.com/ros2/ros2cli/issues/82>)
+  * Print full help when no command is passed. (#81 <https://github.com/ros2/ros2cli/issues/81>)
+  * Contributors: Dirk Thomas, Mikael Arguedas, Nick Medveditskov
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 17:17:00 -0000
+
+ros-kilted-ros2topic (0.4.0-2noble) noble; urgency=high
+
+  * [ros2topic] pub: add --repeat. (#66 <https://github.com/ros2/ros2cli/issues/66>)
+    * First shot at passing -r argument
+    * [ros2topic] add once and rate parameters
+    * [ros2service] add once and rate parameters
+    * Simplify logic, add sleepd for once publisher and remove argparse
+    * Fix spelling
+    * Format default the same as argparse does
+    * Format default the same as argparse does
+    * Move logic to the right function
+    * Mimic ros2topic and remove extra logic
+    * Consistent with services
+  * Merge pull request #64 <https://github.com/ros2/ros2cli/issues/64> from ros2/add_type_completer
+    add type completer for 'topic pub' and 'service call'
+  * Add type completer for 'topic pub' and 'service call'
+  * Remove test_suite, add pytest as test_requires
+  * Make sure to check errors when expanding the topic name. (#58 <https://github.com/ros2/ros2cli/issues/58>)
+    * Make sure to check errors when expanding the topic name.
+    We need to catch ValueErrors when actually doing the expansion,
+    then InvalidTopicNameException when doing the validation.
+    * Switch to using the string from the original exception.
+  * Support non-absolute topic names. (#57 <https://github.com/ros2/ros2cli/issues/57>)
+    * Support non-absolute topic names.
+    If the user passes "/topic_name" to the ros2 echo
+    command, it works properly.  If they pass "topic_name"
+    to the ros2 echo command, it fails to match.  This
+    change just allows us to deal with non-absolute topic
+    names.
+  * 0.0.3
+  * Fix request message population. (#56 <https://github.com/ros2/ros2cli/issues/56>)
+    * Use set_msg_fields
+    * Remove unused comment
+    * Move function and error definition to api module
+    * Use message filling method from ros2topic
+    * Alphabetical order
+  * Merge pull request #48 <https://github.com/ros2/ros2cli/issues/48> from ros2/improve_error_message
+    better error message when passing an invalid value to ros2 topic pub
+  * Better error message when passing an invalid value to ros2 topic pub
+  * Use test_msgs. (#47 <https://github.com/ros2/ros2cli/issues/47>)
+    * Use test_msgs instead of test_communication
+    * Remove unused message
+    * Test all messages with fixtures
+  * Merge pull request #46 <https://github.com/ros2/ros2cli/issues/46> from ros2/flake8_plugins
+    update style to satisfy new flake8 plugins
+  * Update style to satisfy new flake8 plugins
+  * Implicitly inherit from object. (#45 <https://github.com/ros2/ros2cli/issues/45>)
+  * 0.0.2
+  * Merge pull request #36 <https://github.com/ros2/ros2cli/issues/36> from ros2/improve_error_message
+    better error message
+  * Better error message
+  * Update test
+  * Truncate arrays, bytes, and strings by default, add option to show in full or use custom threshold. (#31 <https://github.com/ros2/ros2cli/issues/31>)
+    * Truncate arrays, bytes, and strings by default, add option to show in full or use custom threshold
+    * Add short options
+  * Merge pull request #27 <https://github.com/ros2/ros2cli/issues/27> from ros2/also_catch_value_errors
+    also handle ValueError nicely
+  * Also handle ValueError nicely
+  * Merge pull request #24 <https://github.com/ros2/ros2cli/issues/24> from ros2/recursive_msg_population
+    fix population of recursive message fields
+  * Fix population of recursive message fields
+  * Use yaml for parsing msg and srv values. (#19 <https://github.com/ros2/ros2cli/issues/19>)
+  * Merge pull request #15 <https://github.com/ros2/ros2cli/issues/15> from ros2/various_fixes
+    various fixes and improvements
+  * Add missing dependency on yaml
+  * Various fixes and improvements
+  * Revert no_demangle option until it can be fixed. (#9 <https://github.com/ros2/ros2cli/issues/9>)
+  * Refactor get topic names and types. (#4 <https://github.com/ros2/ros2cli/issues/4>)
+    * Ros2topic: use rclpy utility
+    * Ros2topic: fixup
+    * Ros2topic: support multiple types
+    * Ros2service: initial commit
+    * Ros2topic: support no_demangle
+    * Fix include order
+    * Missed a commit
+    * Ros2service: add pep257 tests
+    * Fix echo to support multiple types
+    * Improve shutdown behavior of call, add loop option
+    * Address comments
+  * Merge pull request #5 <https://github.com/ros2/ros2cli/issues/5> from ros2/pep257
+    add pep257 tests
+  * Add pep257 tests
+  * Merge pull request #1 <https://github.com/ros2/ros2cli/issues/1> from ros2/initial_features
+    Entry point, plugin system, daemon, existing tools
+  * Add ros2topic echo, list, pub including previous tests for yaml/csv output
+  * Contributors: Chris Lalancette, Dirk Thomas, Mikael Arguedas, William Woodall
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Dec 2017 06:00:00 -0000
+
+
