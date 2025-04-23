@@ -1,0 +1,557 @@
+ros-kilted-ros2param (0.37.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Sun, 02 Feb 2025 06:00:00 -0000
+
+ros-kilted-ros2param (0.36.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 20 Dec 2024 06:00:00 -0000
+
+ros-kilted-ros2param (0.36.0-2noble) noble; urgency=high
+
+  * cosmetic fixes for ros2param dump command. (#933 <https://github.com/ros2/ros2cli/issues/933>)
+  * Contributors: Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 20 Nov 2024 06:00:00 -0000
+
+ros-kilted-ros2param (0.35.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 03 Oct 2024 05:00:00 -0000
+
+ros-kilted-ros2param (0.34.1-2noble) noble; urgency=high
+
+  * Switch to using rclpy.init context manager. (#918 <https://github.com/ros2/ros2cli/issues/918>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 29 Jul 2024 05:00:00 -0000
+
+ros-kilted-ros2param (0.34.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 17 Jun 2024 05:00:00 -0000
+
+ros-kilted-ros2param (0.33.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 26 Apr 2024 05:00:00 -0000
+
+ros-kilted-ros2param (0.32.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 16 Apr 2024 05:00:00 -0000
+
+ros-kilted-ros2param (0.31.2-2noble) noble; urgency=high
+
+  * ros2 param dump should handle empty list as exception. (#881 <https://github.com/ros2/ros2cli/issues/881>)
+  * Contributors: Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Mar 2024 05:00:00 -0000
+
+ros-kilted-ros2param (0.31.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Feb 2024 06:00:00 -0000
+
+ros-kilted-ros2param (0.31.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 24 Jan 2024 06:00:00 -0000
+
+ros-kilted-ros2param (0.30.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 Dec 2023 06:00:00 -0000
+
+ros-kilted-ros2param (0.30.0-2noble) noble; urgency=high
+
+  * Warning: get_parameter_value() is deprecated. (#866 <https://github.com/ros2/ros2cli/issues/866>)
+  * Contributors: Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 06 Nov 2023 06:00:00 -0000
+
+ros-kilted-ros2param (0.29.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 04 Oct 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.29.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 21 Aug 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.28.0-2noble) noble; urgency=high
+
+  * Fix tests with get_type_description service and param present (#838 <https://github.com/ros2/ros2cli/issues/838>)
+  * Update ros2 param dump dosctring. (#837 <https://github.com/ros2/ros2cli/issues/837>)
+  * Contributors: Emerson Knapp, Murilo M Marinho
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Jul 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.27.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Jun 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.26.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 11 May 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.26.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 28 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.25.0-2noble) noble; urgency=high
+
+  * remove deprecated options (#824 <https://github.com/ros2/ros2cli/issues/824>)
+  * Make all of the dependencies in pure Python packages exec_depend. (#823 <https://github.com/ros2/ros2cli/issues/823>)
+  * Contributors: Chris Lalancette, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 18 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.24.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.24.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Apr 2023 05:00:00 -0000
+
+ros-kilted-ros2param (0.23.0-2noble) noble; urgency=high
+
+  * add timeout option for ros2param to find node. (#802 <https://github.com/ros2/ros2cli/issues/802>)
+  * Contributors: Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 02 Mar 2023 06:00:00 -0000
+
+ros-kilted-ros2param (0.22.0-2noble) noble; urgency=high
+
+  * Fix printing of integer and double arrays. (#804 <https://github.com/ros2/ros2cli/issues/804>)
+  * [rolling] Update maintainers - 2022-11-07 (#776 <https://github.com/ros2/ros2cli/issues/776>)
+  * Contributors: Audrow Nash, Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 14 Feb 2023 06:00:00 -0000
+
+ros-kilted-ros2param (0.21.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 02 Nov 2022 05:00:00 -0000
+
+ros-kilted-ros2param (0.20.0-2noble) noble; urgency=high
+
+  * refactor: make ros2param use rclpy.parameter_client (#716 <https://github.com/ros2/ros2cli/issues/716>)
+  * Contributors: Brian
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 13 Sep 2022 05:00:00 -0000
+
+ros-kilted-ros2param (0.19.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 29 Apr 2022 05:00:00 -0000
+
+ros-kilted-ros2param (0.18.3-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Apr 2022 05:00:00 -0000
+
+ros-kilted-ros2param (0.18.2-2noble) noble; urgency=high
+
+  * Add timeout to kill hanging tests (#701 <https://github.com/ros2/ros2cli/issues/701>)
+  * Contributors: Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 30 Mar 2022 05:00:00 -0000
+
+ros-kilted-ros2param (0.18.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 28 Mar 2022 05:00:00 -0000
+
+ros-kilted-ros2param (0.18.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 01 Mar 2022 06:00:00 -0000
+
+ros-kilted-ros2param (0.17.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2param (0.17.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2param (0.16.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2param (0.16.0-2noble) noble; urgency=high
+
+  * Fix how ros2 param interprets command-line arguments. (#684 <https://github.com/ros2/ros2cli/issues/684>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 06:00:00 -0000
+
+ros-kilted-ros2param (0.15.0-2noble) noble; urgency=high
+
+  * Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (#673 <https://github.com/ros2/ros2cli/issues/673>)
+  * Updated maintainers (#670 <https://github.com/ros2/ros2cli/issues/670>)
+  * Removed redundant code (#666 <https://github.com/ros2/ros2cli/issues/666>)
+  * Reapply #659 <https://github.com/ros2/ros2cli/issues/659> (#661 <https://github.com/ros2/ros2cli/issues/661>)
+  * Fix flaky ros2 param list (#656 <https://github.com/ros2/ros2cli/issues/656>)
+  * Skip None Result (#646 <https://github.com/ros2/ros2cli/issues/646>)
+  * add '--write' option to avoid an unintentional data loss. (#638 <https://github.com/ros2/ros2cli/issues/638>)
+  * Add changelogs (#635 <https://github.com/ros2/ros2cli/issues/635>)
+  * Contributors: Aditya Pande, Audrow Nash, Ivan Santiago Paunovic, Jacob Perron, Jay Wang, Tomoya Fujita
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 18 Nov 2021 06:00:00 -0000
+
+ros-kilted-ros2param (0.14.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 26 Apr 2021 05:00:00 -0000
+
+ros-kilted-ros2param (0.13.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 06 Apr 2021 05:00:00 -0000
+
+ros-kilted-ros2param (0.12.0-2noble) noble; urgency=high
+
+  * Make the ros2param --filter test more reliable. (#606 <https://github.com/ros2/ros2cli/issues/606>)
+  * Add wildcard loading to ros2 param load. (#602 <https://github.com/ros2/ros2cli/issues/602>)
+  * Ros2 param dump/load should use fully qualified node names. (#600 <https://github.com/ros2/ros2cli/issues/600>)
+  * Add --filter options for 'ros2 param list'. (#592 <https://github.com/ros2/ros2cli/issues/592>)
+  * Remove maintainer. (#597 <https://github.com/ros2/ros2cli/issues/597>)
+  * Add rosparam verb load. (#590 <https://github.com/ros2/ros2cli/issues/590>)
+  * Add Audrow as a maintainer. (#591 <https://github.com/ros2/ros2cli/issues/591>)
+  * Contributors: Audrow Nash, Claire Wang, Ivan Santiago Paunovic, Victor Lopez
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 02 Mar 2021 06:00:00 -0000
+
+ros-kilted-ros2param (0.11.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 25 Jan 2021 06:00:00 -0000
+
+ros-kilted-ros2param (0.10.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Dec 2020 06:00:00 -0000
+
+ros-kilted-ros2param (0.10.0-2noble) noble; urgency=high
+
+  * Add "--param-type" option to ros2param list. (#572 <https://github.com/ros2/ros2cli/issues/572>)
+  * Update maintainers. (#568 <https://github.com/ros2/ros2cli/issues/568>)
+  * Contributors: Claire Wang, tomoya
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 02 Nov 2020 06:00:00 -0000
+
+ros-kilted-ros2param (0.9.5-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 01 Jun 2020 05:00:00 -0000
+
+ros-kilted-ros2param (0.9.4-2noble) noble; urgency=high
+
+  * Avoid array.array in ros2 param output. (#508 <https://github.com/ros2/ros2cli/issues/508>)
+  * Contributors: Michel Hidalgo
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 May 2020 05:00:00 -0000
+
+ros-kilted-ros2param (0.9.3-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 May 2020 05:00:00 -0000
+
+ros-kilted-ros2param (0.9.2-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 May 2020 05:00:00 -0000
+
+ros-kilted-ros2param (0.9.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 06 May 2020 05:00:00 -0000
+
+ros-kilted-ros2param (0.9.0-2noble) noble; urgency=high
+
+  * [ros2param] Convert test_verb_dump into launch test. (#485 <https://github.com/ros2/ros2cli/issues/485>)
+    Fixes https://github.com/ros2/ros2cli/issues/480
+    The actual tests are the same, except with the use of launch_testing we ensure the CLI daemon
+    is restarted between tests. This follows a similar pattern as the other ros2cli tests.
+    In addition to converting to launch tests, this change also runs the tests for all RMW implementations.
+    For now, we are skipping tests on Windows. Other CLI tests are skipped on Windows since https://github.com/ros2/ros2cli/pull/489. To be reverted when https://github.com/ros2/build_farmer/issues/248 is resolved.
+  * Do not wait for entire timeout. (#486 <https://github.com/ros2/ros2cli/issues/486>)
+    Follow-up to #481 <https://github.com/ros2/ros2cli/issues/481>
+    This makes the tests faster.
+  * [ros2param] Add timeout to ros2param list. (#469 <https://github.com/ros2/ros2cli/issues/469>)
+  * [ros2param] Wait for discovery before running tests. (#481 <https://github.com/ros2/ros2cli/issues/481>)
+    Fixes #480 <https://github.com/ros2/ros2cli/issues/480>.
+    Catch expected exceptions from rclpy (or transitively as xmlrpc.client.Fault) while we wait for discovery in the test setup.
+  * More verbose test_flake8 error messages (same as ros2/launch_ros#135 <https://github.com/ros2/launch_ros/issues/135>)
+  * Use f-string. (#448 <https://github.com/ros2/ros2cli/issues/448>)
+    * Use f-string
+    * Remove unused variable
+  * Fix ros2param tests. (#441 <https://github.com/ros2/ros2cli/issues/441>)
+  * Only load required entry points which improves the performance. (#436 <https://github.com/ros2/ros2cli/issues/436>)
+    * Extend API to exclude extensions from loading
+    * Add add_subparsers_on_demand() function
+    * Update all extensions to use the new API
+    * Deprecate old API, add deprecation warnings
+  * Contributors: Dirk Thomas, DongheeYe, Jacob Perron
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 Apr 2020 05:00:00 -0000
+
+ros-kilted-ros2param (0.8.6-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 19 Nov 2019 06:00:00 -0000
+
+ros-kilted-ros2param (0.8.5-2noble) noble; urgency=high
+
+  * 0.8.5
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 14 Nov 2019 06:00:00 -0000
+
+ros-kilted-ros2param (0.8.4-2noble) noble; urgency=high
+
+  * 0.8.4
+  * Contributors: Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 Nov 2019 06:00:00 -0000
+
+ros-kilted-ros2param (0.8.3-2noble) noble; urgency=high
+
+  * 0.8.3
+  * Add ros2 param describe. (#367 <https://github.com/ros2/ros2cli/issues/367>)
+    * Add ros2 param describe
+    * Fix linter
+  * Add completion for parameter name arguments. (#364 <https://github.com/ros2/ros2cli/issues/364>)
+    * Add completion for parameter name arguments
+    * Style
+    * Add parameter name completion for set
+  * Contributors: Dirk Thomas, Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 23 Oct 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.8.2-2noble) noble; urgency=high
+
+  * 0.8.2
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Oct 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.8.1-2noble) noble; urgency=high
+
+  * 0.8.1
+  * Contributors: Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 04 Oct 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.8.0-2noble) noble; urgency=high
+
+  * Install resource marker file for packages. (#339 <https://github.com/ros2/ros2cli/issues/339>)
+  * Update setup.py version. (#331 <https://github.com/ros2/ros2cli/issues/331>)
+    Versions now match latest tag and package.xml.
+  * Install package manifest. (#330 <https://github.com/ros2/ros2cli/issues/330>)
+  * Adjusting ros2param tests to take into account automatic declaration of 'use_sim_time' parameter. (#307 <https://github.com/ros2/ros2cli/issues/307>)
+  * Add param dump <node-name>. (#285 <https://github.com/ros2/ros2cli/issues/285>)
+    * Wip param dump
+    * Default path & cleanup
+    * Wip test verb dump
+    * Rm spin_once
+    * Nested namespaces
+    * Cleaning up
+    * Multithread the test
+    * Todo use PARAMETER_SEPARATOR_STRING
+    * Test comp generate<->expected param file
+    * Lipstick
+    * Use proper PARAMETER_SEPARATOR_STRING
+    * Mv common code to api
+    * Rename param output-dir
+    * Rm line breaks
+    * Raise rather than print
+    * Rm useless import
+    * Raise rather than print
+    * Add --print option
+    * Prepend node namespace to output filename
+    * Preempted -> preempt
+    * "w" -> 'w'
+    * Output file using fully qualified node name
+    * Fix linter tests
+    * Relaxe --print preempt test
+  * Contributors: Dirk Thomas, Jacob Perron, Jeremie Deray, Juan Ignacio Ubeira
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 26 Sep 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.7.4-2noble) noble; urgency=high
+
+  * Fix param list for hidden nodes. (#268 <https://github.com/ros2/ros2cli/issues/268>)
+  * Fix param list for nodes which don't have the service. (#265 <https://github.com/ros2/ros2cli/issues/265>)
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 May 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.7.3-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 May 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.7.2-2noble) noble; urgency=high
+
+  * Add xmllint linter test. (#232 <https://github.com/ros2/ros2cli/issues/232>)
+    * Add xmllint test to ament_python packages
+    * Cover new packages as well
+  * Use yaml.safe_load (round2). (#229 <https://github.com/ros2/ros2cli/issues/229>)
+    * Use yaml.safe_load (round2)
+    * Without the typo
+  * Add capability to use ros2 param set for array types. (#199 <https://github.com/ros2/ros2cli/issues/199>)
+    * Add tests for converting string values to parameter types
+    * Use YAML parsing to convert parameters to correct type
+    * Do not perform redundant type conversions
+    * Fix import ordering
+    * Use single quotes instead of double
+    * Prevent unnecessary list comprehensions
+    * Consolidate similar tests into single paramatrized function
+    * Remove obsolete functions
+    * Expect array.array for numerics
+  * Contributors: Mikael Arguedas, sgvandijk
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 08 May 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.7.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 17 Apr 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.7.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Sun, 14 Apr 2019 05:00:00 -0000
+
+ros-kilted-ros2param (0.6.3-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Feb 2019 06:00:00 -0000
+
+ros-kilted-ros2param (0.6.2-2noble) noble; urgency=high
+
+  * Add slash for node name. (#179 <https://github.com/ros2/ros2cli/issues/179>)
+    * Add slash for node name
+    * Check for forward slash in ros2param
+    * Use get_absolute_node_name function
+  * Contributors: Karsten Knese
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Dec 2018 06:00:00 -0000
+
+ros-kilted-ros2param (0.6.1-2noble) noble; urgency=high
+
+  * 0.6.1
+    bump package.xml, setup.py and setup.cfg versions
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 06 Dec 2018 06:00:00 -0000
+
+ros-kilted-ros2param (0.6.0-2noble) noble; urgency=high
+
+  * Node name with namespace. (#146 <https://github.com/ros2/ros2cli/issues/146>)
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 19 Nov 2018 06:00:00 -0000
+
+ros-kilted-ros2param (0.5.4-2noble) noble; urgency=high
+
+  * Add support for parameter prefixes in ros2 param list. (#131 <https://github.com/ros2/ros2cli/issues/131>)
+    * Add support for parameter prefix in ros2 param list
+    * Require at least 1 prefix and simplify logic
+  * Remove apparently unused yaml dependency. (#130 <https://github.com/ros2/ros2cli/issues/130>)
+  * Contributors: Mikael Arguedas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 Aug 2018 05:00:00 -0000
+
+ros-kilted-ros2param (0.5.3-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 17 Jul 2018 05:00:00 -0000
+
+ros-kilted-ros2param (0.5.2-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 28 Jun 2018 05:00:00 -0000
+
+ros-kilted-ros2param (0.5.1-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 17:27:00 -0000
+
+ros-kilted-ros2param (0.5.0-2noble) noble; urgency=high
+
+  * Specific message for unset parameters. (#104 <https://github.com/ros2/ros2cli/issues/104>)
+  * Update ros2 param list output for a specific node. (#98 <https://github.com/ros2/ros2cli/issues/98>)
+  * Add ros2 param. (#95 <https://github.com/ros2/ros2cli/issues/95>)
+    * Add ros2 param
+    * Remove debug output
+    * Add rcl_interfaces dependency instead of relying on it transitively
+    * Typo
+    * Check if value is None regardless of the hide type value
+    * Return error when requested paraemeter is not set
+    * Remove condition
+  * Contributors: Dirk Thomas, dhood
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 17:17:00 -0000
+
+ros-kilted-ros2param (0.4.0-2noble) noble; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Dec 2017 06:00:00 -0000
+
+
