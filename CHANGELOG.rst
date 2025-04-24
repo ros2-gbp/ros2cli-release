@@ -2,6 +2,34 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.4 (2025-04-24)
+-------------------
+* Custom Completion Finder for fetching topic prototype. (backport `#995 <https://github.com/ros2/ros2cli/issues/995>`_) (`#1012 <https://github.com/ros2/ros2cli/issues/1012>`_)
+  * Custom Completion Finder for fetching topic prototype. (`#995 <https://github.com/ros2/ros2cli/issues/995>`_)
+  * Double yaml encoding for fetching topic prototype.
+  * Use a custom completer for yaml strings.
+  ---------
+  (cherry picked from commit 526401b42107014f56f9d77dcf3df005f360bc91)
+  # Conflicts:
+  #	ros2topic/ros2topic/verb/pub.py
+  * resolve conflicts for backport.
+  * Remove whitespace on blank lines
+  ---------
+  Co-authored-by: Leander Stephen D'Souza <leanderdsouza1234@gmail.com>
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+  Co-authored-by: Shane Loretz <shane.loretz@gmail.com>
+* ros2topic: Documented now and auto keywords (`#1008 <https://github.com/ros2/ros2cli/issues/1008>`_) (`#1011 <https://github.com/ros2/ros2cli/issues/1011>`_)
+  (cherry picked from commit 1a0dcf22b61534c9a391a7d60fbc95a972d23d06)
+  Co-authored-by: Martin Pecka <peci1@seznam.cz>
+* Conditional deserialization of message for `ros2 topic hz` (backport `#1005 <https://github.com/ros2/ros2cli/issues/1005>`_) (`#1006 <https://github.com/ros2/ros2cli/issues/1006>`_)
+  (cherry picked from commit bfc52454d07a1554226b56b64dfdbf5bcb6b3f6b)
+  Co-authored-by: Kostubh Khandelwal <123073764+exMachina316@users.noreply.github.com>
+  Co-authored-by: Christophe Bedard <bedard.christophe@gmail.com>
+* Revert "jazzy: Backport Patch CVE-2024-42002 (`#998 <https://github.com/ros2/ros2cli/issues/998>`_)" (`#1004 <https://github.com/ros2/ros2cli/issues/1004>`_)
+  This reverts commit f037c1961f2b108be734d20c8f770c5e9d523856.
+* jazzy: Backport Patch CVE-2024-42002 (`#998 <https://github.com/ros2/ros2cli/issues/998>`_)
+* Contributors: Christophe Bedard, Michael Carroll, mergify[bot]
+
 0.32.3 (2025-04-02)
 -------------------
 * Adapt tests to Zenoh (backport `#988 <https://github.com/ros2/ros2cli/issues/988>`_) (`#991 <https://github.com/ros2/ros2cli/issues/991>`_)
