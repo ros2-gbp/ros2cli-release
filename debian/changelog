@@ -1,0 +1,617 @@
+ros-jazzy-ros2doctor (0.32.4-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 24 Apr 2025 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.32.3-1bookworm) bookworm; urgency=high
+
+  * Skip QoS compatibility test on Zenoh (#985 <https://github.com/ros2/ros2cli/issues/985>) (#986 <https://github.com/ros2/ros2cli/issues/986>)
+    (cherry picked from commit 50411582ff6f72d1940a52070c26988dff65fee7)
+    Co-authored-by: Alejandro Hernández Cordero <mailto:ahcorde@gmail.com>
+  * Contributors: mergify[bot]
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 02 Apr 2025 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.32.2-1bookworm) bookworm; urgency=high
+
+  * New flag and code update for its use (#942 <https://github.com/ros2/ros2cli/issues/942>) (#943 <https://github.com/ros2/ros2cli/issues/943>)
+    (cherry picked from commit a3198b80f8a993ac01501d8e3fbdd76e7aaf92dc)
+    Co-authored-by: Angel LoGa <mailto:98213868+AngeLoGa@users.noreply.github.com>
+  * Contributors: mergify[bot]
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 18 Dec 2024 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.32.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 13 May 2024 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.32.0-1bookworm) bookworm; urgency=high
+
+  * Remove references to https://index.ros.org (#897 <https://github.com/ros2/ros2cli/issues/897>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 16 Apr 2024 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.31.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Mar 2024 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.31.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Feb 2024 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.31.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 24 Jan 2024 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.30.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 Dec 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.30.0-1bookworm) bookworm; urgency=high
+
+  * (ros2doctor) fix PackageCheck (#860 <https://github.com/ros2/ros2cli/issues/860>)
+    * (ros2doctor)(package) improve result string generation
+  * Contributors: Matthijs van der Burgh
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 06 Nov 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.29.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 04 Oct 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.29.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 21 Aug 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.28.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Jul 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.27.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Jun 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.26.1-1bookworm) bookworm; urgency=high
+
+  * Shutdown ros2doctor hello when ctrl-c is received (#826 <https://github.com/ros2/ros2cli/issues/826>)
+  * Contributors: Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 11 May 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.26.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 28 Apr 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.25.0-1bookworm) bookworm; urgency=high
+
+  * Make all of the dependencies in pure Python packages exec_depend. (#823 <https://github.com/ros2/ros2cli/issues/823>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 18 Apr 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.24.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Apr 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.24.0-1bookworm) bookworm; urgency=high
+
+  * Enable document generation using rosdoc2 (#811 <https://github.com/ros2/ros2cli/issues/811>)
+    * Fix warnings for ros2component, ros2doctor, ros2interface, and ros2node
+  * Contributors: Yadu
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Apr 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.23.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 02 Mar 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.22.0-1bookworm) bookworm; urgency=high
+
+  * [rolling] Update maintainers - 2022-11-07 (#776 <https://github.com/ros2/ros2cli/issues/776>)
+  * Contributors: Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 14 Feb 2023 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.21.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 02 Nov 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.20.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 13 Sep 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.19.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 29 Apr 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.18.3-1bookworm) bookworm; urgency=high
+
+  * Fix importlib_metadata warning on Python 3.10. (#706 <https://github.com/ros2/ros2cli/issues/706>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Apr 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.18.2-1bookworm) bookworm; urgency=high
+
+  * Add timeout to kill hanging tests (#701 <https://github.com/ros2/ros2cli/issues/701>)
+  * Contributors: Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 30 Mar 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.18.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 28 Mar 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.18.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 01 Mar 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.17.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.17.0-1bookworm) bookworm; urgency=high
+
+  * Switch ros2 doctor to using psutil for network checks. (#687 <https://github.com/ros2/ros2cli/issues/687>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.16.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.16.0-1bookworm) bookworm; urgency=high
+
+  * Depend on launch packages instead of ros_testing to avoid circular dependency (#685 <https://github.com/ros2/ros2cli/issues/685>)
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.15.0-1bookworm) bookworm; urgency=high
+
+  * Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (#673 <https://github.com/ros2/ros2cli/issues/673>)
+  * Updated maintainers (#670 <https://github.com/ros2/ros2cli/issues/670>)
+  * Add changelogs (#635 <https://github.com/ros2/ros2cli/issues/635>)
+  * Improve ros2 doctor on Windows. (#631 <https://github.com/ros2/ros2cli/issues/631>)
+  * Contributors: Aditya Pande, Audrow Nash, Ivan Santiago Paunovic
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 18 Nov 2021 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.14.0-1bookworm) bookworm; urgency=high
+
+  * Add QoS compatibility check and report. (#621 <https://github.com/ros2/ros2cli/issues/621>)
+  * Continue to next iteration after exceptions in generate_reports. (#623 <https://github.com/ros2/ros2cli/issues/623>)
+  * Contributors: Alberto Soragna, Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 26 Apr 2021 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.13.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 06 Apr 2021 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.12.0-1bookworm) bookworm; urgency=high
+
+  * Remove maintainer. (#597 <https://github.com/ros2/ros2cli/issues/597>)
+  * Add Audrow as a maintainer. (#591 <https://github.com/ros2/ros2cli/issues/591>)
+  * Contributors: Audrow Nash, Claire Wang
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 02 Mar 2021 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.11.0-1bookworm) bookworm; urgency=high
+
+  * Support Python 3.8-provided importlib.metadata. (#585 <https://github.com/ros2/ros2cli/issues/585>)
+  * Contributors: Scott K Logan
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 25 Jan 2021 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.10.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Dec 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.10.0-1bookworm) bookworm; urgency=high
+
+  * Update maintainers. (#568 <https://github.com/ros2/ros2cli/issues/568>)
+  * Remove pkg_resources from ros2doctor. (#537 <https://github.com/ros2/ros2cli/pull/537>)
+  * Make ros2doctor depend on ros_environment and fix platform.py bug on error. (#538 <https://github.com/ros2/ros2cli/issues/538>)
+  * Refactor ros2doctor hello verb. (#521 <https://github.com/ros2/ros2cli/issues/521>)
+  * Contributors: Chris Lalancette, Claire Wang, Michel Hidalgo
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 02 Nov 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.9.5-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 01 Jun 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.9.4-1bookworm) bookworm; urgency=high
+
+  * Ensure ros2doctor ROS nodes have valid names. (#513 <https://github.com/ros2/ros2cli/issues/513>)
+  * Contributors: Michel Hidalgo
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 May 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.9.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 May 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.9.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 May 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.9.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 06 May 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.9.0-1bookworm) bookworm; urgency=high
+
+  * Make sure to add ros2doctor verbs to the extension points. (#495 <https://github.com/ros2/ros2cli/issues/495>)
+  * [ros2doctor] Only report topic warnings if publisher or subscription count is zero. (#472 <https://github.com/ros2/ros2cli/issues/472>)
+    Before the tool was generating many false positives as it is a valid configuration
+    to have an unequal number of publishers and subscriptions on a given topic.
+    This change makes it so we only provide a warning if one of the counts is zero and the
+    other is not. Although this is still a legitimate configuration, it seems more likely to be
+    a problem and worth reporting.
+  * More verbose test_flake8 error messages (same as ros2/launch_ros#135 <https://github.com/ros2/launch_ros/issues/135>)
+  * Prefix ros2doctor node names with 'ros2doctor_'. (#451 <https://github.com/ros2/ros2cli/issues/451>)
+    This fixes an error when the hostname starts
+    with an illegal character for a node name
+    (e.g. a number).
+  * [ros2doctor] Handle non-metapackages in rosdistro check. (#452 <https://github.com/ros2/ros2cli/issues/452>)
+    Otherwise, we get a KeyError and get warnings about not being able to find versions for certain packages.
+  * [ros2doctor] Improve doctor_warn() . (#445 <https://github.com/ros2/ros2cli/issues/445>)
+    * Decouple warning/error msg from result to show traceback
+    * Update print statement to use f-string
+    * Remove None return and add error catching
+    * Specify stacklevel; add doctor_error
+  * Multimachine communication. (#432 <https://github.com/ros2/ros2cli/issues/432>)
+    * Add verb call
+    * Add verb entry point
+    * Put executor.spin in its own thread
+    * Update args
+    * Add missing whitespace
+    * Add summary table doc string
+    * Fix exception ignore traceback
+    * Fix mixed up sub/receive dicts
+    * Reapply changes
+    * Add option and verbose name, enforce node name uniqueness, add context lock. prefix variables, add infinite loop
+    * Change verb naem
+    * Add single host test case
+    * Add rclpy dependency
+    * Correct typo, remove stderr from test
+    * Restart daemon to resolve CI runtime error
+    * Replace ready_fn with ReadyToTest()
+  * [ros2doctor] Check for deprecated packages. (#388 <https://github.com/ros2/ros2cli/issues/388>)
+    * Check local package versions against rosdistro
+  * Revert "simplify helper function"
+    This reverts commit 2c1768d1f464aa6e8d7f4cb162a5e36647036a43.
+  * Simplify helper function
+  * Update network check to fix missing flags on Windows . (#404 <https://github.com/ros2/ros2cli/issues/404>)
+    * Add no flags scenario
+  * Contributors: Chris Lalancette, Claire Wang, Dirk Thomas, Jacob Perron, claireyywang
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 Apr 2020 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.8.6-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 19 Nov 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.8.5-1bookworm) bookworm; urgency=high
+
+  * 0.8.5
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 14 Nov 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.8.4-1bookworm) bookworm; urgency=high
+
+  * 0.8.4
+  * Update headline to capital letters. (#383 <https://github.com/ros2/ros2cli/issues/383>)
+  * Contributors: Claire Wang, Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 Nov 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.8.3-1bookworm) bookworm; urgency=high
+
+  * 0.8.3
+  * Update failed modules message. (#380 <https://github.com/ros2/ros2cli/issues/380>)
+    * Update failed modules message
+    The message previously said, for example
+    ```
+    Failed modules are  network
+    ```
+    Which is confusing when there's only one module
+    Changing to:
+    ```
+    Failed modules: network
+    ```
+    Which works if there's one or more failed modules
+    * Remove double space
+  * Fix AttributeError. (#370 <https://github.com/ros2/ros2cli/issues/370>)
+  * Add new args. (#354 <https://github.com/ros2/ros2cli/issues/354>)
+  * Contributors: Claire Wang, Marya Belanger, Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 23 Oct 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.8.2-1bookworm) bookworm; urgency=high
+
+  * 0.8.2
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Oct 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.8.1-1bookworm) bookworm; urgency=high
+
+  * 0.8.1
+  * Ros2doctor: add topic check. (#341 <https://github.com/ros2/ros2cli/issues/341>)
+    * Add topic check&report
+    * Add topic check&report
+    * Add topic test, tbc
+    * Add topic report unit test
+    * Correct docstring
+  * Contributors: Claire Wang, Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 04 Oct 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.8.0-1bookworm) bookworm; urgency=high
+
+  * Install resource marker file for packages. (#339 <https://github.com/ros2/ros2cli/issues/339>)
+  * Ros2doctor: add --include-warning arg. (#338 <https://github.com/ros2/ros2cli/issues/338>)
+    * Add include-warning arg
+    * Rm whitespace
+    * Update arg usage
+    * Simplify error/warning mechanism
+    * Simplify run_checks param
+  * Add warning and error handling for ifcfg import on Windows and OSX. (#332 <https://github.com/ros2/ros2cli/issues/332>)
+    * Add error handling for ifcfg and check/report type
+    * Modify check/report warning msgs
+    * Fix code format
+    * Fix grammar
+    * Fix var refed before declared exception
+    * Remove type check
+    * Update network check/report rtypes
+    * Move report if/else block
+    * Remove report inits
+  * Add RMW name to report . (#335 <https://github.com/ros2/ros2cli/issues/335>)
+    * Add rmw library info
+    * Add middleware name
+    * Add entry point
+  * Make network check case-insensitive. (#334 <https://github.com/ros2/ros2cli/issues/334>)
+    * Make network check case-insensitive
+    * Update case insensitive function call
+  * Install package manifest. (#330 <https://github.com/ros2/ros2cli/issues/330>)
+  * Update README entry point examples. (#329 <https://github.com/ros2/ros2cli/issues/329>)
+  * Update report feature with new argument, add temp fix for ifcfg module . (#324 <https://github.com/ros2/ros2cli/issues/324>)
+    * Add network checks and report
+    * Network shenanigens
+    * Network shenanigens
+    * Network shenanigens
+    * Add network check and report
+    * Update code format
+    * Revised code format
+    * Added rosdep key ifcfg-pip
+    * Revise code
+    * Working on report format
+    * Improving report
+    * Update platform report format
+    * Update network report format
+    * Add format print
+    * Add --report_failed feature
+    * Improving report format
+    * Temp fix ifcfg import module
+    * Update build dep
+    * Fix flake8
+    * Fix flake8
+    * Add abc and Report class
+    * Implement ABC for each check and report and udpate format print
+    * Update ifcfg import error, fix code format
+    * Add newlines
+    * Update warning msgs
+    * Fix code format
+    * Update report of failed checks
+    * Update run_check
+    * Udpate generate_report
+    * Add sphinx style docstring and type annotations
+    * Add context manager for custom warning msg
+    * Fixed flakey issues
+    * Update Check and Report class error handling
+    * Fix report refed before assigned mistake
+    * Add failed entry point name
+    * Remove pass from try/except
+    * Add error handling for check/report
+    * Change ValueError to Exception
+  * Removing ifcfg_vendor. (#323 <https://github.com/ros2/ros2cli/issues/323>)
+  * Add network configuration check and report to ros2doctor. (#319 <https://github.com/ros2/ros2cli/issues/319>)
+    * Add network checks and report
+    * Network shenanigens
+    * Network shenanigens
+    * Network shenanigens
+    * Add network check and report
+    * Update code format
+    * Revised code format
+    * Add ifcfg-pip rosdep key
+    waiting for rosdistro PR approval https://github.com/ros/rosdistro/pull/22071
+    * Added rosdep key ifcfg-pip
+    * Revise code
+  * Add ros2doctor README. (#318 <https://github.com/ros2/ros2cli/issues/318>)
+    * Add README
+    * Update sentence to new line
+    * Update grammer
+    Co-Authored-By: Marya Belanger <mailto:marya@openrobotics.org>
+    * Update grammer
+    Co-Authored-By: Marya Belanger <mailto:marya@openrobotics.org>
+    * Update grammer
+    Co-Authored-By: Marya Belanger <mailto:marya@openrobotics.org>
+    * Update grammar
+    Co-Authored-By: Marya Belanger <mailto:marya@openrobotics.org>
+  * Add distribution check and report feature to ros2 doctor command  . (#311 <https://github.com/ros2/ros2cli/issues/311>)
+    * Created ros2debug package
+    * Created setup verb, need revision
+    * Added simple setup check
+    * Added simple setup check, need testing
+    * Added four standard tests
+    * Add new line to end of file
+    * Corrected code format
+    * Update debug api Signed-off by: Claire Wang mailto:clairewang@openrobotics.org
+    * Update code format
+    * Added rosdistro
+    * Fixed style and added rosdistro
+    * Fixed code style
+    * Corrected code style
+    * Added network interface print command
+    * Leave out network verb, change cmd name to doctor, add alias wtf
+    * Remove network.py
+    * Add version, rosdistro, platformdist, fallback checks, fallback checks
+    * Add wtf alias, separate checks and report
+    * Remove duplicates, correct grammer
+    * Add entrypoints for checks and report, output failed checks
+    * Corrected code format
+    * Reformat report, correct typo
+  * Contributors: Claire Wang, Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 26 Sep 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.7.4-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 May 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.7.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 May 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.7.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 08 May 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.7.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 17 Apr 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.7.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Sun, 14 Apr 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.6.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Feb 2019 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.6.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Dec 2018 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.6.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 06 Dec 2018 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.6.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 19 Nov 2018 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.5.4-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 Aug 2018 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.5.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 17 Jul 2018 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.5.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 28 Jun 2018 00:00:00 -0000
+
+ros-jazzy-ros2doctor (0.5.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 12:27:00 -0000
+
+ros-jazzy-ros2doctor (0.5.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 12:17:00 -0000
+
+ros-jazzy-ros2doctor (0.4.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Dec 2017 00:00:00 -0000
+
+
