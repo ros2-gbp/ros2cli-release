@@ -2,6 +2,9 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.4 (2025-04-24)
+-------------------
+
 0.32.3 (2025-04-02)
 -------------------
 * Skip QoS compatibility test on Zenoh (`#985 <https://github.com/ros2/ros2cli/issues/985>`_) (`#986 <https://github.com/ros2/ros2cli/issues/986>`_)
