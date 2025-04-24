@@ -17,6 +17,8 @@ from argparse import ArgumentTypeError
 from time import sleep
 from typing import Optional
 
+from argcomplete import CompletionFinder
+
 import rclpy
 
 from rclpy.duration import Duration
@@ -158,6 +160,17 @@ def _get_msg_class(node, topic, include_hidden_topics):
         raise RuntimeError("The message type '%s' is invalid" % message_type)
 
 
+class YamlCompletionFinder(CompletionFinder):
+    def quote_completions(
+        self, completions: list[str],
+            cword_prequote: str, last_wordbreak_pos: Optional[int]):
+
+        # For YAML content, return as-is without escaping
+        if not any('-' in c for c in completions):
+            return completions
+        return super().quote_completions(completions, cword_prequote, last_wordbreak_pos)
+
+
 class TopicMessagePrototypeCompleter:
     """Callable returning a message prototype."""
 
@@ -166,7 +179,8 @@ class TopicMessagePrototypeCompleter:
 
     def __call__(self, prefix, parsed_args, **kwargs):
         message = get_message(getattr(parsed_args, self.topic_type_key))
-        return [message_to_yaml(message())]
+        yaml_snippet = "'" + message_to_yaml(message()) + "'"
+        return [yaml_snippet]
 
 
 def profile_configure_short_keys(
