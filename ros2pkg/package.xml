@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>ros2pkg</name>
-  <version>0.37.0</version>
+  <version>0.32.4</version>
   <description>
     The pkg command for ROS 2 command line tools.
   </description>
@@ -22,6 +22,7 @@
   <exec_depend>python3-catkin-pkg-modules</exec_depend>
   <exec_depend>python3-empy</exec_depend>
   <exec_depend>python3-importlib-resources</exec_depend>
+  <exec_depend>python3-pkg-resources</exec_depend>
   <exec_depend>ros2cli</exec_depend>
 
   <test_depend>ament_flake8</test_depend>

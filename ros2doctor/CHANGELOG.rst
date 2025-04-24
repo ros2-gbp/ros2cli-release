@@ -2,31 +2,24 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.37.0 (2025-02-02)
+0.32.4 (2025-04-24)
 -------------------
 
-0.36.1 (2024-12-20)
+0.32.3 (2025-04-02)
 -------------------
+* Skip QoS compatibility test on Zenoh (`#985 <https://github.com/ros2/ros2cli/issues/985>`_) (`#986 <https://github.com/ros2/ros2cli/issues/986>`_)
+  (cherry picked from commit 50411582ff6f72d1940a52070c26988dff65fee7)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
 
-0.36.0 (2024-11-20)
+0.32.2 (2024-12-18)
 -------------------
-* New flag and code update for its use (`#942 <https://github.com/ros2/ros2cli/issues/942>`_)
-* Contributors: Angel LoGa
+* New flag and code update for its use (`#942 <https://github.com/ros2/ros2cli/issues/942>`_) (`#943 <https://github.com/ros2/ros2cli/issues/943>`_)
+  (cherry picked from commit a3198b80f8a993ac01501d8e3fbdd76e7aaf92dc)
+  Co-authored-by: Angel LoGa <98213868+AngeLoGa@users.noreply.github.com>
+* Contributors: mergify[bot]
 
-0.35.0 (2024-10-03)
--------------------
-
-0.34.1 (2024-07-29)
--------------------
-* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
-* Contributors: Chris Lalancette
-
-0.34.0 (2024-06-17)
--------------------
-* Revamp how we get network information in ros2doctor. (`#910 <https://github.com/ros2/ros2cli/issues/910>`_)
-* Contributors: Chris Lalancette
-
-0.33.0 (2024-04-26)
+0.32.1 (2024-05-13)
 -------------------
 
 0.32.0 (2024-04-16)
