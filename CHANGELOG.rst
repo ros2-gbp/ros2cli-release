@@ -2,6 +2,9 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.4 (2025-04-24)
+-------------------
+
 0.32.3 (2025-04-02)
 -------------------
 * Correct the license content (`#979 <https://github.com/ros2/ros2cli/issues/979>`_) (`#980 <https://github.com/ros2/ros2cli/issues/980>`_)
