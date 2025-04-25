@@ -2,6 +2,9 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
 0.38.0 (2025-04-25)
 -------------------
 * Fix loading parameter behavior from yaml file (`#864 <https://github.com/ros2/ros2cli/issues/864>`_)

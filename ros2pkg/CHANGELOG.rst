@@ -2,6 +2,9 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
 0.38.0 (2025-04-25)
 -------------------
 * Use modern C++17 syntax. (`#982 <https://github.com/ros2/ros2cli/issues/982>`_)

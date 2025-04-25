@@ -2,6 +2,9 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
 0.38.0 (2025-04-25)
 -------------------
 * Custom Completion Finder for fetching topic prototype (`#995 <https://github.com/ros2/ros2cli/issues/995>`_)

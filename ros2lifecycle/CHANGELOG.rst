@@ -2,6 +2,9 @@
 Changelog for package ros2lifecycle
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
 0.38.0 (2025-04-25)
 -------------------
 * Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
