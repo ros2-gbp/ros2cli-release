@@ -2,6 +2,14 @@
 Changelog for package ros2run
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
+0.38.0 (2025-04-25)
+-------------------
+* Add signal handler SIGIN/SIGTERM to ros2run (`#899 <https://github.com/ros2/ros2cli/issues/899>`_)
+* Contributors: Tomoya Fujita
+
 0.37.0 (2025-02-02)
 -------------------
 
