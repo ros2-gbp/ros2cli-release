@@ -2,6 +2,21 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.0 (2025-04-25)
+-------------------
+* Custom Completion Finder for fetching topic prototype (`#995 <https://github.com/ros2/ros2cli/issues/995>`_)
+* Documented now and auto keywords (`#1008 <https://github.com/ros2/ros2cli/issues/1008>`_)
+* Conditional deserialization of message for `ros2 topic hz` (`#1005 <https://github.com/ros2/ros2cli/issues/1005>`_)
+* Enable `ros2 topic echo` with entries of array fields (`#996 <https://github.com/ros2/ros2cli/issues/996>`_)
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Adapt tests to Zenoh (`#988 <https://github.com/ros2/ros2cli/issues/988>`_)
+* Adjust topic hz and bw command description (`#987 <https://github.com/ros2/ros2cli/issues/987>`_)
+* Add support for topic QOS for ros2topic bw, delay and hz (`#935 <https://github.com/ros2/ros2cli/issues/935>`_)
+* Start the simulation from 1 second for the test (`#975 <https://github.com/ros2/ros2cli/issues/975>`_)
+* Support QoS options for `ros2 service call` (`#966 <https://github.com/ros2/ros2cli/issues/966>`_)
+* Support ros2 topic pub yaml file input (`#925 <https://github.com/ros2/ros2cli/issues/925>`_)
+* Contributors: Alejandro Hernández Cordero, Anthony Welte, Fabian Thomsen, Florencia, Kostubh Khandelwal, Leander Stephen D'Souza, Martin Pecka, Michael Carroll, Tomoya Fujita
+
 0.37.0 (2025-02-02)
 -------------------
 * support multiple fields in ros2topic echo (`#964 <https://github.com/ros2/ros2cli/issues/964>`_)
