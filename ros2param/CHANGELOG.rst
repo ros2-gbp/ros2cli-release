@@ -2,6 +2,12 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.0 (2025-04-25)
+-------------------
+* Fix loading parameter behavior from yaml file (`#864 <https://github.com/ros2/ros2cli/issues/864>`_)
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Contributors: Michael Carroll, Tomoya Fujita
+
 0.37.0 (2025-02-02)
 -------------------
 

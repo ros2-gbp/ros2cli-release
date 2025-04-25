@@ -2,6 +2,13 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.0 (2025-04-25)
+-------------------
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Support 'ros2 action echo' (`#978 <https://github.com/ros2/ros2cli/issues/978>`_)
+* Correct the license content (`#979 <https://github.com/ros2/ros2cli/issues/979>`_)
+* Contributors: Barry Xu, Michael Carroll
+
 0.37.0 (2025-02-02)
 -------------------
 * Maintaining consistency of automatically putting time stamps in the service and action calls similiar to publishing in rostopics. (`#961 <https://github.com/ros2/ros2cli/issues/961>`_)
