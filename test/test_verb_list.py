@@ -34,7 +34,9 @@ import pytest
 import rclpy
 from rclpy.utilities import get_available_rmw_implementations
 
+from ros2cli.helpers import get_rmw_additional_env
 from ros2cli.node.strategy import NodeStrategy
+
 
 TEST_NODE = 'test_node'
 TEST_NAMESPACE = '/foo'
@@ -53,7 +55,7 @@ if sys.platform.startswith('win'):
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
 def generate_test_description(rmw_implementation):
     path_to_fixtures = Path(__file__).parent / 'fixtures'
-    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
+    additional_env = get_rmw_additional_env(rmw_implementation)
 
     # Parameter node test fixture
     path_to_parameter_node_script = path_to_fixtures / 'parameter_node.py'
@@ -101,11 +103,10 @@ class TestVerbList(unittest.TestCase):
 
         @contextlib.contextmanager
         def launch_param_list_command(self, arguments):
+            additional_env = get_rmw_additional_env(rmw_implementation)
             param_list_command_action = ExecuteProcess(
                 cmd=['ros2', 'param', 'list', *arguments],
-                additional_env={
-                    'RMW_IMPLEMENTATION': rmw_implementation,
-                },
+                additional_env=additional_env,
                 name='ros2param-list-cli',
                 output='screen'
             )
