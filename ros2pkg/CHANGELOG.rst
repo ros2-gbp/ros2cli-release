@@ -2,6 +2,14 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.0 (2025-04-25)
+-------------------
+* Use modern C++17 syntax. (`#982 <https://github.com/ros2/ros2cli/issues/982>`_)
+* Use target_link_libraries instead of ament_target_dependencies (`#973 <https://github.com/ros2/ros2cli/issues/973>`_)
+* Try to use the git global user.name for maintainer-name (`#968 <https://github.com/ros2/ros2cli/issues/968>`_)
+* Update minimum CMake version CMakeLists.txt.em (`#969 <https://github.com/ros2/ros2cli/issues/969>`_)
+* Contributors: Larry Gezelius, Sebastian Castro, Shane Loretz, Shynur
+
 0.37.0 (2025-02-02)
 -------------------
 * Add ament_xmllint test by default to ament_python packages. (`#957 <https://github.com/ros2/ros2cli/issues/957>`_)
