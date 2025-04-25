@@ -35,6 +35,7 @@ import launch_testing_ros.tools
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
+from ros2cli.helpers import get_rmw_additional_env
 
 
 # Skip cli tests on Windows while they exhibit pathological behavior
@@ -49,10 +50,8 @@ if sys.platform.startswith('win'):
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
 def generate_test_description(rmw_implementation):
     path_to_fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
-    additional_env = {
-        'RMW_IMPLEMENTATION': rmw_implementation, 'PYTHONUNBUFFERED': '1'
-    }
-
+    additional_env = get_rmw_additional_env(rmw_implementation)
+    additional_env['PYTHONUNBUFFERED'] = '1'
     path_to_talker_node_script = os.path.join(path_to_fixtures, 'talker_node.py')
     path_to_listener_node_script = os.path.join(path_to_fixtures, 'listener_node.py')
 
@@ -167,12 +166,11 @@ class TestROS2TopicCLI(unittest.TestCase):
 
         @contextlib.contextmanager
         def launch_topic_command(self, arguments):
+            additional_env = get_rmw_additional_env(rmw_implementation)
+            additional_env['PYTHONUNBUFFERED'] = '1'
             topic_command_action = ExecuteProcess(
                 cmd=['ros2', 'topic', *arguments],
-                additional_env={
-                    'RMW_IMPLEMENTATION': rmw_implementation,
-                    'PYTHONUNBUFFERED': '1'
-                },
+                additional_env=additional_env,
                 name='ros2topic-cli',
                 output='screen'
             )
@@ -619,6 +617,19 @@ class TestROS2TopicCLI(unittest.TestCase):
         assert topic_command.wait_for_shutdown(timeout=10)
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[2]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '-1.125',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_topic_echo_multi_fields_nested(self):
         with self.launch_topic_command(
             arguments=['echo', '/cmd_vel', '--field', 'twist.linear.x',
@@ -634,6 +645,21 @@ class TestROS2TopicCLI(unittest.TestCase):
         assert topic_command.wait_for_shutdown(timeout=10)
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_multi_fields_array(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[2]', '--field',
+                       'string_values_default.[1]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '-1.125',
+                    'max value',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_topic_echo_field_not_a_member(self):
         with self.launch_topic_command(
             arguments=['echo', '/arrays', '--field', 'not_member'],
@@ -641,6 +667,45 @@ class TestROS2TopicCLI(unittest.TestCase):
             assert topic_command.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
                     "Invalid field 'not_member': 'Arrays' object has no attribute 'not_member'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array_not_an_array(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[0].[0]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'float32_values_default.[0].[0]': invalid index to "
+                    'scalar variable.',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array_index_out_of_bounds(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[3]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'float32_values_default.[3]': index 3 is out of bounds "
+                    'for axis 0 with size 3',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array_no_index(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[abc]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'float32_values_default.[abc]': 'numpy.ndarray' object "
+                    "has no attribute '[abc]'",
                 ], strict=True
             ), timeout=10)
         assert topic_command.wait_for_shutdown(timeout=10)
@@ -946,7 +1011,7 @@ class TestROS2TopicCLI(unittest.TestCase):
             assert topic_command.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
                     'Subscribed to [/defaults]',
-                    re.compile(r'\d{2} B/s from \d+ messages'),
+                    re.compile(r'\d{2,3} B/s from \d+ messages'),
                     re.compile(r'\s*Message size mean: \d{2} B min: \d{2} B max: \d{2} B')
                 ], strict=True
             ), timeout=10)
