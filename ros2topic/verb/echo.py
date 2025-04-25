@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 from typing import Optional
 from typing import TypeVar
 
@@ -19,18 +20,15 @@ import rclpy
 from rclpy.event_handler import SubscriptionEventCallbacks
 from rclpy.event_handler import UnsupportedEventTypeError
 from rclpy.node import Node
-from rclpy.qos import QoSDurabilityPolicy
-from rclpy.qos import QoSPresetProfiles
 from rclpy.qos import QoSProfile
-from rclpy.qos import QoSReliabilityPolicy
 from rclpy.task import Future
 from ros2cli.helpers import unsigned_int
 from ros2cli.node.strategy import add_arguments as add_strategy_node_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2topic.api import add_qos_arguments
+from ros2topic.api import choose_qos
 from ros2topic.api import get_msg_class
 from ros2topic.api import positive_float
-from ros2topic.api import qos_profile_from_short_keys
 from ros2topic.api import TopicNameCompleter
 from ros2topic.verb import VerbExtension
 from rosidl_runtime_py import message_to_csv
@@ -57,7 +55,9 @@ class EchoVerb(VerbExtension):
         parser.add_argument(
             'message_type', nargs='?',
             help="Type of the ROS message (e.g. 'std_msgs/msg/String')")
-        add_qos_arguments(parser, 'subscribe', 'sensor_data')
+        add_qos_arguments(
+            parser, 'subscribe', 'sensor_data',
+            ' / compatible profile with running endpoints')
         parser.add_argument(
             '--csv', action='store_true',
             help=(
@@ -73,7 +73,9 @@ class EchoVerb(VerbExtension):
             help='Echo a selected field of a message. '
                  "Use '.' to select sub-fields. "
                  'For example, to echo the position field of a nav_msgs/msg/Odometry message: '
-                 "'ros2 topic echo /odom --field pose.pose.position'",
+                 "'ros2 topic echo /odom --field pose.pose.position'. "
+                 'Use the --field option multiple times to echo multiple fields. '
+                 'If the field is an array, use the syntax .[index] to select a single element.'
         )
         parser.add_argument(
             '--full-length', '-f', action='store_true',
@@ -114,67 +116,6 @@ class EchoVerb(VerbExtension):
             '-n', '--node-name', type=str, default=None,
             help='The name of the echoing node; by default, will be a hidden node name')
 
-    def choose_qos(self, node, args):
-
-        if (args.qos_reliability is not None or
-                args.qos_durability is not None or
-                args.qos_depth is not None or
-                args.qos_history is not None or
-                args.qos_liveliness is not None or
-                args.qos_liveliness_lease_duration_seconds is not None):
-
-            return qos_profile_from_short_keys(
-                args.qos_profile,
-                reliability=args.qos_reliability,
-                durability=args.qos_durability,
-                depth=args.qos_depth,
-                history=args.qos_history,
-                liveliness=args.qos_liveliness,
-                liveliness_lease_duration_s=args.qos_liveliness_lease_duration_seconds)
-
-        qos_profile = QoSPresetProfiles.get_from_short_key(args.qos_profile)
-        reliability_reliable_endpoints_count = 0
-        durability_transient_local_endpoints_count = 0
-
-        pubs_info = node.get_publishers_info_by_topic(args.topic_name)
-        publishers_count = len(pubs_info)
-        if publishers_count == 0:
-            return qos_profile
-
-        for info in pubs_info:
-            if (info.qos_profile.reliability == QoSReliabilityPolicy.RELIABLE):
-                reliability_reliable_endpoints_count += 1
-            if (info.qos_profile.durability == QoSDurabilityPolicy.TRANSIENT_LOCAL):
-                durability_transient_local_endpoints_count += 1
-
-        # If all endpoints are reliable, ask for reliable
-        if reliability_reliable_endpoints_count == publishers_count:
-            qos_profile.reliability = QoSReliabilityPolicy.RELIABLE
-        else:
-            if reliability_reliable_endpoints_count > 0:
-                print(
-                    'Some, but not all, publishers are offering '
-                    'QoSReliabilityPolicy.RELIABLE. Falling back to '
-                    'QoSReliabilityPolicy.BEST_EFFORT as it will connect '
-                    'to all publishers'
-                )
-            qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
-
-        # If all endpoints are transient_local, ask for transient_local
-        if durability_transient_local_endpoints_count == publishers_count:
-            qos_profile.durability = QoSDurabilityPolicy.TRANSIENT_LOCAL
-        else:
-            if durability_transient_local_endpoints_count > 0:
-                print(
-                    'Some, but not all, publishers are offering '
-                    'QoSDurabilityPolicy.TRANSIENT_LOCAL. Falling back to '
-                    'QoSDurabilityPolicy.VOLATILE as it will connect '
-                    'to all publishers'
-                )
-            qos_profile.durability = QoSDurabilityPolicy.VOLATILE
-
-        return qos_profile
-
     def main(self, *, args):
 
         self.csv = args.csv
@@ -208,7 +149,7 @@ class EchoVerb(VerbExtension):
 
         with NodeStrategy(args, node_name=args.node_name) as node:
 
-            qos_profile = self.choose_qos(node, args)
+            qos_profile = choose_qos(node, topic_name=args.topic_name, qos_args=args)
 
             if args.message_type is None:
                 message_type = get_msg_class(
@@ -277,12 +218,19 @@ class EchoVerb(VerbExtension):
     def _subscriber_callback(self, msg, info):
         submsgs = []
         if self.fields_list:
+            # Matches strings exactly in the format "[digits]" (e.g., "[123]")
+            # and captures the digits as a group
+            is_indexing = re.compile(r'^\[(\d+)\]$')
             for fields in self.fields_list:
                 submsg = msg
                 for field in fields:
+                    match = is_indexing.match(field)
                     try:
-                        submsg = getattr(submsg, field)
-                    except AttributeError as ex:
+                        if match is None:
+                            submsg = getattr(submsg, field)
+                        else:
+                            submsg = submsg[int(match.group(1))]
+                    except (AttributeError, IndexError, TypeError, ValueError) as ex:
                         raise RuntimeError(f"Invalid field '{'.'.join(fields)}': {ex}")
                 submsgs.append(submsg)
         else:
