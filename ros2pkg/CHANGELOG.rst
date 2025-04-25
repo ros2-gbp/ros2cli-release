@@ -2,20 +2,39 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.4 (2025-04-24)
+0.38.0 (2025-04-25)
+-------------------
+* Use modern C++17 syntax. (`#982 <https://github.com/ros2/ros2cli/issues/982>`_)
+* Use target_link_libraries instead of ament_target_dependencies (`#973 <https://github.com/ros2/ros2cli/issues/973>`_)
+* Try to use the git global user.name for maintainer-name (`#968 <https://github.com/ros2/ros2cli/issues/968>`_)
+* Update minimum CMake version CMakeLists.txt.em (`#969 <https://github.com/ros2/ros2cli/issues/969>`_)
+* Contributors: Larry Gezelius, Sebastian Castro, Shane Loretz, Shynur
+
+0.37.0 (2025-02-02)
+-------------------
+* Add ament_xmllint test by default to ament_python packages. (`#957 <https://github.com/ros2/ros2cli/issues/957>`_)
+* Contributors: Chris Lalancette
+
+0.36.1 (2024-12-20)
 -------------------
 
-0.32.3 (2025-04-02)
+0.36.0 (2024-11-20)
 -------------------
-* Update minimum CMake version CMakeLists.txt.em (`#969 <https://github.com/ros2/ros2cli/issues/969>`_) (`#971 <https://github.com/ros2/ros2cli/issues/971>`_)
-  (cherry picked from commit a91bbc1b25d1d45e727d430a86d9f05646e71288)
-  Co-authored-by: Sebastian Castro <4603398+sea-bass@users.noreply.github.com>
-* Contributors: mergify[bot]
+* Drop dependency on python3-pkg-resources (`#946 <https://github.com/ros2/ros2cli/issues/946>`_)
+* Contributors: Scott K Logan
 
-0.32.2 (2024-12-18)
+0.35.0 (2024-10-03)
+-------------------
+* Support empy4 and empy3 (`#921 <https://github.com/ros2/ros2cli/issues/921>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.34.1 (2024-07-29)
 -------------------
 
-0.32.1 (2024-05-13)
+0.34.0 (2024-06-17)
+-------------------
+
+0.33.0 (2024-04-26)
 -------------------
 
 0.32.0 (2024-04-16)

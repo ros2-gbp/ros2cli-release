@@ -2,16 +2,34 @@
 Changelog for package ros2node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.4 (2025-04-24)
+0.38.0 (2025-04-25)
+-------------------
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Contributors: Michael Carroll
+
+0.37.0 (2025-02-02)
 -------------------
 
-0.32.3 (2025-04-02)
+0.36.1 (2024-12-20)
 -------------------
 
-0.32.2 (2024-12-18)
+0.36.0 (2024-11-20)
 -------------------
 
-0.32.1 (2024-05-13)
+0.35.0 (2024-10-03)
+-------------------
+* ros2node requires fully qualified node name. (`#923 <https://github.com/ros2/ros2cli/issues/923>`_)
+* Contributors: Tomoya Fujita
+
+0.34.1 (2024-07-29)
+-------------------
+* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
+* Contributors: Chris Lalancette
+
+0.34.0 (2024-06-17)
+-------------------
+
+0.33.0 (2024-04-26)
 -------------------
 
 0.32.0 (2024-04-16)

@@ -2,20 +2,40 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.4 (2025-04-24)
+0.38.0 (2025-04-25)
+-------------------
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Contributors: Michael Carroll
+
+0.37.0 (2025-02-02)
+-------------------
+* Rename the test\_{daemon,direct}.py tests. (`#959 <https://github.com/ros2/ros2cli/issues/959>`_)
+* Contributors: Chris Lalancette
+
+0.36.1 (2024-12-20)
+-------------------
+* replace removeprefix with string slicing. (`#953 <https://github.com/ros2/ros2cli/issues/953>`_)
+* Contributors: Tomoya Fujita
+
+0.36.0 (2024-11-20)
+-------------------
+* Fix instability in the ros2 daemon. (`#947 <https://github.com/ros2/ros2cli/issues/947>`_)
+* Drop dependency on python3-pkg-resources (`#946 <https://github.com/ros2/ros2cli/issues/946>`_)
+* NodeStrategy supports node name argument. (`#941 <https://github.com/ros2/ros2cli/issues/941>`_)
+* Contributors: Chris Lalancette, Scott K Logan, Tomoya Fujita
+
+0.35.0 (2024-10-03)
 -------------------
 
-0.32.3 (2025-04-02)
+0.34.1 (2024-07-29)
+-------------------
+* Switch to using the rclpy.init context manager. (`#920 <https://github.com/ros2/ros2cli/issues/920>`_)
+* Contributors: Chris Lalancette
+
+0.34.0 (2024-06-17)
 -------------------
 
-0.32.2 (2024-12-18)
--------------------
-* replace removeprefix with string slicing. (`#953 <https://github.com/ros2/ros2cli/issues/953>`_) (`#955 <https://github.com/ros2/ros2cli/issues/955>`_)
-  (cherry picked from commit 35d6abd50a55181099aab82134fc507d8fd162bd)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-* Contributors: mergify[bot]
-
-0.32.1 (2024-05-13)
+0.33.0 (2024-04-26)
 -------------------
 
 0.32.0 (2024-04-16)

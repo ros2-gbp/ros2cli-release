@@ -34,14 +34,17 @@ from collections import defaultdict
 import functools
 import math
 import threading
+import time
 
 import rclpy
 
 from rclpy.clock import Clock
 from rclpy.clock import ClockType
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.executors import ExternalShutdownException
 from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
+from ros2topic.api import add_qos_arguments
+from ros2topic.api import choose_qos
 from ros2topic.api import get_msg_class
 from ros2topic.api import positive_int
 from ros2topic.api import TopicNameCompleter
@@ -63,9 +66,11 @@ class HzVerb(VerbExtension):
         )
         arg = parser.add_argument(
             'topic_name',
-            help="Name of the ROS topic to listen to (e.g. '/chatter')")
+            nargs='+',
+            help="Names of the ROS topic to listen to (e.g. '/chatter')")
         arg.completer = TopicNameCompleter(
             include_hidden_topics_key='include_hidden_topics')
+        add_qos_arguments(parser, 'subscribe', 'sensor_data')
         parser.add_argument(
             '--window', '-w',
             dest='window_size', type=positive_int, default=DEFAULT_WINDOW_SIZE,
@@ -87,7 +92,7 @@ class HzVerb(VerbExtension):
 
 
 def main(args):
-    topic = args.topic_name
+    topics = args.topic_name
     if args.filter_expr:
         def expr_eval(expr):
             def eval_fn(m):
@@ -98,8 +103,8 @@ def main(args):
         filter_expr = None
 
     with DirectNode(args) as node:
-        _rostopic_hz(node.node, topic, window_size=args.window_size, filter_expr=filter_expr,
-                     use_wtime=args.use_wtime)
+        _rostopic_hz(node.node, topics, qos_args=args, window_size=args.window_size,
+                     filter_expr=filter_expr, use_wtime=args.use_wtime)
 
 
 class ROSTopicHz(object):
@@ -209,13 +214,10 @@ class ROSTopicHz(object):
         """
         if not self.get_times(topic=topic):
             return
-        elif self.get_last_printed_tn(topic=topic) == 0:
-            self.set_last_printed_tn(self.get_msg_tn(topic=topic), topic=topic)
-            return
-        elif self.get_msg_tn(topic=topic) < self.get_last_printed_tn(topic=topic) + 1e9:
+        elif self.get_msg_tn(topic=topic) == self.get_last_printed_tn(topic=topic):
             return
         with self.lock:
-            # Get frequency every one minute
+            # Get frequency every one second
             times = self.get_times(topic=topic)
             n = len(times)
             mean = sum(times) / n
@@ -232,44 +234,113 @@ class ROSTopicHz(object):
 
         return rate, min_delta, max_delta, std_dev, n
 
-    def print_hz(self, topic=None):
+    def print_hz(self, topics=None):
         """Print the average publishing rate to screen."""
-        ret = self.get_hz(topic)
-        if ret is None:
+
+        def get_format_hz(stat):
+            return stat[0] * 1e9, stat[1] * 1e-9, stat[2] * 1e-9, stat[3] * 1e-9, stat[4]
+
+        if len(topics) == 1:
+            ret = self.get_hz(topics[0])
+            if ret is None:
+                return
+            rate, min_delta, max_delta, std_dev, window = get_format_hz(ret)
+            print('average rate: %.3f\n\tmin: %.3fs max: %.3fs std dev: %.5fs window: %s'
+                  % (rate, min_delta, max_delta, std_dev, window))
             return
-        rate, min_delta, max_delta, std_dev, window = ret
-        print('average rate: %.3f\n\tmin: %.3fs max: %.3fs std dev: %.5fs window: %s'
-              % (rate * 1e9, min_delta * 1e-9, max_delta * 1e-9, std_dev * 1e-9, window))
-        return
+
+        # monitoring multiple topics' hz
+        header = ['topic', 'rate', 'min_delta', 'max_delta', 'std_dev', 'window']
+        stats = {h: [] for h in header}
+        for topic in topics:
+            hz_stat = self.get_hz(topic)
+            if hz_stat is None:
+                continue
+            rate, min_delta, max_delta, std_dev, window = get_format_hz(hz_stat)
+            stats['topic'].append(topic)
+            stats['rate'].append('{:.3f}'.format(rate))
+            stats['min_delta'].append('{:.3f}'.format(min_delta))
+            stats['max_delta'].append('{:.3f}'.format(max_delta))
+            stats['std_dev'].append('{:.5f}'.format(std_dev))
+            stats['window'].append(str(window))
+        if not stats['topic']:
+            return
+        print(_get_ascii_table(header, stats))
 
 
-def _rostopic_hz(node, topic, window_size=DEFAULT_WINDOW_SIZE, filter_expr=None, use_wtime=False):
+def _get_ascii_table(header, cols):
+    # compose table with left alignment
+    header_aligned = []
+    col_widths = []
+    for h in header:
+        col_width = max(len(h), max(len(el) for el in cols[h]))
+        col_widths.append(col_width)
+        header_aligned.append(h.center(col_width))
+        for i, el in enumerate(cols[h]):
+            cols[h][i] = str(cols[h][i]).ljust(col_width)
+    # sum of col and each 3 spaces width
+    table_width = sum(col_widths) + 3 * (len(header) - 1)
+    n_rows = len(cols[header[0]])
+    body = '\n'.join('   '.join(cols[h][i] for h in header) for i in range(n_rows))
+    table = '{header}\n{hline}\n{body}\n'.format(
+        header='   '.join(header_aligned), hline='=' * table_width, body=body)
+    return table
+
+
+def _rostopic_hz(node, topics, qos_args, window_size=DEFAULT_WINDOW_SIZE, filter_expr=None,
+                 use_wtime=False):
     """
     Periodically print the publishing rate of a topic to console until shutdown.
 
-    :param topic: topic name, ``list`` of ``str``
+    :param topics: list of topic names, ``list`` of ``str``
+    :param qos_args: qos arguments used to pick the qos profile of the subscriber
     :param window_size: number of messages to average over, -1 for infinite, ``int``
     :param filter_expr: Python filter expression that is called with m, the message instance
     """
     # pause hz until topic is published
-    msg_class = get_msg_class(
-        node, topic, blocking=True, include_hidden_topics=True)
+    rt = ROSTopicHz(node, window_size, filter_expr=filter_expr, use_wtime=use_wtime)
+    topics_len = len(topics)
+    topics_to_be_removed = []
+    for topic in topics:
+        msg_class = get_msg_class(
+            node, topic, blocking=True, include_hidden_topics=True)
 
-    if msg_class is None:
+        if msg_class is None:
+            topics_to_be_removed.append(topic)
+            print('WARNING: failed to find message type for topic [%s]' % topic)
+            continue
+
+        qos_profile = choose_qos(node, topic_name=topic, qos_args=qos_args)
+
+        node.create_subscription(
+            msg_class,
+            topic,
+            functools.partial(rt.callback_hz, topic=topic),
+            qos_profile,
+            raw=filter_expr is None)
+        if topics_len > 1:
+            print('Subscribed to [%s]' % topic)
+
+    # remove the topics from the list if failed to find message type
+    while (topic in topics_to_be_removed):
+        topics.remove(topic)
+    if len(topics) == 0:
         node.destroy_node()
+        rclpy.try_shutdown()
         return
 
-    rt = ROSTopicHz(node, window_size, filter_expr=filter_expr, use_wtime=use_wtime)
-    node.create_subscription(
-        msg_class,
-        topic,
-        functools.partial(rt.callback_hz, topic=topic),
-        qos_profile_sensor_data,
-        raw=filter_expr is None)
+    try:
+        def thread_func():
+            while rclpy.ok():
+                rt.print_hz(topics)
+                time.sleep(1.0)
 
-    while rclpy.ok():
-        rclpy.spin_once(node)
-        rt.print_hz(topic)
-
-    node.destroy_node()
-    rclpy.shutdown()
+        print_thread = threading.Thread(target=thread_func)
+        print_thread.start()
+        rclpy.spin(node)
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.try_shutdown()
+        print_thread.join()

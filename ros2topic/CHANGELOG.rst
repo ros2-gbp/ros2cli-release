@@ -2,51 +2,50 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.4 (2025-04-24)
+0.38.0 (2025-04-25)
 -------------------
-* Custom Completion Finder for fetching topic prototype. (backport `#995 <https://github.com/ros2/ros2cli/issues/995>`_) (`#1012 <https://github.com/ros2/ros2cli/issues/1012>`_)
-  * Custom Completion Finder for fetching topic prototype. (`#995 <https://github.com/ros2/ros2cli/issues/995>`_)
-  * Double yaml encoding for fetching topic prototype.
-  * Use a custom completer for yaml strings.
-  ---------
-  (cherry picked from commit 526401b42107014f56f9d77dcf3df005f360bc91)
-  # Conflicts:
-  #	ros2topic/ros2topic/verb/pub.py
-  * resolve conflicts for backport.
-  * Remove whitespace on blank lines
-  ---------
-  Co-authored-by: Leander Stephen D'Souza <leanderdsouza1234@gmail.com>
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-  Co-authored-by: Shane Loretz <shane.loretz@gmail.com>
-* ros2topic: Documented now and auto keywords (`#1008 <https://github.com/ros2/ros2cli/issues/1008>`_) (`#1011 <https://github.com/ros2/ros2cli/issues/1011>`_)
-  (cherry picked from commit 1a0dcf22b61534c9a391a7d60fbc95a972d23d06)
-  Co-authored-by: Martin Pecka <peci1@seznam.cz>
-* Conditional deserialization of message for `ros2 topic hz` (backport `#1005 <https://github.com/ros2/ros2cli/issues/1005>`_) (`#1006 <https://github.com/ros2/ros2cli/issues/1006>`_)
-  (cherry picked from commit bfc52454d07a1554226b56b64dfdbf5bcb6b3f6b)
-  Co-authored-by: Kostubh Khandelwal <123073764+exMachina316@users.noreply.github.com>
-  Co-authored-by: Christophe Bedard <bedard.christophe@gmail.com>
-* Revert "jazzy: Backport Patch CVE-2024-42002 (`#998 <https://github.com/ros2/ros2cli/issues/998>`_)" (`#1004 <https://github.com/ros2/ros2cli/issues/1004>`_)
-  This reverts commit f037c1961f2b108be734d20c8f770c5e9d523856.
-* jazzy: Backport Patch CVE-2024-42002 (`#998 <https://github.com/ros2/ros2cli/issues/998>`_)
-* Contributors: Christophe Bedard, Michael Carroll, mergify[bot]
+* Custom Completion Finder for fetching topic prototype (`#995 <https://github.com/ros2/ros2cli/issues/995>`_)
+* Documented now and auto keywords (`#1008 <https://github.com/ros2/ros2cli/issues/1008>`_)
+* Conditional deserialization of message for `ros2 topic hz` (`#1005 <https://github.com/ros2/ros2cli/issues/1005>`_)
+* Enable `ros2 topic echo` with entries of array fields (`#996 <https://github.com/ros2/ros2cli/issues/996>`_)
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Adapt tests to Zenoh (`#988 <https://github.com/ros2/ros2cli/issues/988>`_)
+* Adjust topic hz and bw command description (`#987 <https://github.com/ros2/ros2cli/issues/987>`_)
+* Add support for topic QOS for ros2topic bw, delay and hz (`#935 <https://github.com/ros2/ros2cli/issues/935>`_)
+* Start the simulation from 1 second for the test (`#975 <https://github.com/ros2/ros2cli/issues/975>`_)
+* Support QoS options for `ros2 service call` (`#966 <https://github.com/ros2/ros2cli/issues/966>`_)
+* Support ros2 topic pub yaml file input (`#925 <https://github.com/ros2/ros2cli/issues/925>`_)
+* Contributors: Alejandro Hernández Cordero, Anthony Welte, Fabian Thomsen, Florencia, Kostubh Khandelwal, Leander Stephen D'Souza, Martin Pecka, Michael Carroll, Tomoya Fujita
 
-0.32.3 (2025-04-02)
+0.37.0 (2025-02-02)
 -------------------
-* Adapt tests to Zenoh (backport `#988 <https://github.com/ros2/ros2cli/issues/988>`_) (`#991 <https://github.com/ros2/ros2cli/issues/991>`_)
-  * Adapt tests to Zenoh (`#988 <https://github.com/ros2/ros2cli/issues/988>`_)
-  (cherry picked from commit 31d814d1c9e7cbe1bab9180ffb5f101707e02df4)
-* Adjust topic hz and bw command description. (`#987 <https://github.com/ros2/ros2cli/issues/987>`_) (`#990 <https://github.com/ros2/ros2cli/issues/990>`_)
-  (cherry picked from commit 9a0c044ff08c89795fdfc66feb6cfe5fd3842f3a)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-* start the simulation from 1 second for the test. (`#975 <https://github.com/ros2/ros2cli/issues/975>`_) (`#976 <https://github.com/ros2/ros2cli/issues/976>`_)
-  (cherry picked from commit 2c9c1933af37ae8a502a1c3abf2acf4ea810dc9e)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-* Contributors: mergify[bot]
+* support multiple fields in ros2topic echo (`#964 <https://github.com/ros2/ros2cli/issues/964>`_)
+* Contributors: SangtaekLee
 
-0.32.2 (2024-12-18)
+0.36.1 (2024-12-20)
 -------------------
 
-0.32.1 (2024-05-13)
+0.36.0 (2024-11-20)
+-------------------
+* NodeStrategy supports node name argument. (`#941 <https://github.com/ros2/ros2cli/issues/941>`_)
+* feat(echo --clear): add --clear option to echo (`#819 <https://github.com/ros2/ros2cli/issues/819>`_)
+* Contributors: Guillaume Beuzeboc, Tomoya Fujita
+
+0.35.0 (2024-10-03)
+-------------------
+* Support multiple topics via ros2 topic hz. (`#929 <https://github.com/ros2/ros2cli/issues/929>`_)
+* Remove TODO for OpenSplice DDS issue. (`#928 <https://github.com/ros2/ros2cli/issues/928>`_)
+* Contributors: Tomoya Fujita
+
+0.34.1 (2024-07-29)
+-------------------
+* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
+* Contributors: Chris Lalancette
+
+0.34.0 (2024-06-17)
+-------------------
+
+0.33.0 (2024-04-26)
 -------------------
 
 0.32.0 (2024-04-16)
