@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib
 import time
+from typing import Optional
 
 import rclpy
+from rclpy.qos import QoSPresetProfiles
+from rclpy.qos import QoSProfile
 from ros2cli.helpers import collect_stdin
 from ros2cli.node import NODE_NAME_PREFIX
 from ros2service.api import ServiceNameCompleter
 from ros2service.api import ServicePrototypeCompleter
 from ros2service.api import ServiceTypeCompleter
 from ros2service.verb import VerbExtension
+from ros2topic.api import add_qos_arguments, profile_configure_short_keys
 from rosidl_runtime_py import set_message_fields
+from rosidl_runtime_py.utilities import get_service
 import yaml
 
 
@@ -54,11 +58,17 @@ class CallVerb(VerbExtension):
         parser.add_argument(
             '-r', '--rate', metavar='N', type=float,
             help='Repeat the call at a specific rate in Hz')
+        add_qos_arguments(parser, 'service client', 'services_default')
 
     def main(self, *, args):
         if args.rate is not None and args.rate <= 0:
             raise RuntimeError('rate must be greater than zero')
         period = 1. / args.rate if args.rate else None
+
+        default_profile = QoSPresetProfiles.get_from_short_key(args.qos_profile)
+        profile_configure_short_keys(
+            default_profile, args.qos_reliability, args.qos_durability,
+            args.qos_depth, args.qos_history)
 
         if args.stdin:
             values = collect_stdin()
@@ -66,33 +76,28 @@ class CallVerb(VerbExtension):
             values = args.values
 
         return requester(
-            args.service_type, args.service_name, values, period)
+            args.service_type, args.service_name, values, period, default_profile)
 
 
-def requester(service_type, service_name, values, period):
-    # TODO(wjwwood) this logic should come from a rosidl related package
+def requester(service_type: str, service_name: str, values, period: Optional[float],
+              qos_profile: QoSProfile) -> None:
     try:
         parts = service_type.split('/')
-        if len(parts) == 2:
-            parts = [parts[0], 'srv', parts[1]]
         package_name = parts[0]
-        module = importlib.import_module('.'.join(parts[:-1]))
         srv_name = parts[-1]
-        srv_module = getattr(module, srv_name)
-    except (AttributeError, ModuleNotFoundError, ValueError):
+        srv_module = get_service(service_type)
+    except (AttributeError, ModuleNotFoundError):
         raise RuntimeError('The passed service type is invalid')
-    try:
-        srv_module.Request
-        srv_module.Response
-    except AttributeError:
-        raise RuntimeError('The passed type is not a service')
 
     values_dictionary = yaml.safe_load(values)
 
     with rclpy.init():
         node = rclpy.create_node(NODE_NAME_PREFIX + '_requester_%s_%s' % (package_name, srv_name))
 
-        cli = node.create_client(srv_module, service_name)
+        cli = node.create_client(
+            srv_module,
+            service_name,
+            qos_profile=qos_profile)
 
         request = srv_module.Request()
 

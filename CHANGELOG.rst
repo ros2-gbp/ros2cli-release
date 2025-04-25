@@ -2,6 +2,16 @@
 Changelog for package ros2service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
+0.38.0 (2025-04-25)
+-------------------
+* Use `get_service` in `ros2service call` (`#994 <https://github.com/ros2/ros2cli/issues/994>`_)
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Support QoS options for `ros2 service call` (`#966 <https://github.com/ros2/ros2cli/issues/966>`_)
+* Contributors: Michael Carlstrom, Michael Carroll, Tomoya Fujita
+
 0.37.0 (2025-02-02)
 -------------------
 * Maintaining consistency of automatically putting time stamps in the service and action calls similiar to publishing in rostopics. (`#961 <https://github.com/ros2/ros2cli/issues/961>`_)
