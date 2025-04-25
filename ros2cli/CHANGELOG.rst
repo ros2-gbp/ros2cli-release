@@ -2,6 +2,14 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
+0.38.0 (2025-04-25)
+-------------------
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Contributors: Michael Carroll
+
 0.37.0 (2025-02-02)
 -------------------
 * Rename the test\_{daemon,direct}.py tests. (`#959 <https://github.com/ros2/ros2cli/issues/959>`_)
