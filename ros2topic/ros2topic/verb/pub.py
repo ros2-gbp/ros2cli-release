@@ -16,6 +16,8 @@ import time
 from typing import Optional
 from typing import TypeVar
 
+import argcomplete
+
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
@@ -25,7 +27,7 @@ from ros2cli.node.direct import DirectNode
 from ros2topic.api import add_qos_arguments
 from ros2topic.api import positive_float
 from ros2topic.api import profile_configure_short_keys
-from ros2topic.api import TopicMessagePrototypeCompleter
+from ros2topic.api import TopicMessagePrototypeCompleter, YamlCompletionFinder
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import TopicTypeCompleter
 from ros2topic.verb import VerbExtension
@@ -64,12 +66,19 @@ class PubVerb(VerbExtension):
             'values', nargs='?', default='{}',
             help='Values to fill the message with in YAML format '
                  "(e.g. 'data: Hello World'), "
-                 'otherwise the message will be published with default values')
+                 'otherwise the message will be published with default values. '
+                 "You can use 'now' placeholder to get the current time and "
+                 "'auto' placeholder to get a std_msgs.msg.Header with current "
+                 'time and empty frame_id.')
         arg.completer = TopicMessagePrototypeCompleter(
             topic_type_key='message_type')
         group.add_argument(
             '--stdin', action='store_true',
             help='Read values from standard input')
+        group.add_argument(
+            '--yaml-file', type=str, default=None,
+            help='YAML file that has message contents, '
+                 'e.g STDOUT from ros2 topic echo <topic>')
         parser.add_argument(
             '-r', '--rate', metavar='N', type=positive_float, default=1.0,
             help='Publishing rate in Hz (default: 1)')
@@ -101,6 +110,10 @@ class PubVerb(VerbExtension):
         parser.add_argument(
             '-n', '--node-name',
             help='Name of the created publishing node')
+
+        # Use the custom completion finder
+        argcomplete.autocomplete = YamlCompletionFinder(parser)
+
         add_qos_arguments(parser, 'publish', 'default')
         add_direct_node_arguments(parser)
 
@@ -131,6 +144,7 @@ def main(args):
             args.message_type,
             args.topic_name,
             values,
+            args.yaml_file,
             1. / args.rate,
             args.print,
             times,
@@ -146,6 +160,7 @@ def publisher(
     message_type: MsgType,
     topic_name: str,
     values: dict,
+    yaml_file: str,
     period: float,
     print_nth: int,
     times: int,
@@ -159,9 +174,24 @@ def publisher(
         msg_module = get_message(message_type)
     except (AttributeError, ModuleNotFoundError, ValueError):
         raise RuntimeError('The passed message type is invalid')
-    values_dictionary = yaml.safe_load(values)
-    if not isinstance(values_dictionary, dict):
-        return 'The passed value needs to be a dictionary in YAML format'
+
+    msg_reader = None
+    if yaml_file:
+        msg_reader = read_msg_from_yaml(yaml_file)
+    else:
+        try:
+            # Handle cases where the user pastes the autocompleted bash safe string
+            if '^J' in values:
+                values = values.replace("'", '')
+                values = values.replace('^J', '\n')
+
+            values_dictionary = yaml.safe_load(values)
+
+        except (yaml.parser.ParserError, yaml.scanner.ScannerError):
+            return 'The passed value needs to be in YAML string or a dictionary'
+
+        if not isinstance(values_dictionary, dict):
+            return 'The passed value needs to be a dictionary in YAML format'
 
     pub = node.create_publisher(msg_module, topic_name, qos_profile)
 
@@ -184,15 +214,38 @@ def publisher(
         total_wait_time += DEFAULT_WAIT_TIME
 
     msg = msg_module()
-    try:
-        timestamp_fields = set_message_fields(
-            msg, values_dictionary, expand_header_auto=True, expand_time_now=True)
-    except Exception as e:
-        return 'Failed to populate field: {0}'.format(e)
+    timestamp_fields = None
+
+    if not msg_reader:
+        # Set the static message from specified values once
+        try:
+            timestamp_fields = set_message_fields(
+                msg, values_dictionary, expand_header_auto=True, expand_time_now=True)
+        except Exception as e:
+            return 'Failed to populate field: {0}'.format(e)
+
     print('publisher: beginning loop')
     count = 0
+    more_message = True
 
     def timer_callback():
+        if msg_reader:
+            # Try to read out the contents for each message
+            try:
+                one_msg = next(msg_reader)
+                if not isinstance(one_msg, dict):
+                    print('The contents in YAML file need to be a YAML format')
+            except StopIteration:
+                nonlocal more_message
+                more_message = False
+                return
+            # Set the message with contents
+            try:
+                nonlocal timestamp_fields
+                timestamp_fields = set_message_fields(
+                    msg, one_msg, expand_header_auto=True, expand_time_now=True)
+            except Exception as e:
+                return 'Failed to populate field: {0}'.format(e)
         stamp_now = node.get_clock().now().to_msg()
         for field_setter in timestamp_fields:
             field_setter(stamp_now)
@@ -205,7 +258,7 @@ def publisher(
     timer_callback()
     if times != 1:
         timer = node.create_timer(period, timer_callback)
-        while times == 0 or count < times:
+        while (times == 0 or count < times) and more_message:
             rclpy.spin_once(node)
         # give some time for the messages to reach the wire before exiting
         time.sleep(keep_alive)
@@ -213,3 +266,12 @@ def publisher(
     else:
         # give some time for the messages to reach the wire before exiting
         time.sleep(keep_alive)
+
+
+def read_msg_from_yaml(yaml_file):
+    with open(yaml_file, 'r') as f:
+        for document in yaml.load_all(f, Loader=yaml.FullLoader):
+            if document is None:
+                continue  # Skip if there's no more document
+
+            yield document
