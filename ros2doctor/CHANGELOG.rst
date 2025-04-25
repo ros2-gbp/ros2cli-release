@@ -2,6 +2,15 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.0 (2025-04-25)
+-------------------
+
+0.38.0 (2025-04-25)
+-------------------
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Skip QoS compatibility test on Zenoh (`#985 <https://github.com/ros2/ros2cli/issues/985>`_)
+* Contributors: Alejandro Hernández Cordero, Michael Carroll
+
 0.37.0 (2025-02-02)
 -------------------
 
