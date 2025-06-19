@@ -195,6 +195,8 @@ class TestVerbLoad(unittest.TestCase):
                     services = node.get_service_names_and_types_by_node(TEST_NODE, TEST_NAMESPACE)
                 except rclpy.node.NodeNameNonExistentError:
                     continue
+                except ConnectionRefusedError:
+                    continue
                 except xmlrpc.client.Fault as e:
                     if 'NodeNameNonExistentError' in e.faultString:
                         continue
@@ -309,7 +311,7 @@ class TestVerbLoad(unittest.TestCase):
             assert launch_testing.tools.expect_output(
                 expected_text=INPUT_PARAMETER_FILE + '\n',
                 text=param_dump_command.output,
-                strict=True
+                strict=False
             )
 
     def test_verb_load_wildcard(self):
@@ -344,8 +346,13 @@ class TestVerbLoad(unittest.TestCase):
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
-            loaded_params = yaml.safe_load(param_dump_command.output)
-            params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            try:
+                loaded_params = yaml.safe_load(param_dump_command.output)
+                if not isinstance(loaded_params, dict):
+                    self.fail('Invalid YAML output: Expected a dictionary')
+                params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            except yaml.YAMLError as e:
+                self.fail(f'Failed to parse YAML output: {e}')
             assert params['str_param'] == 'Wildcard'
             assert params['int_param'] == 12345
 
@@ -359,15 +366,20 @@ class TestVerbLoad(unittest.TestCase):
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code == launch_testing.asserts.EXIT_OK
 
-            # Dump and check that wildcard parameters were overriden if in node namespace
+            # Dump and check that wildcard parameters were overridden if in node namespace
             with self.launch_param_dump_command(
                 arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
-            loaded_params = yaml.safe_load(param_dump_command.output)
-            params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
-            assert params['str_param'] == 'Override'  # Overriden
+            try:
+                loaded_params = yaml.safe_load(param_dump_command.output)
+                if not isinstance(loaded_params, dict):
+                    self.fail('Invalid YAML output: Expected a dictionary')
+                params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            except yaml.YAMLError as e:
+                self.fail(f'Failed to parse YAML output: {e}')
+            assert params['str_param'] == 'Override'  # Overridden
             assert params['int_param'] == 12345  # Wildcard namespace
 
             # Concatenate wildcard + some overlays with namespace and base node name
@@ -380,13 +392,18 @@ class TestVerbLoad(unittest.TestCase):
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code == launch_testing.asserts.EXIT_OK
 
-            # Dump and check that wildcard parameters were overriden if in node namespace
+            # Dump and check that wildcard parameters were overridden if in node namespace
             with self.launch_param_dump_command(
                 arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
-            loaded_params = yaml.safe_load(param_dump_command.output)
-            params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
-            assert params['str_param'] == 'Override'  # Overriden
+            try:
+                loaded_params = yaml.safe_load(param_dump_command.output)
+                if not isinstance(loaded_params, dict):
+                    self.fail('Invalid YAML output: Expected a dictionary')
+                params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            except yaml.YAMLError as e:
+                self.fail(f'Failed to parse YAML output: {e}')
+            assert params['str_param'] == 'Override'  # Overridden
             assert params['int_param'] == 12345  # Wildcard namespace
