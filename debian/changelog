@@ -1,0 +1,529 @@
+ros-rolling-ros2interface (0.39.2-1bookworm) bookworm; urgency=high
+
+  * Make sure to install py.typed files (#1058 <https://github.com/ros2/ros2cli/issues/1058>)
+  * Contributors: Christophe Bedard
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 01 Jul 2025 00:00:00 -0000
+
+ros-rolling-ros2interface (0.39.1-1bookworm) bookworm; urgency=high
+
+  * Export Typing information (#1041 <https://github.com/ros2/ros2cli/issues/1041>)
+  * Contributors: Michael Carlstrom
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 19 Jun 2025 00:00:00 -0000
+
+ros-rolling-ros2interface (0.39.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 25 Apr 2025 00:00:00 -0000
+
+ros-rolling-ros2interface (0.38.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 25 Apr 2025 00:00:00 -0000
+
+ros-rolling-ros2interface (0.37.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Sun, 02 Feb 2025 00:00:00 -0000
+
+ros-rolling-ros2interface (0.36.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 20 Dec 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.36.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 20 Nov 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.35.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 03 Oct 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.34.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 29 Jul 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.34.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 17 Jun 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.33.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 26 Apr 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.32.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 16 Apr 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.31.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Mar 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.31.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Feb 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.31.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 24 Jan 2024 00:00:00 -0000
+
+ros-rolling-ros2interface (0.30.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 Dec 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.30.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 06 Nov 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.29.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 04 Oct 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.29.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 21 Aug 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.28.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Jul 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.27.0-1bookworm) bookworm; urgency=high
+
+  * Add interface type filters to ros2 interface package (#765 <https://github.com/ros2/ros2cli/issues/765>)
+  * Contributors: David V. Lu!!
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 07 Jun 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.26.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 11 May 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.26.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 28 Apr 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.25.0-1bookworm) bookworm; urgency=high
+
+  * Make all of the dependencies in pure Python packages exec_depend. (#823 <https://github.com/ros2/ros2cli/issues/823>)
+  * Contributors: Chris Lalancette
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 18 Apr 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.24.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Apr 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.24.0-1bookworm) bookworm; urgency=high
+
+  * Enable document generation using rosdoc2 (#811 <https://github.com/ros2/ros2cli/issues/811>)
+  * Contributors: Yadu
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 11 Apr 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.23.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 02 Mar 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.22.0-1bookworm) bookworm; urgency=high
+
+  * [rolling] Update maintainers - 2022-11-07 (#776 <https://github.com/ros2/ros2cli/issues/776>)
+  * Contributors: Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 14 Feb 2023 00:00:00 -0000
+
+ros-rolling-ros2interface (0.21.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 02 Nov 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.20.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 13 Sep 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.19.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 29 Apr 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.18.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Apr 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.18.2-1bookworm) bookworm; urgency=high
+
+  * Add timeout to kill hanging tests (#701 <https://github.com/ros2/ros2cli/issues/701>)
+  * Contributors: Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 30 Mar 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.18.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 28 Mar 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.18.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 01 Mar 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.17.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.17.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 25 Jan 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.16.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.16.0-1bookworm) bookworm; urgency=high
+
+  * Depend on launch packages instead of ros_testing to avoid circular dependency (#685 <https://github.com/ros2/ros2cli/issues/685>)
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 14 Jan 2022 00:00:00 -0000
+
+ros-rolling-ros2interface (0.15.0-1bookworm) bookworm; urgency=high
+
+  * Update maintainers to Aditya Pande, Audrow Nash, and Michael Jeronimo (#673 <https://github.com/ros2/ros2cli/issues/673>)
+  * Updated maintainers (#670 <https://github.com/ros2/ros2cli/issues/670>)
+  * Add changelogs (#635 <https://github.com/ros2/ros2cli/issues/635>)
+  * Contributors: Aditya Pande, Audrow Nash, Ivan Santiago Paunovic
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 18 Nov 2021 00:00:00 -0000
+
+ros-rolling-ros2interface (0.14.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 26 Apr 2021 00:00:00 -0000
+
+ros-rolling-ros2interface (0.13.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 06 Apr 2021 00:00:00 -0000
+
+ros-rolling-ros2interface (0.12.0-1bookworm) bookworm; urgency=high
+
+  * Remove maintainer. (#597 <https://github.com/ros2/ros2cli/issues/597>)
+  * Add Audrow as a maintainer. (#591 <https://github.com/ros2/ros2cli/issues/591>)
+  * Contributors: Audrow Nash, Claire Wang
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 02 Mar 2021 00:00:00 -0000
+
+ros-rolling-ros2interface (0.11.0-1bookworm) bookworm; urgency=high
+
+  * Remove ros2interface test dependencies on builtin interface. (#579 <https://github.com/ros2/ros2cli/issues/579>)
+  * Contributors: Audrow Nash
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 25 Jan 2021 00:00:00 -0000
+
+ros-rolling-ros2interface (0.10.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Dec 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.10.0-1bookworm) bookworm; urgency=high
+
+  * Update maintainers. (#568 <https://github.com/ros2/ros2cli/issues/568>)
+  * Handle inline comments on constants correctly. (#548 <https://github.com/ros2/ros2cli/issues/548>)
+  * Update quoted comments in the test (#540 <https://github.com/ros2/ros2cli/issues/540>)
+  * Add option to include/remove whitespace and comments. (#527 <https://github.com/ros2/ros2cli/issues/527>)
+  * Show "expanded" message definition. (#524 <https://github.com/ros2/ros2cli/issues/524>)
+  * Contributors: Audrow, Audrow Nash, Claire Wang, Tully Foote
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 02 Nov 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.9.5-1bookworm) bookworm; urgency=high
+
+  * [ros2interface] Allow stdin input for 'ros2 interface show'. (#387 <https://github.com/ros2/ros2cli/issues/387>)
+    * Allow stdin input for 'ros2 interface show'
+    * Just use help for all the information
+    * Fix import order
+    * Simplify logic
+    * Catch empty values in case stdin doesn't contain output
+    * Add test for 'ros2 interface show' with stdin
+    * Use test_msgs instead of std_msgs for stdin test
+    * Use example_interfaces in help for show
+    Co-authored-by: Dirk Thomas <mailto:dirk-thomas@users.noreply.github.com>
+  * Contributors: Nursharmin Ramli
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 01 Jun 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.9.4-1bookworm) bookworm; urgency=high
+
+  * [ros2interface] Remove usage of deprecated std_msgs and std_srvs packages. (#516 <https://github.com/ros2/ros2cli/issues/516>)
+  * Use consistent quotes in help messages. (#517 <https://github.com/ros2/ros2cli/issues/517>)
+    Using single quotes inside double quotes is consistent with the other CLI help messages.
+  * Contributors: Jacob Perron
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 26 May 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.9.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 May 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.9.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 May 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.9.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 06 May 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.9.0-1bookworm) bookworm; urgency=high
+
+  * Skip CLI tests on Windows until we resolve the blocking/hanging isuse. (#489 <https://github.com/ros2/ros2cli/issues/489>)
+  * More verbose test_flake8 error messages (same as ros2/launch_ros#135 <https://github.com/ros2/launch_ros/issues/135>)
+  * Remove ready_fn from test descriptions. (#376 <https://github.com/ros2/ros2cli/issues/376>)
+  * Only load required entry points which improves the performance. (#436 <https://github.com/ros2/ros2cli/issues/436>)
+    * Extend API to exclude extensions from loading
+    * Add add_subparsers_on_demand() function
+    * Update all extensions to use the new API
+    * Deprecate old API, add deprecation warnings
+  * Add docblock for ros2interface command. (#434 <https://github.com/ros2/ros2cli/issues/434>)
+  * Contributors: Dirk Thomas, Jacob Perron, Peter Baughman, Steven! Ragnarök
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 Apr 2020 00:00:00 -0000
+
+ros-rolling-ros2interface (0.8.6-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 19 Nov 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.8.5-1bookworm) bookworm; urgency=high
+
+  * 0.8.5
+  * Contributors: Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 14 Nov 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.8.4-1bookworm) bookworm; urgency=high
+
+  * 0.8.4
+  * [ros2interface] Fix tests. (#386 <https://github.com/ros2/ros2cli/issues/386>)
+    Broken in https://github.com/ros2/rosidl_runtime_py/pull/6
+  * Contributors: Jacob Perron, Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 13 Nov 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.8.3-1bookworm) bookworm; urgency=high
+
+  * 0.8.3
+  * End-to-end test coverage for CLI commands output. (#304 <https://github.com/ros2/ros2cli/issues/304>)
+    * Add end-to-end CLI output tests for ros2:
+    - ros2action
+    - ros2service
+    - ros2topic
+    - ros2msg
+    - ros2srv
+    - ros2interface
+    - ros2node
+    - ros2pkg
+  * Make ros2 interface show fail gracefully (no traceback). (#372 <https://github.com/ros2/ros2cli/issues/372>)
+  * Move rosidl implementation details to rosidl_runtime_py. (#371 <https://github.com/ros2/ros2cli/issues/371>)
+    * Move rosidl implementation details to rosidl_runtime_py
+    This resolves several TODOs.
+    Here is the PR moving the related functions to their new home: https://github.com/ros2/rosidl_runtime_py/pull/3
+    * Remove dependencies on deprecated packages
+    * Remove obsolete test
+    * Make linters happy :)
+  * Handle bad or missing package on ros2 interface show. (#366 <https://github.com/ros2/ros2cli/issues/366>)
+  * Ensure ros2 interface show has trailing newline. (#368 <https://github.com/ros2/ros2cli/issues/368>)
+  * Contributors: Dirk Thomas, Jacob Perron, Michel Hidalgo, Shane Loretz
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 23 Oct 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.8.2-1bookworm) bookworm; urgency=high
+
+  * 0.8.2
+  * Contributors: Dirk Thomas
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 08 Oct 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.8.1-1bookworm) bookworm; urgency=high
+
+  * 0.8.1
+  * Contributors: Michael Carroll
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 04 Oct 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.8.0-1bookworm) bookworm; urgency=high
+
+  * Install resource marker file for packages. (#339 <https://github.com/ros2/ros2cli/issues/339>)
+  * Add interface proto . (#298 <https://github.com/ros2/ros2cli/issues/298>)
+    * Add interface proto
+    * Use rosidl_runtime_py.utilities
+    * No-hyphens -> no-quotes
+  * Install package manifest. (#330 <https://github.com/ros2/ros2cli/issues/330>)
+  * Ros2interface fixes/changes. (#308 <https://github.com/ros2/ros2cli/issues/308>)
+    * Minor changes to ros2interface
+  * Add actions to interface type completer. (#303 <https://github.com/ros2/ros2cli/issues/303>)
+    Fix #302 <https://github.com/ros2/ros2cli/issues/302>
+  * [ros2interface] Fix output formatting. (#289 <https://github.com/ros2/ros2cli/issues/289>)
+    * Add missing indentation to list verb output
+    * Format show verb error message
+  * Added ros2interface to replace ros2 msg/srv. (#288 <https://github.com/ros2/ros2cli/issues/288>)
+    * Adding ros2 interface command line tool
+    Signed off by: Siddharth Kucheria
+  * Contributors: Dirk Thomas, Jacob Perron, Jeremie Deray, Siddharth Kucheria
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 26 Sep 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.7.4-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 29 May 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.7.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 May 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.7.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 08 May 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.7.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 17 Apr 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.7.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Sun, 14 Apr 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.6.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Feb 2019 00:00:00 -0000
+
+ros-rolling-ros2interface (0.6.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 12 Dec 2018 00:00:00 -0000
+
+ros-rolling-ros2interface (0.6.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 06 Dec 2018 00:00:00 -0000
+
+ros-rolling-ros2interface (0.6.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 19 Nov 2018 00:00:00 -0000
+
+ros-rolling-ros2interface (0.5.4-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Mon, 20 Aug 2018 00:00:00 -0000
+
+ros-rolling-ros2interface (0.5.3-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Tue, 17 Jul 2018 00:00:00 -0000
+
+ros-rolling-ros2interface (0.5.2-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Thu, 28 Jun 2018 00:00:00 -0000
+
+ros-rolling-ros2interface (0.5.1-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 12:27:00 -0000
+
+ros-rolling-ros2interface (0.5.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Wed, 27 Jun 2018 12:17:00 -0000
+
+ros-rolling-ros2interface (0.4.0-1bookworm) bookworm; urgency=high
+
+
+
+ -- Audrow Nash <audrow@openrobotics.org>  Fri, 08 Dec 2017 00:00:00 -0000
+
+
