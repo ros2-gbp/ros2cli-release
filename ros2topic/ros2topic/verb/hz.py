@@ -274,7 +274,8 @@ def _rostopic_hz(node, topic, window_size=DEFAULT_WINDOW_SIZE, filter_expr=None,
         msg_class,
         topic,
         functools.partial(rt.callback_hz, topic=topic),
-        qos_profile_sensor_data)
+        qos_profile_sensor_data,
+        raw=filter_expr is None)
 
     while rclpy.ok():
         rclpy.spin_once(node)
