@@ -17,7 +17,6 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import Optional
 
 import ament_copyright
 
@@ -80,7 +79,7 @@ class CreateVerb(VerbExtension):
             '--maintainer-email',
             help='email address of the maintainer of this package'),
         parser.add_argument(
-            '--maintainer-name',
+            '--maintainer-name', default=getpass.getuser(),
             help='name of the maintainer of this package'),
         parser.add_argument(
             '--node-name',
@@ -90,21 +89,6 @@ class CreateVerb(VerbExtension):
             help='name of the empty library')
 
     def main(self, *, args):
-
-        def get_git_config(key: str) -> Optional[str]:
-            # retrieve a value from git config
-            git = shutil.which('git')
-            if git is not None:
-                result = subprocess.run(
-                    [git, 'config', key],
-                    stdout=subprocess.PIPE,
-                    text=True
-                )
-                value = result.stdout.strip()
-                if value:
-                    return value
-            return None
-
         available_licenses = {}
         for shortname, entry in ament_copyright.get_licenses().items():
             available_licenses[entry.spdx] = entry.license_files
@@ -113,15 +97,23 @@ class CreateVerb(VerbExtension):
             print('Supported licenses:\n%s' % ('\n'.join(available_licenses)))
             sys.exit(0)
 
-        maintainer_name: str = (
-            args.maintainer_name
-            or get_git_config('user.name')
-            or getpass.getuser())
-        maintainer = Person(maintainer_name)
-        maintainer.email = (
-            args.maintainer_email
-            or get_git_config('user.email')
-            or f"{maintainer.name.replace(' ', '')}@todo.todo")
+        maintainer = Person(args.maintainer_name)
+
+        if args.maintainer_email:
+            maintainer.email = args.maintainer_email
+        else:
+            # try getting the email from the global git config
+            git = shutil.which('git')
+            if git is not None:
+                p = subprocess.Popen(
+                    [git, 'config', 'user.email'],
+                    stdout=subprocess.PIPE)
+                resp = p.communicate()
+                email = resp[0].decode().rstrip()
+                if email:
+                    maintainer.email = email
+            if not maintainer.email:
+                maintainer.email = maintainer.name + '@todo.todo'
 
         node_name = None
         library_name = None
@@ -146,7 +138,7 @@ class CreateVerb(VerbExtension):
             test_dependencies = ['ament_lint_auto', 'ament_lint_common']
         if args.build_type == 'ament_python':
             test_dependencies = ['ament_copyright', 'ament_flake8', 'ament_pep257',
-                                 'ament_xmllint', 'python3-pytest']
+                                 'python3-pytest']
 
         if args.build_type == 'ament_python' and args.package_name == 'test':
             # If the package name is 'test', there will be a conflict between
@@ -231,4 +223,4 @@ class CreateVerb(VerbExtension):
         else:
             print("\n[WARNING]: Unknown license '%s'.  This has been set in the package.xml, but "
                   'no LICENSE file has been created.\nIt is recommended to use one of the ament '
-                  'license identifiers:\n%s' % (args.license, '\n'.join(available_licenses)))
+                  'license identitifers:\n%s' % (args.license, '\n'.join(available_licenses)))

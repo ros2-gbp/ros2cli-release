@@ -15,6 +15,7 @@
 import contextlib
 import os
 import sys
+import tempfile
 import time
 import unittest
 import xmlrpc
@@ -33,7 +34,6 @@ import pytest
 
 import rclpy
 from rclpy.utilities import get_available_rmw_implementations
-from ros2cli.helpers import get_rmw_additional_env
 
 from ros2cli.node.strategy import NodeStrategy
 
@@ -64,7 +64,6 @@ EXPECTED_PARAMETER_FILE = (
     '    - 2\n'
     '    - 3\n'
     '    int_param: 42\n'
-    '    start_type_description_service: true\n'
     '    str_array_param:\n'
     '    - foo\n'
     '    - bar\n'
@@ -85,7 +84,7 @@ if sys.platform.startswith('win'):
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
 def generate_test_description(rmw_implementation):
     path_to_fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
-    additional_env = get_rmw_additional_env(rmw_implementation)
+    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
 
     # Parameter node test fixture
     path_to_parameter_node_script = os.path.join(path_to_fixtures, 'parameter_node.py')
@@ -135,7 +134,9 @@ class TestVerbDump(unittest.TestCase):
         def launch_param_dump_command(self, arguments):
             param_dump_command_action = ExecuteProcess(
                 cmd=['ros2', 'param', 'dump', *arguments],
-                additional_env=get_rmw_additional_env(rmw_implementation),
+                additional_env={
+                    'RMW_IMPLEMENTATION': rmw_implementation,
+                },
                 name='ros2param-dump-cli',
                 output='screen'
             )
@@ -198,6 +199,18 @@ class TestVerbDump(unittest.TestCase):
             strict=True
         )
 
+    def test_verb_dump_invalid_path(self):
+        with self.launch_param_dump_command(
+            arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--output-dir', 'invalid_path']
+        ) as param_dump_command:
+            assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
+        assert param_dump_command.exit_code != launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=["'invalid_path' is not a valid directory."],
+            text=param_dump_command.output,
+            strict=True
+        )
+
     def test_verb_dump(self):
         with self.launch_param_dump_command(
             arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
@@ -207,5 +220,41 @@ class TestVerbDump(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_text=EXPECTED_PARAMETER_FILE + '\n',
             text=param_dump_command.output,
-            strict=False
+            strict=True
         )
+
+    # TODO(fujitatomoya): remove this test when '--print' option is removed
+    def test_verb_dump_print(self):
+        # If '--print' is provided, ensure it does nothing but print parameters to stdout
+        with self.launch_param_dump_command(
+            arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--print']
+        ) as param_dump_command:
+            assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
+        assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                "WARNING: '--print' is deprecated; this utility prints to stdout by default"
+            ],
+            text=param_dump_command.stderr,
+            strict=True
+        )
+
+    # TODO(fujitatomoya): remove this test when '--output-dir' option is removed
+    def test_verb_dump_output(self):
+        # If '--output-dir' is provided, ensure it only saves parameters into file
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.launch_param_dump_command(
+                arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}', '--output-dir', tmpdir]
+            ) as param_dump_command:
+                assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
+            assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
+            assert launch_testing.tools.expect_output(
+                expected_lines=[
+                    "WARNING: '--output-dir' is deprecated; use redirection to save to a file"
+                ],
+                text=param_dump_command.stderr,
+                strict=True
+            )
+            # Compare generated parameter file against expected
+            generated_param_file = os.path.join(tmpdir, self._output_file())
+            assert (open(generated_param_file, 'r').read() == EXPECTED_PARAMETER_FILE)

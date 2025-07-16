@@ -21,7 +21,6 @@ from ros2action.api import action_name_completer
 from ros2action.api import ActionGoalPrototypeCompleter
 from ros2action.api import ActionTypeCompleter
 from ros2action.verb import VerbExtension
-from ros2cli.helpers import collect_stdin
 from ros2cli.node import NODE_NAME_PREFIX
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py import set_message_fields
@@ -42,13 +41,9 @@ class SendGoalVerb(VerbExtension):
             'action_type',
             help="Type of the ROS action (e.g. 'example_interfaces/action/Fibonacci')")
         arg.completer = ActionTypeCompleter(action_name_key='action_name')
-        group = parser.add_mutually_exclusive_group()
-        arg = group.add_argument(
-            'goal', nargs='?', default='{}',
+        arg = parser.add_argument(
+            'goal',
             help="Goal request values in YAML format (e.g. '{order: 10}')")
-        group.add_argument(
-            '--stdin', action='store_true',
-            help='Read goal from standard input')
         arg.completer = ActionGoalPrototypeCompleter(action_type_key='action_type')
         parser.add_argument(
             '-f', '--feedback', action='store_true',
@@ -58,13 +53,7 @@ class SendGoalVerb(VerbExtension):
         feedback_callback = None
         if args.feedback:
             feedback_callback = _feedback_callback
-
-        if args.stdin:
-            goal = collect_stdin()
-        else:
-            goal = args.goal
-
-        return send_goal(args.action_name, args.action_type, goal, feedback_callback)
+        return send_goal(args.action_name, args.action_type, args.goal, feedback_callback)
 
 
 def _goal_status_to_string(status):
@@ -109,19 +98,13 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
 
         goal = action_module.Goal()
 
-        timestamp_fields = []
         try:
-            timestamp_fields = set_message_fields(
-                goal, goal_dict, expand_header_auto=True, expand_time_now=True)
+            set_message_fields(goal, goal_dict)
         except Exception as ex:
             return 'Failed to populate message fields: {!r}'.format(ex)
 
         print('Waiting for an action server to become available...')
         action_client.wait_for_server()
-
-        stamp_now = node.get_clock().now().to_msg()
-        for field_setter in timestamp_fields:
-            field_setter(stamp_now)
 
         print('Sending goal:\n     {}'.format(message_to_yaml(goal)))
         goal_future = action_client.send_goal_async(goal, feedback_callback)
@@ -181,7 +164,6 @@ def send_goal(action_name, action_type, goal_values, feedback_callback):
 
         print('Result:\n    {}'.format(message_to_yaml(result.result)))
         print('Goal finished with status: {}'.format(_goal_status_to_string(result.status)))
-
     finally:
         if action_client is not None:
             action_client.destroy()

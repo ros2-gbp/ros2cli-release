@@ -5,20 +5,19 @@ package_name = 'ros2service'
 
 setup(
     name=package_name,
-    version='0.39.2',
+    version='0.18.13',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
     ],
-    package_data={'': ['py.typed']},
     install_requires=['ros2cli'],
     zip_safe=True,
     author='William Woodall',
     author_email='william@osrfoundation.org',
-    maintainer='Audrow Nash, Geoffrey Biggs',
-    maintainer_email='audrow@openrobotics.org, geoff@openrobotics.org',
+    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
+    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
     url='https://github.com/ros2/ros2cli/tree/master/ros2service',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],
@@ -42,9 +41,7 @@ The package provides the service command for the ROS 2 command line tools.""",
         ],
         'ros2service.verb': [
             'call = ros2service.verb.call:CallVerb',
-            'echo = ros2service.verb.echo:EchoVerb',
             'find = ros2service.verb.find:FindVerb',
-            'info = ros2service.verb.info:InfoVerb',
             'list = ros2service.verb.list:ListVerb',
             'type = ros2service.verb.type:TypeVerb',
         ],

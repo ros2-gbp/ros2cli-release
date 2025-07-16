@@ -12,35 +12,112 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import array
+from functools import partial
 import time
+from typing import Any
+from typing import Dict
+from typing import List
 from typing import Optional
 from typing import TypeVar
 
-import argcomplete
+import numpy
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSDurabilityPolicy
 from rclpy.qos import QoSProfile
-
-from ros2cli.helpers import collect_stdin
+from rclpy.qos import QoSReliabilityPolicy
 from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
-from ros2cli.qos import add_qos_arguments
-from ros2cli.qos import profile_configure_short_keys
-
-from ros2topic.api import positive_float
-from ros2topic.api import TopicMessagePrototypeCompleter, YamlCompletionFinder
+from ros2topic.api import profile_configure_short_keys
+from ros2topic.api import TopicMessagePrototypeCompleter
 from ros2topic.api import TopicNameCompleter
 from ros2topic.api import TopicTypeCompleter
 from ros2topic.verb import VerbExtension
-
-from rosidl_runtime_py import set_message_fields
+from rosidl_parser.definition import AbstractNestedType
+from rosidl_parser.definition import NamespacedType
+from rosidl_runtime_py.convert import get_message_slot_types
+from rosidl_runtime_py.import_message import import_message_from_namespaced_type
 from rosidl_runtime_py.utilities import get_message
-
 import yaml
 
 MsgType = TypeVar('MsgType')
-DEFAULT_WAIT_TIME = 0.1
+
+
+def set_message_fields_expanded(
+        msg: Any, values: Dict[str, str], expand_header_auto: bool = False,
+        expand_time_now: bool = False) -> List[Any]:
+    """
+    Set the fields of a ROS message.
+
+    :param msg: The ROS message to populate.
+    :param values: The values to set in the ROS message. The keys of the dictionary represent
+        fields of the message.
+    :param expand_header_auto: If enabled and 'auto' is passed as a value to a
+        'std_msgs.msg.Header' field, an empty Header will be instantiated and a setter function
+        will be returned so that its 'stamp' field can be set to the current time.
+    :param expand_time_now: If enabled and 'now' is passed as a value to a
+        'builtin_interfaces.msg.Time' field, a setter function will be returned so that
+        its value can be set to the current time.
+    :returns: A list of setter functions that can be used to update 'builtin_interfaces.msg.Time'
+        fields, useful for setting them to the current time. The list will be empty if the message
+        does not have any 'builtin_interfaces.msg.Time' fields, or if expand_header_auto and
+        expand_time_now are false.
+    :raises AttributeError: If the message does not have a field provided in the input dictionary.
+    :raises TypeError: If a message value does not match its field type.
+    """
+    timestamp_fields = []
+
+    def set_message_fields_expanded_internal(
+            msg: Any, values: Dict[str, str],
+            timestamp_fields: List[Any]) -> List[Any]:
+        try:
+            items = values.items()
+        except AttributeError:
+            raise TypeError(
+                "Value '%s' is expected to be a dictionary but is a %s" %
+                (values, type(values).__name__))
+        for field_name, field_value in items:
+            field = getattr(msg, field_name)
+            field_type = type(field)
+            qualified_class_name = '{}.{}'.format(field_type.__module__, field_type.__name__)
+            if field_type is array.array:
+                value = field_type(field.typecode, field_value)
+            elif field_type is numpy.ndarray:
+                value = numpy.array(field_value, dtype=field.dtype)
+            elif type(field_value) is field_type:
+                value = field_value
+            # We can't import these types directly, so we use the qualified class name to
+            # distinguish them from other fields
+            elif qualified_class_name == 'std_msgs.msg._header.Header' and \
+                    field_value == 'auto' and expand_header_auto:
+                timestamp_fields.append(partial(setattr, field, 'stamp'))
+                continue
+            elif qualified_class_name == 'builtin_interfaces.msg._time.Time' and \
+                    field_value == 'now' and expand_time_now:
+                timestamp_fields.append(partial(setattr, msg, field_name))
+                continue
+            else:
+                try:
+                    value = field_type(field_value)
+                except TypeError:
+                    value = field_type()
+                    set_message_fields_expanded_internal(
+                        value, field_value, timestamp_fields)
+            rosidl_type = get_message_slot_types(msg)[field_name]
+            # Check if field is an array of ROS messages
+            if isinstance(rosidl_type, AbstractNestedType):
+                if isinstance(rosidl_type.value_type, NamespacedType):
+                    field_elem_type = import_message_from_namespaced_type(rosidl_type.value_type)
+                    for n in range(len(value)):
+                        submsg = field_elem_type()
+                        set_message_fields_expanded_internal(
+                            submsg, value[n], timestamp_fields)
+                        value[n] = submsg
+            setattr(msg, field_name, value)
+    set_message_fields_expanded_internal(msg, values, timestamp_fields)
+    return timestamp_fields
 
 
 def nonnegative_int(inval):
@@ -49,6 +126,21 @@ def nonnegative_int(inval):
         # The error message here gets completely swallowed by argparse
         raise ValueError('Value must be positive or zero')
     return ret
+
+
+def positive_float(inval):
+    ret = float(inval)
+    if ret <= 0.0:
+        # The error message here gets completely swallowed by argparse
+        raise ValueError('Value must be positive')
+    return ret
+
+
+def get_pub_qos_profile():
+    return QoSProfile(
+        reliability=QoSReliabilityPolicy.RELIABLE,
+        durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+        depth=1)
 
 
 class PubVerb(VerbExtension):
@@ -65,8 +157,7 @@ class PubVerb(VerbExtension):
             help="Type of the ROS message (e.g. 'std_msgs/String')")
         arg.completer = TopicTypeCompleter(
             topic_name_key='topic_name')
-        group = parser.add_mutually_exclusive_group()
-        arg = group.add_argument(
+        arg = parser.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the message with in YAML format '
                  "(e.g. 'data: Hello World'), "
@@ -76,13 +167,6 @@ class PubVerb(VerbExtension):
                  'time and empty frame_id.')
         arg.completer = TopicMessagePrototypeCompleter(
             topic_type_key='message_type')
-        group.add_argument(
-            '--stdin', action='store_true',
-            help='Read values from standard input')
-        group.add_argument(
-            '--yaml-file', type=str, default=None,
-            help='YAML file that has message contents, '
-                 'e.g STDOUT from ros2 topic echo <topic>')
         parser.add_argument(
             '-r', '--rate', metavar='N', type=positive_float, default=1.0,
             help='Publishing rate in Hz (default: 1)')
@@ -102,23 +186,39 @@ class PubVerb(VerbExtension):
                 'Wait until finding the specified number of matching subscriptions. '
                 'Defaults to 1 when using "-1"/"--once"/"--times", otherwise defaults to 0.'))
         parser.add_argument(
-            '--max-wait-time-secs', type=positive_float, default=None,
-            help=(
-                'This sets the maximum wait time in seconds if '
-                '--wait-until-matching-subscriptions is set. '
-                'By default, this flag is not set meaning the subscriber will wait endlessly.'))
-        parser.add_argument(
             '--keep-alive', metavar='N', type=positive_float, default=0.1,
             help='Keep publishing node alive for N seconds after the last msg '
                  '(default: 0.1)')
         parser.add_argument(
             '-n', '--node-name',
             help='Name of the created publishing node')
-
-        # Use the custom completion finder
-        argcomplete.autocomplete = YamlCompletionFinder(parser)
-
-        add_qos_arguments(parser, 'publish', 'default')
+        parser.add_argument(
+            '--qos-profile',
+            choices=rclpy.qos.QoSPresetProfiles.short_keys(),
+            help='Quality of service preset profile to publish)')
+        default_profile = get_pub_qos_profile()
+        parser.add_argument(
+            '--qos-depth', metavar='N', type=int, default=-1,
+            help='Queue size setting to publish with '
+                 '(overrides depth value of --qos-profile option)')
+        parser.add_argument(
+            '--qos-history',
+            choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
+            help='History of samples setting to publish with '
+                 '(overrides history value of --qos-profile option, default: {})'
+                 .format(default_profile.history.short_key))
+        parser.add_argument(
+            '--qos-reliability',
+            choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
+            help='Quality of service reliability setting to publish with '
+                 '(overrides reliability value of --qos-profile option, default: {})'
+                 .format(default_profile.reliability.short_key))
+        parser.add_argument(
+            '--qos-durability',
+            choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
+            help='Quality of service durability setting to publish with '
+                 '(overrides durability value of --qos-profile option, default: {})'
+                 .format(default_profile.durability.short_key))
         add_direct_node_arguments(parser)
 
     def main(self, *, args):
@@ -126,35 +226,30 @@ class PubVerb(VerbExtension):
 
 
 def main(args):
+    qos_profile = get_pub_qos_profile()
+
     qos_profile_name = args.qos_profile
-    qos_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(qos_profile_name)
+    if qos_profile_name:
+        qos_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(qos_profile_name)
     profile_configure_short_keys(
         qos_profile, args.qos_reliability, args.qos_durability,
-        args.qos_depth, args.qos_history, args.qos_liveliness,
-        args.qos_liveliness_lease_duration_seconds)
+        args.qos_depth, args.qos_history)
 
     times = args.times
     if args.once:
         times = 1
-
-    if args.stdin:
-        values = collect_stdin()
-    else:
-        values = args.values
 
     with DirectNode(args, node_name=args.node_name) as node:
         return publisher(
             node.node,
             args.message_type,
             args.topic_name,
-            values,
-            args.yaml_file,
+            args.values,
             1. / args.rate,
             args.print,
             times,
             args.wait_matching_subscriptions
             if args.wait_matching_subscriptions is not None else int(times != 0),
-            args.max_wait_time_secs,
             qos_profile,
             args.keep_alive)
 
@@ -164,12 +259,10 @@ def publisher(
     message_type: MsgType,
     topic_name: str,
     values: dict,
-    yaml_file: str,
     period: float,
     print_nth: int,
     times: int,
     wait_matching_subscriptions: int,
-    max_wait_time: Optional[float],
     qos_profile: QoSProfile,
     keep_alive: float,
 ) -> Optional[str]:
@@ -178,78 +271,31 @@ def publisher(
         msg_module = get_message(message_type)
     except (AttributeError, ModuleNotFoundError, ValueError):
         raise RuntimeError('The passed message type is invalid')
-
-    msg_reader = None
-    if yaml_file:
-        msg_reader = read_msg_from_yaml(yaml_file)
-    else:
-        try:
-            # Handle cases where the user pastes the autocompleted bash safe string
-            if '^J' in values:
-                values = values.replace("'", '')
-                values = values.replace('^J', '\n')
-
-            values_dictionary = yaml.safe_load(values)
-
-        except (yaml.parser.ParserError, yaml.scanner.ScannerError):
-            return 'The passed value needs to be in YAML string or a dictionary'
-
-        if not isinstance(values_dictionary, dict):
-            return 'The passed value needs to be a dictionary in YAML format'
+    values_dictionary = yaml.safe_load(values)
+    if not isinstance(values_dictionary, dict):
+        return 'The passed value needs to be a dictionary in YAML format'
 
     pub = node.create_publisher(msg_module, topic_name, qos_profile)
 
-    if wait_matching_subscriptions == 0 and max_wait_time is not None:
-        return '--max-wait-time-secs option is only effective' \
-            ' with --wait-matching-subscriptions, --once or --times'
-
     times_since_last_log = 0
-    total_wait_time = 0
     while pub.get_subscription_count() < wait_matching_subscriptions:
         # Print a message reporting we're waiting each 1s, check condition each 100ms.
         if not times_since_last_log:
             print(
                 f'Waiting for at least {wait_matching_subscriptions} matching subscription(s)...')
-        if max_wait_time is not None and max_wait_time <= total_wait_time:
-            return f'Timed out waiting for subscribers: Expected {wait_matching_subscriptions}' \
-                f' subcribers but only got {pub.get_subscription_count()} subscribers'
         times_since_last_log = (times_since_last_log + 1) % 10
-        time.sleep(DEFAULT_WAIT_TIME)
-        total_wait_time += DEFAULT_WAIT_TIME
+        time.sleep(0.1)
 
     msg = msg_module()
-    timestamp_fields = None
-
-    if not msg_reader:
-        # Set the static message from specified values once
-        try:
-            timestamp_fields = set_message_fields(
-                msg, values_dictionary, expand_header_auto=True, expand_time_now=True)
-        except Exception as e:
-            return 'Failed to populate field: {0}'.format(e)
-
+    try:
+        timestamp_fields = set_message_fields_expanded(
+            msg, values_dictionary, expand_header_auto=True, expand_time_now=True)
+    except Exception as e:
+        return 'Failed to populate field: {0}'.format(e)
     print('publisher: beginning loop')
     count = 0
-    more_message = True
 
     def timer_callback():
-        if msg_reader:
-            # Try to read out the contents for each message
-            try:
-                one_msg = next(msg_reader)
-                if not isinstance(one_msg, dict):
-                    print('The contents in YAML file need to be a YAML format')
-            except StopIteration:
-                nonlocal more_message
-                more_message = False
-                return
-            # Set the message with contents
-            try:
-                nonlocal timestamp_fields
-                timestamp_fields = set_message_fields(
-                    msg, one_msg, expand_header_auto=True, expand_time_now=True)
-            except Exception as e:
-                return 'Failed to populate field: {0}'.format(e)
         stamp_now = node.get_clock().now().to_msg()
         for field_setter in timestamp_fields:
             field_setter(stamp_now)
@@ -262,7 +308,7 @@ def publisher(
     timer_callback()
     if times != 1:
         timer = node.create_timer(period, timer_callback)
-        while (times == 0 or count < times) and more_message:
+        while times == 0 or count < times:
             rclpy.spin_once(node)
         # give some time for the messages to reach the wire before exiting
         time.sleep(keep_alive)
@@ -270,12 +316,3 @@ def publisher(
     else:
         # give some time for the messages to reach the wire before exiting
         time.sleep(keep_alive)
-
-
-def read_msg_from_yaml(yaml_file):
-    with open(yaml_file, 'r') as f:
-        for document in yaml.load_all(f, Loader=yaml.FullLoader):
-            if document is None:
-                continue  # Skip if there's no more document
-
-            yield document

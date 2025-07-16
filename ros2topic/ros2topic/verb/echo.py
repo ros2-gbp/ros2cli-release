@@ -12,36 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
+import sys
 from typing import Optional
 from typing import TypeVar
 
 import rclpy
-from rclpy.event_handler import SubscriptionEventCallbacks
-from rclpy.event_handler import UnsupportedEventTypeError
 from rclpy.node import Node
+from rclpy.qos import QoSDurabilityPolicy
+from rclpy.qos import QoSPresetProfiles
 from rclpy.qos import QoSProfile
+from rclpy.qos import QoSReliabilityPolicy
+from rclpy.qos_event import SubscriptionEventCallbacks
+from rclpy.qos_event import UnsupportedEventTypeError
 from rclpy.task import Future
-
-from ros2cli.helpers import unsigned_int
 from ros2cli.node.strategy import add_arguments as add_strategy_node_arguments
 from ros2cli.node.strategy import NodeStrategy
-from ros2cli.qos import add_qos_arguments
-from ros2cli.qos import choose_qos
-
 from ros2topic.api import get_msg_class
-from ros2topic.api import positive_float
+from ros2topic.api import qos_profile_from_short_keys
 from ros2topic.api import TopicNameCompleter
+from ros2topic.api import unsigned_int
 from ros2topic.verb import VerbExtension
-
 from rosidl_runtime_py import message_to_csv
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py.utilities import get_message
 
-import yaml
-
 DEFAULT_TRUNCATE_LENGTH = 128
 MsgType = TypeVar('MsgType')
+default_profile_str = 'sensor_data'
 
 
 class EchoVerb(VerbExtension):
@@ -58,27 +55,44 @@ class EchoVerb(VerbExtension):
         parser.add_argument(
             'message_type', nargs='?',
             help="Type of the ROS message (e.g. 'std_msgs/msg/String')")
-        add_qos_arguments(
-            parser, 'subscribe', 'sensor_data',
-            ' / compatible profile with running endpoints')
+        parser.add_argument(
+            '--qos-profile',
+            choices=rclpy.qos.QoSPresetProfiles.short_keys(),
+            help='Quality of service preset profile to subscribe with (default: {})'
+                 .format(default_profile_str))
+        default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(default_profile_str)
+        parser.add_argument(
+            '--qos-depth', metavar='N', type=int,
+            help='Queue size setting to subscribe with '
+                 '(overrides depth value of --qos-profile option)')
+        parser.add_argument(
+            '--qos-history',
+            choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
+            help='History of samples setting to subscribe with '
+                 '(overrides history value of --qos-profile option, default: {})'
+                 .format(default_profile.history.short_key))
+        parser.add_argument(
+            '--qos-reliability',
+            choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
+            help='Quality of service reliability setting to subscribe with '
+                 '(overrides reliability value of --qos-profile option, default: '
+                 'Automatically match existing publishers )')
+        parser.add_argument(
+            '--qos-durability',
+            choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
+            help='Quality of service durability setting to subscribe with '
+                 '(overrides durability value of --qos-profile option, default: '
+                 'Automatically match existing publishers )')
         parser.add_argument(
             '--csv', action='store_true',
-            help=(
-                'Output all recursive fields separated by commas (e.g. for '
-                'plotting). '
-                'If --include-message-info is also passed, the following fields are prepended: '
-                'source_timestamp, received_timestamp, publication_sequence_number,'
-                ' reception_sequence_number.'
-            )
-        )
+            help='Output all recursive fields separated by commas (e.g. for '
+                 'plotting)')
         parser.add_argument(
-            '--field', action='append', type=str, default=None,
+            '--field', type=str, default=None,
             help='Echo a selected field of a message. '
                  "Use '.' to select sub-fields. "
                  'For example, to echo the position field of a nav_msgs/msg/Odometry message: '
-                 "'ros2 topic echo /odom --field pose.pose.position'. "
-                 'Use the --field option multiple times to echo multiple fields. '
-                 'If the field is an array, use the syntax .[index] to select a single element.'
+                 "'ros2 topic echo /odom --field pose.pose.position'",
         )
         parser.add_argument(
             '--full-length', '-f', action='store_true',
@@ -97,6 +111,8 @@ class EchoVerb(VerbExtension):
             '--flow-style', action='store_true',
             help='Print collections in the block style (not available with csv format)')
         parser.add_argument(
+            '--lost-messages', action='store_true', help='DEPRECATED: Does nothing')
+        parser.add_argument(
             '--no-lost-messages', action='store_true', help="Don't report when a message is lost")
         parser.add_argument(
             '--raw', action='store_true', help='Echo the raw binary representation')
@@ -106,53 +122,102 @@ class EchoVerb(VerbExtension):
                                                  'as well as m (the message).')
         parser.add_argument(
             '--once', action='store_true', help='Print the first message received and then exit.')
-        parser.add_argument(
-            '--timeout', metavar='N', type=positive_float,
-            help='Set a timeout in seconds for waiting', default=None)
-        parser.add_argument(
-            '--include-message-info', '-i', action='store_true',
-            help='Shows the associated message info.')
-        parser.add_argument(
-            '--clear', '-c', action='store_true',
-            help='Clear screen before printing next message')
-        parser.add_argument(
-            '-n', '--node-name', type=str, default=None,
-            help='The name of the echoing node; by default, will be a hidden node name')
+
+    def choose_qos(self, node, args):
+
+        if (args.qos_profile is not None or
+                args.qos_reliability is not None or
+                args.qos_durability is not None or
+                args.qos_depth is not None or
+                args.qos_history is not None):
+
+            if args.qos_profile is None:
+                args.qos_profile = default_profile_str
+            return qos_profile_from_short_keys(args.qos_profile,
+                                               reliability=args.qos_reliability,
+                                               durability=args.qos_durability,
+                                               depth=args.qos_depth,
+                                               history=args.qos_history)
+
+        qos_profile = QoSPresetProfiles.get_from_short_key(default_profile_str)
+        reliability_reliable_endpoints_count = 0
+        durability_transient_local_endpoints_count = 0
+
+        pubs_info = node.get_publishers_info_by_topic(args.topic_name)
+        publishers_count = len(pubs_info)
+        if publishers_count == 0:
+            return qos_profile
+
+        for info in pubs_info:
+            if (info.qos_profile.reliability == QoSReliabilityPolicy.RELIABLE):
+                reliability_reliable_endpoints_count += 1
+            if (info.qos_profile.durability == QoSDurabilityPolicy.TRANSIENT_LOCAL):
+                durability_transient_local_endpoints_count += 1
+
+        # If all endpoints are reliable, ask for reliable
+        if reliability_reliable_endpoints_count == publishers_count:
+            qos_profile.reliability = QoSReliabilityPolicy.RELIABLE
+        else:
+            if reliability_reliable_endpoints_count > 0:
+                print(
+                    'Some, but not all, publishers are offering '
+                    'QoSReliabilityPolicy.RELIABLE. Falling back to '
+                    'QoSReliabilityPolicy.BEST_EFFORT as it will connect '
+                    'to all publishers'
+                )
+            qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
+
+        # If all endpoints are transient_local, ask for transient_local
+        if durability_transient_local_endpoints_count == publishers_count:
+            qos_profile.durability = QoSDurabilityPolicy.TRANSIENT_LOCAL
+        else:
+            if durability_transient_local_endpoints_count > 0:
+                print(
+                    'Some, but not all, publishers are offering '
+                    'QoSDurabilityPolicy.TRANSIENT_LOCAL. Falling back to '
+                    'QoSDurabilityPolicy.VOLATILE as it will connect '
+                    'to all publishers'
+                )
+            qos_profile.durability = QoSDurabilityPolicy.VOLATILE
+
+        return qos_profile
 
     def main(self, *, args):
 
+        if args.lost_messages:
+            print(
+                "WARNING: '--lost-messages' is deprecated; lost messages are reported by default",
+                file=sys.stderr)
+
+        # Select print function
+        self.print_func = _print_yaml
         self.csv = args.csv
+        if self.csv:
+            self.print_func = _print_csv
 
         # Validate field selection
-        self.fields_list = []
-        if args.field:
-            for field in args.field:
-                if field is not None:
-                    field_filtered = list(filter(None, field.split('.')))
-                    self.fields_list.append(field_filtered)
-                    if not field_filtered:
-                        raise RuntimeError(f"Invalid field value '{field}'")
+        self.field = args.field
+        if self.field is not None:
+            self.field = list(filter(None, self.field.split('.')))
+            if not self.field:
+                raise RuntimeError(f"Invalid field value '{args.field}'")
 
         self.truncate_length = args.truncate_length if not args.full_length else None
         self.no_arr = args.no_arr
         self.no_str = args.no_str
         self.flow_style = args.flow_style
-        self.once = args.once
-        self.clear_screen = args.clear
 
         self.filter_fn = None
         if args.filter_expr:
             self.filter_fn = _expr_eval(args.filter_expr)
 
         self.future = None
-        if args.timeout or args.once:
+        if args.once:
             self.future = Future()
 
-        self.include_message_info = args.include_message_info
+        with NodeStrategy(args) as node:
 
-        with NodeStrategy(args, node_name=args.node_name) as node:
-
-            qos_profile = choose_qos(node, topic_name=args.topic_name, qos_args=args)
+            qos_profile = self.choose_qos(node, args)
 
             if args.message_type is None:
                 message_type = get_msg_class(
@@ -166,9 +231,6 @@ class EchoVerb(VerbExtension):
             if message_type is None:
                 raise RuntimeError(
                     'Could not determine the type for the passed topic')
-
-            if args.timeout is not None:
-                self.timer = node.create_timer(args.timeout, self._timed_out)
 
             self.subscribe_and_spin(
                 node,
@@ -185,7 +247,7 @@ class EchoVerb(VerbExtension):
         message_type: MsgType,
         qos_profile: QoSProfile,
         no_report_lost_messages: bool,
-        raw: bool,
+        raw: bool
     ) -> Optional[str]:
         """Initialize a node with a single subscription and spin."""
         event_callbacks = None
@@ -215,84 +277,51 @@ class EchoVerb(VerbExtension):
         else:
             rclpy.spin(node)
 
-    def _timed_out(self):
-        self.future.set_result(True)
-
-    def _subscriber_callback(self, msg, info):
-        submsgs = []
-        if self.fields_list:
-            # Matches strings exactly in the format "[digits]" (e.g., "[123]")
-            # and captures the digits as a group
-            is_indexing = re.compile(r'^\[(\d+)\]$')
-            for fields in self.fields_list:
-                submsg = msg
-                for field in fields:
-                    match = is_indexing.match(field)
-                    try:
-                        if match is None:
-                            submsg = getattr(submsg, field)
-                        else:
-                            submsg = submsg[int(match.group(1))]
-                    except (AttributeError, IndexError, TypeError, ValueError) as ex:
-                        raise RuntimeError(f"Invalid field '{'.'.join(fields)}': {ex}")
-                submsgs.append(submsg)
-        else:
-            submsgs.append(msg)
+    def _subscriber_callback(self, msg):
+        submsg = msg
+        if self.field is not None:
+            for field in self.field:
+                try:
+                    submsg = getattr(submsg, field)
+                except AttributeError as ex:
+                    raise RuntimeError(f"Invalid field '{'.'.join(self.field)}': {ex}")
 
         # Evaluate the current msg against the supplied expression
-        if self.filter_fn is not None:
-            for submsg in submsgs:
-                if not self.filter_fn(submsg):
-                    submsgs.remove(submsg)
-            if not submsgs:
-                return
+        if self.filter_fn is not None and not self.filter_fn(submsg):
+            return
 
-        if self.future is not None and self.once:
+        if self.future is not None:
             self.future.set_result(True)
 
-        # Clear terminal screen before print
-        if self.clear_screen:
-            clear_terminal()
-
-        for i, submsg in enumerate(submsgs):
-            if i == len(submsgs)-1:
-                line_end = '---\n'
-            else:
-                line_end = ''
-            if not hasattr(submsg, '__slots__'):
-                # raw
-                if self.include_message_info:
-                    print('---Got new message, message info:---')
-                    print(info)
-                    print('---Message data:---')
-                line_end = '\n' + line_end
-                print(submsg, end=line_end)
-                continue
-
-            if self.csv:
-                to_print = message_to_csv(
-                    submsg,
-                    truncate_length=self.truncate_length,
-                    no_arr=self.no_arr,
-                    no_str=self.no_str)
-                if self.include_message_info:
-                    to_print = f'{",".join(str(x) for x in info.values())},{to_print}'
-                print(to_print)
-                continue
-            # yaml
-            if self.include_message_info:
-                print(yaml.dump(info), end=line_end)
-            print(
-                message_to_yaml(
-                    submsg, truncate_length=self.truncate_length,
-                    no_arr=self.no_arr, no_str=self.no_str, flow_style=self.flow_style),
-                end=line_end)
+        if self.csv:
+            self.print_func(submsg, self.truncate_length, self.no_arr, self.no_str)
+        else:
+            self.print_func(
+                submsg, self.truncate_length, self.no_arr, self.no_str, self.flow_style)
 
 
 def _expr_eval(expr):
     def eval_fn(m):
         return eval(expr)
     return eval_fn
+
+
+def _print_yaml(msg, truncate_length, noarr, nostr, flowstyle):
+    if hasattr(msg, '__slots__'):
+        print(
+            message_to_yaml(
+                msg, truncate_length=truncate_length,
+                no_arr=noarr, no_str=nostr, flow_style=flowstyle),
+            end='---\n')
+    else:
+        print(msg, end='\n---\n')
+
+
+def _print_csv(msg, truncate_length, noarr, nostr):
+    if hasattr(msg, '__slots__'):
+        print(message_to_csv(msg, truncate_length=truncate_length, no_arr=noarr, no_str=nostr))
+    else:
+        print(msg)
 
 
 def _message_lost_event_callback(message_lost_status):
@@ -302,7 +331,3 @@ def _message_lost_event_callback(message_lost_status):
         f'\n\ttotal count: {message_lost_status.total_count}',
         end='---\n'
     )
-
-
-def clear_terminal():
-    print('\x1b[H\x1b[2J')

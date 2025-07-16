@@ -32,7 +32,6 @@ import launch_testing_ros.tools
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
-from ros2cli.helpers import get_rmw_additional_env
 
 
 # Skip cli tests on Windows while they exhibit pathological behavior
@@ -47,8 +46,9 @@ if sys.platform.startswith('win'):
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
 def generate_test_description(rmw_implementation):
     path_to_fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
-    additional_env = get_rmw_additional_env(rmw_implementation)
-    additional_env['PYTHONUNBUFFERED'] = '1'
+    additional_env = {
+        'RMW_IMPLEMENTATION': rmw_implementation, 'PYTHONUNBUFFERED': '1'
+    }
 
     path_to_incompatible_talker_node_script = os.path.join(
         path_to_fixtures, 'talker_node_with_best_effort_qos.py')
@@ -122,17 +122,14 @@ class TestROS2DoctorQoSCompatibility(unittest.TestCase):
             filtered_rmw_implementation=rmw_implementation
         )
 
-        # skip zenoh because of the QoS compatibility
-        if rmw_implementation == 'rmw_zenoh_cpp':
-            raise unittest.SkipTest()
-
         @contextlib.contextmanager
         def launch_doctor_command(self, arguments):
-            additional_env = get_rmw_additional_env(rmw_implementation)
-            additional_env['PYTHONUNBUFFERED'] = '1'
             doctor_command_action = ExecuteProcess(
                 cmd=['ros2', 'doctor', *arguments],
-                additional_env=additional_env,
+                additional_env={
+                    'RMW_IMPLEMENTATION': rmw_implementation,
+                    'PYTHONUNBUFFERED': '1'
+                },
                 name='ros2doctor-cli',
                 output='screen'
             )

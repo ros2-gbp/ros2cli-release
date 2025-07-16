@@ -62,16 +62,6 @@ def run_executable(*, path, argv, prefix=None):
         cmd = prefix + cmd
 
     process = subprocess.Popen(cmd)
-
-    # add signal handler for the parent process, so that we can finalize the child process
-    def signal_handler(sig, frame):
-        print(ROS2RUN_MSG_PREFIX, 'Received signal: ', signal.strsignal(sig))
-        if process.poll() is None:
-            # If child process is running, forward the signal to it
-            process.send_signal(sig)
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
     while process.returncode is None:
         try:
             process.communicate()
@@ -80,7 +70,8 @@ def run_executable(*, path, argv, prefix=None):
             # therefore we continue here until the process has finished
             pass
     if process.returncode != 0:
-        if -process.returncode in signal.valid_signals() and os.name == 'posix':
+        if hasattr(signal, 'valid_signals') and -process.returncode in signal.valid_signals() \
+                and os.name == 'posix':
             # a negative value -N indicates that the child was terminated by signal N.
             print(ROS2RUN_MSG_PREFIX, signal.strsignal(-process.returncode))
         else:

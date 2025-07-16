@@ -5,20 +5,19 @@ package_name = 'ros2action'
 
 setup(
     name=package_name,
-    version='0.39.2',
+    version='0.18.13',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
     ],
-    package_data={'': ['py.typed']},
     install_requires=['ros2cli'],
     zip_safe=True,
     author='Jacob Perron',
     author_email='jacob@openrobotics.org',
-    maintainer='Audrow Nash, Geoffrey Biggs',
-    maintainer_email='audrow@openrobotics.org, geoff@openrobotics.org',
+    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
+    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
     url='https://github.com/ros2/ros2cli/tree/master/ros2action',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],
@@ -41,12 +40,10 @@ The package provides the action command for the ROS 2 command line tools.""",
             'ros2action.verb = ros2action.verb:VerbExtension',
         ],
         'ros2action.verb': [
+            # 'echo = ros2action.verb.echo:EchoVerb',
             'info = ros2action.verb.info:InfoVerb',
             'list = ros2action.verb.list:ListVerb',
             'send_goal = ros2action.verb.send_goal:SendGoalVerb',
-            'type = ros2action.verb.type:TypeVerb',
-            'find = ros2action.verb.find:FindVerb',
-            'echo = ros2action.verb.echo:EchoVerb',
         ],
     }
 )

@@ -29,23 +29,30 @@
 # This file is originally from:
 # https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
 
+from argparse import ArgumentTypeError
 import math
 
 import rclpy
 
+from rclpy.qos import qos_profile_sensor_data
 from rclpy.time import Time
-
 from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
-from ros2cli.qos import add_qos_arguments
-from ros2cli.qos import choose_qos
-
 from ros2topic.api import get_msg_class
-from ros2topic.api import positive_int
 from ros2topic.api import TopicNameCompleter
 from ros2topic.verb import VerbExtension
 
 DEFAULT_WINDOW_SIZE = 10000
+
+
+def positive_int(string):
+    try:
+        value = int(string)
+    except ValueError:
+        value = -1
+    if value <= 0:
+        raise ArgumentTypeError('value must be a positive integer')
+    return value
 
 
 class DelayVerb(VerbExtension):
@@ -53,13 +60,12 @@ class DelayVerb(VerbExtension):
 
     def add_arguments(self, parser, cli_name):
         arg = parser.add_argument(
-            'topic_name',
+            'topic',
             help='Topic name to calculate the delay for')
         arg.completer = TopicNameCompleter(
             include_hidden_topics_key='include_hidden_topics')
-        add_qos_arguments(parser, 'subscribe', 'sensor_data')
         parser.add_argument(
-            '--window', '-w', dest='window_size', type=positive_int, default=DEFAULT_WINDOW_SIZE,
+            '--window', '-w', type=positive_int, default=DEFAULT_WINDOW_SIZE,
             help='window size, in # of messages, for calculating rate, '
                  'string to (default: %d)' % DEFAULT_WINDOW_SIZE)
         add_direct_node_arguments(parser)
@@ -70,8 +76,8 @@ class DelayVerb(VerbExtension):
 
 def main(args):
     with DirectNode(args) as node:
-        qos_profile = choose_qos(node.node, topic_name=args.topic_name, qos_args=args)
-        _rostopic_delay(node.node, args.topic_name, qos_profile, window_size=args.window_size)
+        _rostopic_delay(
+            node.node, args.topic, window_size=args.window)
 
 
 class ROSTopicDelay(object):
@@ -123,7 +129,7 @@ class ROSTopicDelay(object):
 
     def get_delay(self):
         """
-        Calculate the average publishing delay.
+        Calculate the average publising delay.
 
         :returns: tuple of stat results
             (rate, min_delta, max_delta, standard deviation, window number)
@@ -159,12 +165,11 @@ class ROSTopicDelay(object):
               % (delay * 1e-9, min_delta * 1e-9, max_delta * 1e-9, std_dev * 1e-9, window))
 
 
-def _rostopic_delay(node, topic, qos_profile, window_size=DEFAULT_WINDOW_SIZE):
+def _rostopic_delay(node, topic, window_size=DEFAULT_WINDOW_SIZE):
     """
     Periodically print the publishing delay of a topic to console until shutdown.
 
     :param topic: topic name, ``str``
-    :param qos_profile: qos profile of the subscriber
     :param window_size: number of messages to average over, ``unsigned_int``
     :param blocking: pause delay until topic is published, ``bool``
     """
@@ -180,7 +185,7 @@ def _rostopic_delay(node, topic, qos_profile, window_size=DEFAULT_WINDOW_SIZE):
         msg_class,
         topic,
         rt.callback_delay,
-        qos_profile)
+        qos_profile_sensor_data)
 
     timer = node.create_timer(1, rt.print_delay)
     while rclpy.ok():
