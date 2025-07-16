@@ -189,6 +189,8 @@ class TestVerbDump(unittest.TestCase):
                     services = node.get_service_names_and_types_by_node(TEST_NODE, TEST_NAMESPACE)
                 except rclpy.node.NodeNameNonExistentError:
                     continue
+                except ConnectionRefusedError:
+                    continue
                 except xmlrpc.client.Fault as e:
                     if 'NodeNameNonExistentError' in e.faultString:
                         continue
@@ -327,8 +329,13 @@ class TestVerbDump(unittest.TestCase):
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
-            loaded_params = yaml.safe_load(param_dump_command.output)
-            params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            try:
+                loaded_params = yaml.safe_load(param_dump_command.output)
+                if not isinstance(loaded_params, dict):
+                    self.fail('Invalid YAML output: Expected a dictionary')
+                params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            except yaml.YAMLError as e:
+                self.fail(f'Failed to parse YAML output: {e}')
             assert params['str_param'] == 'Wildcard'
             assert params['int_param'] == 12345
 
@@ -348,7 +355,12 @@ class TestVerbDump(unittest.TestCase):
             ) as param_dump_command:
                 assert param_dump_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_dump_command.exit_code == launch_testing.asserts.EXIT_OK
-            loaded_params = yaml.safe_load(param_dump_command.output)
-            params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            try:
+                loaded_params = yaml.safe_load(param_dump_command.output)
+                if not isinstance(loaded_params, dict):
+                    self.fail('Invalid YAML output: Expected a dictionary')
+                params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
+            except yaml.YAMLError as e:
+                self.fail(f'Failed to parse YAML output: {e}')
             assert params['str_param'] == 'Override'  # Overriden
             assert params['int_param'] == 12345  # Wildcard namespace
