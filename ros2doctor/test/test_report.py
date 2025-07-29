@@ -1,4 +1,4 @@
-# Copyright 2021 Open Source Robotics Foundation, Inc.
+# Copyright 2025 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
 import contextlib
 import os
 import sys
+from typing import Any
+from typing import Dict
+from typing import Generator
+from typing import Tuple
 import unittest
 
 from launch import LaunchDescription
+from launch import LaunchService
 from launch.actions import ExecuteProcess
-from launch.actions import SetEnvironmentVariable
 
 from launch_ros.actions import Node
 
@@ -28,7 +32,6 @@ import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
-from launch_testing_ros.actions import EnableRmwIsolation
 import launch_testing_ros.tools
 
 import pytest
@@ -47,89 +50,61 @@ if sys.platform.startswith('win'):
 
 @pytest.mark.rostest
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
-def generate_test_description(rmw_implementation):
+def generate_test_description(rmw_implementation: str) -> Tuple[LaunchDescription,
+                                                                Dict[str, Any]]:
     path_to_fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
     additional_env = get_rmw_additional_env(rmw_implementation)
     additional_env['PYTHONUNBUFFERED'] = '1'
-    set_env_actions = [SetEnvironmentVariable(k, v) for k, v in additional_env.items()]
-
-    path_to_incompatible_talker_node_script = os.path.join(
-        path_to_fixtures, 'talker_node_with_best_effort_qos.py')
-    path_to_compatible_talker_node_script = os.path.join(
-        path_to_fixtures, 'talker_node_with_reliable_qos.py')
-
-    path_to_listener_node_script = os.path.join(
-        path_to_fixtures, 'listener_node_with_reliable_qos.py')
-
-    talker_node_compatible = Node(
-        executable=sys.executable,
-        arguments=[path_to_compatible_talker_node_script],
-        remappings=[('chatter', 'compatible_chatter')],
-    )
-    listener_node_compatible = Node(
-        executable=sys.executable,
-        arguments=[path_to_listener_node_script],
-        remappings=[('chatter', 'compatible_chatter')],
-    )
-    talker_node_incompatible = Node(
-        executable=sys.executable,
-        arguments=[path_to_incompatible_talker_node_script],
-        remappings=[('chatter', 'incompatible_chatter')],
-    )
-    listener_node_incompatible = Node(
-        executable=sys.executable,
-        arguments=[path_to_listener_node_script],
-        remappings=[('chatter', 'incompatible_chatter')],
-    )
 
     return LaunchDescription([
-        # Always restart daemon to isolate tests.
         ExecuteProcess(
             cmd=['ros2', 'daemon', 'stop'],
             name='daemon-stop',
             on_exit=[
-                *set_env_actions,
-                EnableRmwIsolation(),
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
+                    additional_env=additional_env,
                     on_exit=[
-                        # Add incompatible talker/listener pair.
-                        talker_node_incompatible,
-                        listener_node_incompatible,
-                        talker_node_compatible,
-                        listener_node_compatible,
+                        Node(
+                            executable=sys.executable,
+                            arguments=[os.path.join(path_to_fixtures, 'report_node.py')],
+                            additional_env=additional_env
+                        ),
                         launch_testing.actions.ReadyToTest()
-                    ],
+                    ]
                 )
             ]
-        ),
+        )
     ]), locals()
 
 
-class TestROS2DoctorQoSCompatibility(unittest.TestCase):
+class TestROS2DoctorReport(unittest.TestCase):
 
     @classmethod
     def setUpClass(
             cls,
-            launch_service,
-            proc_info,
-            proc_output,
-            rmw_implementation,
-    ):
+            launch_service: LaunchService,
+            proc_info: launch_testing.tools.process.ActiveProcInfoHandler,
+            proc_output: launch_testing.tools.process.ActiveIoHandler,
+            rmw_implementation: str,
+    ) -> None:
+        cls.rmw_implementation = rmw_implementation
         rmw_implementation_filter = launch_testing_ros.tools.basic_output_filter(
             filtered_patterns=['WARNING: topic .* does not appear to be published yet'],
             filtered_rmw_implementation=rmw_implementation
         )
 
-        # skip zenoh because of the QoS compatibility
-        if rmw_implementation == 'rmw_zenoh_cpp':
-            raise unittest.SkipTest()
-
         @contextlib.contextmanager
-        def launch_doctor_command(self, arguments):
+        def launch_doctor_command(
+            self,
+            arguments
+        ) -> Generator[launch_testing.tools.process.ProcessProxy, None, None]:
+            additional_env = get_rmw_additional_env(rmw_implementation)
+            additional_env['PYTHONUNBUFFERED'] = '1'
             doctor_command_action = ExecuteProcess(
                 cmd=['ros2', 'doctor', *arguments],
+                additional_env=additional_env,
                 name='ros2doctor-cli',
                 output='screen'
             )
@@ -141,7 +116,7 @@ class TestROS2DoctorQoSCompatibility(unittest.TestCase):
         cls.launch_doctor_command = launch_doctor_command
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_check(self):
+    def test_check(self) -> None:
         with self.launch_doctor_command(
                 arguments=[]
         ) as doctor_command:
@@ -150,24 +125,50 @@ class TestROS2DoctorQoSCompatibility(unittest.TestCase):
         assert doctor_command.output
 
         lines_list = [line for line in doctor_command.output.splitlines() if line]
-        assert 'Failed modules' in lines_list[-1]
-        assert 'middleware' in lines_list[-1]
+        assert 'All' in lines_list[-1]
+        assert 'checks passed' in lines_list[-1]
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_report(self):
+    def test_report(self) -> None:
+        # TODO(@fujitatomoya): rmw_zenoh_cpp is instable to find the endpoints, it does not
+        # matter if DaemonNode or DirectNode is used. For now, skip the test for rmw_zenoh_cpp.
+        if self.rmw_implementation == 'rmw_zenoh_cpp':
+            raise unittest.SkipTest()
+
         for argument in ['-r', '--report']:
             with self.launch_doctor_command(
                     arguments=[argument]
             ) as doctor_command:
                 assert doctor_command.wait_for_shutdown(timeout=10)
             assert doctor_command.exit_code == launch_testing.asserts.EXIT_OK
-            assert ('topic [type]            : /compatible_chatter [std_msgs/msg/String]\n'
-                    'publisher node          : talker_node\n'
-                    'subscriber node         : listener\n'
-                    'compatibility status    : OK') in doctor_command.output
-            assert ('topic [type]            : /incompatible_chatter [std_msgs/msg/String]\n'
-                    'publisher node          : talker_node\n'
-                    'subscriber node         : listener\n'
-                    'compatibility status    : '
-                    'ERROR: Best effort publisher and reliable subscription;') \
-                in doctor_command.output
+
+            assert launch_testing.tools.expect_output(
+                expected_lines=[
+                    'topic               : /msg',
+                    'publisher count     : 1',
+                    'subscriber count    : 1'
+                ],
+                text=doctor_command.output
+            )
+
+            assert launch_testing.tools.expect_output(
+                expected_lines=[
+                    'service          : /bar',
+                    'service count    : 1',
+                    'client count     : 0',
+                    'service          : /baz',
+                    'service count    : 0',
+                    'client count     : 1',
+                    'service          : /report_node/get_type_description',
+                    'service count    : 1',
+                    'client count     : 0'
+                ],
+                text=doctor_command.output)
+
+            assert launch_testing.tools.expect_output(
+                expected_lines=[
+                    'action                 : /fibonacci',
+                    'action server count    : 1',
+                    'action client count    : 1'
+                ],
+                text=doctor_command.output)
