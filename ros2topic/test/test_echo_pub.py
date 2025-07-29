@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import functools
+import pathlib
+import re
 import sys
 import unittest
 
@@ -31,6 +33,8 @@ import pytest
 import rclpy
 from rclpy.executors import SingleThreadedExecutor
 from rclpy.qos import DurabilityPolicy
+from rclpy.qos import qos_check_compatible
+from rclpy.qos import QoSCompatibility
 from rclpy.qos import QoSProfile
 from rclpy.qos import ReliabilityPolicy
 from rclpy.utilities import get_rmw_implementation_identifier
@@ -48,6 +52,8 @@ if sys.platform.startswith('win'):
 
 TEST_NODE = 'cli_echo_pub_test_node'
 TEST_NAMESPACE = 'cli_echo_pub'
+
+TEST_RESOURCES_DIR = pathlib.Path(__file__).resolve().parent / 'resources'
 
 
 @pytest.mark.rostest
@@ -73,11 +79,6 @@ def generate_test_description():
 
 class TestROS2TopicEchoPub(unittest.TestCase):
 
-    # TODO(hidmic): investigate why making use of the same rclpy node, executor
-    #               and context for all tests on a per rmw implementation basis
-    #               makes them fail on Linux-aarch64 when using 'rmw_opensplice_cpp'.
-    #               Presumably, interfaces creation/destruction and/or executor spinning
-    #               on one test is affecting the other.
     def setUp(self):
         self.context = rclpy.context.Context()
         rclpy.init(context=self.context)
@@ -126,12 +127,23 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                         pub_extra_options = [
                             '--qos-reliability', 'best_effort',
                             '--qos-durability', 'volatile']
+                        # This QoS profile matched with the extra options defined above
+                        rostopic_qos_profile = QoSProfile(
+                            depth=10,
+                            reliability=ReliabilityPolicy.BEST_EFFORT,
+                            durability=DurabilityPolicy.VOLATILE)
                         subscription_qos_profile = QoSProfile(
                             depth=10,
                             reliability=ReliabilityPolicy.RELIABLE,
                             durability=DurabilityPolicy.TRANSIENT_LOCAL)
                         expected_maximum_message_count = 0
                         expected_minimum_message_count = 0
+                        # Skip this test if the QoS between the publisher and subscription
+                        # are compatible according to the underlying middleware.
+                        comp, reason = qos_check_compatible(
+                            rostopic_qos_profile, subscription_qos_profile)
+                        if comp == QoSCompatibility.OK:
+                            raise unittest.SkipTest()
 
                 future = rclpy.task.Future()
 
@@ -178,6 +190,87 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                     self.node.destroy_subscription(subscription)
 
     @launch_testing.markers.retry_on_failure(times=5)
+    def test_pub_maxwait_no_subscribers(self, launch_service, proc_info, proc_output):
+        command_action = ExecuteProcess(
+            cmd=(['ros2', 'topic', 'pub', '-t', '5', '--max-wait-time-secs',
+                  '1', '/clitest/topic/pub_times', 'std_msgs/String', 'data: hello']),
+            additional_env={
+                'PYTHONUNBUFFERED': '1'
+            },
+            output='screen'
+        )
+        with launch_testing.tools.launch_process(
+            launch_service, command_action, proc_info, proc_output,
+            output_filter=launch_testing_ros.tools.basic_output_filter(
+                filtered_rmw_implementation=get_rmw_implementation_identifier()
+            )
+        ) as command:
+            assert command.wait_for_shutdown(timeout=5)
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'Waiting for at least 1 matching subscription(s)...',
+                'Waiting for at least 1 matching subscription(s)...',
+                'Timed out waiting for subscribers: Expected'
+                ' 1 subcribers but only got 0 subscribers'
+            ],
+            text=command.output,
+            strict=True)
+
+    @launch_testing.markers.retry_on_failure(times=5)
+    def test_pub_maxwait_malformed_arguments(self, launch_service, proc_info, proc_output):
+        command_action = ExecuteProcess(
+            cmd=(['ros2', 'topic', 'pub', '--max-wait-time-secs', '1',
+                  '/clitest/topic/pub_times', 'std_msgs/String', 'data: hello']),
+            additional_env={
+                'PYTHONUNBUFFERED': '1'
+            },
+            output='screen'
+        )
+        with launch_testing.tools.launch_process(
+            launch_service, command_action, proc_info, proc_output,
+            output_filter=launch_testing_ros.tools.basic_output_filter(
+                filtered_rmw_implementation=get_rmw_implementation_identifier()
+            )
+        ) as command:
+            assert command.wait_for_shutdown(timeout=5)
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                '--max-wait-time-secs option is only effective with'
+                ' --wait-matching-subscriptions, --once or --times'
+            ],
+            text=command.output,
+            strict=True)
+
+    @launch_testing.markers.retry_on_failure(times=5)
+    def test_pub_maxwait_yields(self, launch_service, proc_info, proc_output):
+        topic = '/clitest/topic/pub/max_wait_timeout'
+        command_action = ExecuteProcess(
+            cmd=(['ros2', 'topic', 'pub', '-t', '10', '--max-wait-time-secs', '20', topic,
+                  'std_msgs/String', 'data: hello']),
+            additional_env={
+                'PYTHONUNBUFFERED': '1'
+            },
+            output='screen'
+        )
+
+        future = rclpy.task.Future()
+
+        def message_callback(msg):
+            """If we receive one message, the test has succeeded."""
+            future.set_result(True)
+
+        self.node.create_subscription(String, topic, message_callback, 1)
+        with launch_testing.tools.launch_process(
+            launch_service, command_action, proc_info, proc_output,
+            output_filter=launch_testing_ros.tools.basic_output_filter(
+                filtered_rmw_implementation=get_rmw_implementation_identifier()
+            )
+        ) as command:
+            self.executor.spin_until_future_complete(future, timeout_sec=10)
+            assert future.done()
+            assert command.wait_for_shutdown(timeout=20)
+
+    @launch_testing.markers.retry_on_failure(times=5)
     def test_pub_times(self, launch_service, proc_info, proc_output):
         command_action = ExecuteProcess(
             cmd=(['ros2', 'topic', 'pub', '-t', '5', '-w', '0', '/clitest/topic/pub_times',
@@ -207,6 +300,42 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                 "publishing #4: std_msgs.msg.String(data='hello')",
                 '',
                 "publishing #5: std_msgs.msg.String(data='hello')",
+                '',
+            ],
+            text=command.output,
+            strict=True
+        )
+
+    @launch_testing.markers.retry_on_failure(times=5)
+    def test_pub_yaml(self, launch_service, proc_info, proc_output):
+        command_action = ExecuteProcess(
+            # yaml file prevails to the values 'data: hello'
+            cmd=(['ros2', 'topic', 'pub', '/clitest/topic/chatter',
+                  'std_msgs/String', '--yaml-file',
+                  str(TEST_RESOURCES_DIR / 'chatter.yaml')]),
+            additional_env={
+                'PYTHONUNBUFFERED': '1'
+            },
+            output='screen'
+        )
+        with launch_testing.tools.launch_process(
+            launch_service, command_action, proc_info, proc_output,
+            output_filter=launch_testing_ros.tools.basic_output_filter(
+                filtered_rmw_implementation=get_rmw_implementation_identifier()
+            )
+        ) as command:
+            assert command.wait_for_shutdown(timeout=10)
+        assert command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'publisher: beginning loop',
+                "publishing #1: std_msgs.msg.String(data='Hello ROS Users')",
+                '',
+                "publishing #2: std_msgs.msg.String(data='Hello ROS Developers')",
+                '',
+                "publishing #3: std_msgs.msg.String(data='Hello ROS Developers')",
+                '',
+                "publishing #4: std_msgs.msg.String(data='Hello ROS Users')",
                 '',
             ],
             text=command.output,
@@ -248,6 +377,17 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                             depth=10,
                             reliability=ReliabilityPolicy.BEST_EFFORT,
                             durability=DurabilityPolicy.VOLATILE)
+                        # This QoS profile matched with the extra options defined above
+                        rostopic_qos_profile = QoSProfile(
+                            depth=10,
+                            reliability=ReliabilityPolicy.RELIABLE,
+                            durability=DurabilityPolicy.TRANSIENT_LOCAL)
+                        # Skip this test if the QoS between the publisher and subscription
+                        # are compatible according to the underlying middleware.
+                        comp, reason = qos_check_compatible(
+                            rostopic_qos_profile, publisher_qos_profile)
+                        if comp == QoSCompatibility.OK or comp == QoSCompatibility.WARNING:
+                            raise unittest.SkipTest()
                 if not message_lost:
                     echo_extra_options.append('--no-lost-messages')
                 publisher = self.node.create_publisher(String, topic, publisher_qos_profile)
@@ -379,9 +519,9 @@ class TestROS2TopicEchoPub(unittest.TestCase):
                 )
                 assert command.wait_for_output(functools.partial(
                     launch_testing.tools.expect_output, expected_lines=[
-                        "b'\\x00\\x01\\x00\\x00\\x06\\x00\\x00\\x00hello\\x00\\x00\\x00'",
-                        '---',
-                    ], strict=True
+                        re.compile(r"^b'\\x00\\x01\\x00\\x00\\x06\\x00\\x00\\x00hello(\\x00)*'$"),
+                        re.compile(r'^---$'),
+                    ], strict=False
                 ), timeout=10), 'Echo CLI did not print expected message'
             assert command.wait_for_shutdown(timeout=10)
 
@@ -433,3 +573,24 @@ class TestROS2TopicEchoPub(unittest.TestCase):
             # Cleanup
             self.node.destroy_timer(publish_timer)
             self.node.destroy_publisher(publisher)
+
+    @launch_testing.markers.retry_on_failure(times=5)
+    def test_echo_timeout(self, launch_service, proc_info, proc_output):
+        topic = '/clitest/topic/echo_timeout'
+
+        command_action = ExecuteProcess(
+            cmd=['ros2', 'topic', 'echo', '--timeout', '1', topic, 'std_msgs/msg/String'],
+            additional_env={
+                'PYTHONUNBUFFERED': '1'
+            },
+            output='screen'
+        )
+        with launch_testing.tools.launch_process(
+            launch_service, command_action, proc_info, proc_output,
+            output_filter=launch_testing_ros.tools.basic_output_filter(
+                filtered_rmw_implementation=get_rmw_implementation_identifier()
+            )
+        ) as command:
+            # wait for command to shutdown on its own
+            assert command.wait_for_shutdown(timeout=5)
+            assert command.output == ''

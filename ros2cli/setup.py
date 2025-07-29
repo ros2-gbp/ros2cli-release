@@ -3,10 +3,13 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.18.13',
+    version='0.40.0',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],
+        'test': [
+            'pytest',
+        ],
     },
     data_files=[
         ('share/ament_index/resource_index/packages', [
@@ -21,18 +24,18 @@ setup(
             'completion/ros2-argcomplete.zsh'
         ]),
     ],
+    package_data={'': ['py.typed']},
     zip_safe=False,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
-    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
-    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
+    maintainer='Audrow Nash, Geoffrey Biggs',
+    maintainer_email='audrow@openrobotics.org, geoff@openrobotics.org',
     url='https://github.com/ros2/ros2cli/tree/master/ros2cli',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
     ],
     description='Framework for ROS 2 command line tools.',
@@ -40,7 +43,6 @@ setup(
 The framework provides a single command line script which can be extended with
 commands and verbs.""",
     license='Apache License, Version 2.0',
-    tests_require=['pytest'],
     entry_points={
         'ros2cli.command': [
             'daemon = ros2cli.command.daemon:DaemonCommand',

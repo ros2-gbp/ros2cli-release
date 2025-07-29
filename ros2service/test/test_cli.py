@@ -16,12 +16,12 @@ import contextlib
 import functools
 import itertools
 import os
-import re
 import sys
 import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
+from launch.actions import SetEnvironmentVariable
 from launch_ros.actions import Node
 
 import launch_testing
@@ -29,11 +29,13 @@ import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
+from launch_testing_ros.actions import EnableRmwIsolation
 import launch_testing_ros.tools
 
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
+from ros2cli.helpers import get_rmw_additional_env
 
 from test_msgs.srv import BasicTypes
 
@@ -68,13 +70,16 @@ def generate_test_description(rmw_implementation):
     path_to_echo_server_script = os.path.join(
         os.path.dirname(__file__), 'fixtures', 'echo_server.py'
     )
-    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
+    additional_env = get_rmw_additional_env(rmw_implementation)
+    set_env_actions = [SetEnvironmentVariable(k, v) for k, v in additional_env.items()]
     return LaunchDescription([
         # Always restart daemon to isolate tests.
         ExecuteProcess(
             cmd=['ros2', 'daemon', 'stop'],
             name='daemon-stop',
             on_exit=[
+                *set_env_actions,
+                EnableRmwIsolation(),
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
@@ -85,7 +90,6 @@ def generate_test_description(rmw_implementation):
                             arguments=[path_to_echo_server_script],
                             name='echo_server',
                             namespace='my_ns',
-                            additional_env=additional_env,
                         ),
                         Node(
                             executable=sys.executable,
@@ -93,11 +97,9 @@ def generate_test_description(rmw_implementation):
                             name='_hidden_echo_server',
                             namespace='my_ns',
                             remappings=[('echo', '_echo')],
-                            additional_env=additional_env,
                         ),
                         launch_testing.actions.ReadyToTest()
                     ],
-                    additional_env=additional_env
                 )
             ]
         ),
@@ -105,6 +107,16 @@ def generate_test_description(rmw_implementation):
 
 
 class TestROS2ServiceCLI(unittest.TestCase):
+    expected_builtin_services = {
+        'describe_parameters': 'rcl_interfaces/srv/DescribeParameters',
+        'get_parameter_types': 'rcl_interfaces/srv/GetParameterTypes',
+        'get_parameters': 'rcl_interfaces/srv/GetParameters',
+        'get_type_description': 'type_description_interfaces/srv/GetTypeDescription',
+        'list_parameters': 'rcl_interfaces/srv/ListParameters',
+        'set_parameters': 'rcl_interfaces/srv/SetParameters',
+        'set_parameters_atomically': 'rcl_interfaces/srv/SetParametersAtomically',
+    }
+    builtin_service_count = len(expected_builtin_services)
 
     @classmethod
     def setUpClass(
@@ -116,12 +128,12 @@ class TestROS2ServiceCLI(unittest.TestCase):
     ):
         @contextlib.contextmanager
         def launch_service_command(self, arguments):
+            additional_env = {
+                'PYTHONUNBUFFERED': '1',
+            }
             service_command_action = ExecuteProcess(
                 cmd=['ros2', 'service', *arguments],
-                additional_env={
-                    'RMW_IMPLEMENTATION': rmw_implementation,
-                    'PYTHONUNBUFFERED': '1'
-                },
+                additional_env=additional_env,
                 name='ros2service-cli',
                 output='screen'
             )
@@ -138,6 +150,13 @@ class TestROS2ServiceCLI(unittest.TestCase):
                 yield service_command
         cls.launch_service_command = launch_service_command
 
+    @classmethod
+    def get_expected_builtin_services(cls, namespace: str, with_types: bool = False) -> list[str]:
+        return [
+            f'{namespace}/{srv_name}' + (f' [{srv_type}]' if with_types else '')
+            for srv_name, srv_type in cls.expected_builtin_services.items()
+        ]
+
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_list_services(self):
         with self.launch_service_command(arguments=['list']) as service_command:
@@ -146,9 +165,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=itertools.chain(
                 ['/my_ns/echo'],
-                itertools.repeat(re.compile(
-                    r'/my_ns/echo_server/.*parameter.*'
-                ), 6)
+                self.get_expected_builtin_services('/my_ns/echo_server'),
             ),
             text=service_command.output,
             strict=True
@@ -164,13 +181,9 @@ class TestROS2ServiceCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=itertools.chain(
                 ['/my_ns/_echo'],
-                itertools.repeat(re.compile(
-                    r'/my_ns/_hidden_echo_server/.*parameter.*'
-                ), 6),
+                self.get_expected_builtin_services('/my_ns/_hidden_echo_server'),
                 ['/my_ns/echo'],
-                itertools.repeat(re.compile(
-                    r'/my_ns/echo_server/.*parameter.*'
-                ), 6)
+                self.get_expected_builtin_services('/my_ns/echo_server'),
             ),
             text=service_command.output,
             strict=True
@@ -184,10 +197,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=itertools.chain(
                 ['/my_ns/echo [test_msgs/srv/BasicTypes]'],
-                itertools.repeat(re.compile(
-                    r'/my_ns/echo_server/.*parameter.*'
-                    r' \[rcl_interfaces/srv/.*Parameter.*\]'
-                ), 6)
+                self.get_expected_builtin_services('/my_ns/echo_server', with_types=True)
             ),
             text=service_command.output,
             strict=True
@@ -200,7 +210,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
         assert service_command.exit_code == launch_testing.asserts.EXIT_OK
         output_lines = service_command.output.splitlines()
         assert len(output_lines) == 1
-        assert int(output_lines[0]) == 7
+        assert int(output_lines[0]) == self.builtin_service_count + 1
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_find(self):
@@ -277,7 +287,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=get_echo_call_output(),
             text=service_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -300,7 +310,7 @@ class TestROS2ServiceCLI(unittest.TestCase):
                 string_value='bazbar'
             ),
             text=service_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -319,3 +329,40 @@ class TestROS2ServiceCLI(unittest.TestCase):
                     bool_value=True, int32_value=1, float64_value=1.0, string_value='foobar'
                 )
             ), timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_call_with_qos_option(self):
+        with self.launch_service_command(
+            arguments=[
+                'call',
+                '--qos-profile',
+                'system_default',
+                '--qos-depth',
+                '5',
+                '--qos-history',
+                'system_default',
+                '--qos-reliability',
+                'system_default',
+                '--qos-durability',
+                'system_default',
+                '--qos-liveliness',
+                'system_default',
+                '--qos-liveliness-lease-duration',
+                '0',
+                '/my_ns/echo',
+                'test_msgs/srv/BasicTypes',
+                '{bool_value: false, int32_value: -1, float64_value: 0.1, string_value: bazbar}'
+            ]
+        ) as service_command:
+            assert service_command.wait_for_shutdown(timeout=10)
+        assert service_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=get_echo_call_output(
+                bool_value=False,
+                int32_value=-1,
+                float64_value=0.1,
+                string_value='bazbar'
+            ),
+            text=service_command.output,
+            strict=False
+        )

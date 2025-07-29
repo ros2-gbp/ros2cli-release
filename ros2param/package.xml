@@ -2,24 +2,24 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>ros2param</name>
-  <version>0.18.13</version>
+  <version>0.40.0</version>
   <description>
     The param command for ROS 2 command line tools.
   </description>
 
-  <maintainer email="aditya.pande@openrobotics.org">Aditya Pande</maintainer>
   <maintainer email="audrow@openrobotics.org">Audrow Nash</maintainer>
-  <maintainer email="michael.jeronimo@openrobotics.org">Michael Jeronimo</maintainer>
+  <maintainer email="geoff@openrobotics.org">Geoffrey Biggs</maintainer>
 
   <license>Apache License 2.0</license>
 
+  <author email="aditya.pande@openrobotics.org">Aditya Pande</author>
   <author email="dthomas@osrfoundation.org">Dirk Thomas</author>
   <author email="mabel@openrobotics.org">Mabel Zhang</author>
+  <author email="michael.jeronimo@openrobotics.org">Michael Jeronimo</author>
 
-  <depend>rcl_interfaces</depend>
-  <depend>rclpy</depend>
-  <depend>ros2cli</depend>
-
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>ros2cli</exec_depend>
   <exec_depend>ros2node</exec_depend>
   <exec_depend>ros2service</exec_depend>
 

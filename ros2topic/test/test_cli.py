@@ -22,6 +22,7 @@ import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
+from launch.actions import SetEnvironmentVariable
 
 from launch_ros.actions import Node
 
@@ -30,11 +31,13 @@ import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
+from launch_testing_ros.actions import EnableRmwIsolation
 import launch_testing_ros.tools
 
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
+from ros2cli.helpers import get_rmw_additional_env
 
 
 # Skip cli tests on Windows while they exhibit pathological behavior
@@ -49,10 +52,9 @@ if sys.platform.startswith('win'):
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
 def generate_test_description(rmw_implementation):
     path_to_fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
-    additional_env = {
-        'RMW_IMPLEMENTATION': rmw_implementation, 'PYTHONUNBUFFERED': '1'
-    }
-
+    additional_env = get_rmw_additional_env(rmw_implementation)
+    additional_env['PYTHONUNBUFFERED'] = '1'
+    set_env_actions = [SetEnvironmentVariable(k, v) for k, v in additional_env.items()]
     path_to_talker_node_script = os.path.join(path_to_fixtures, 'talker_node.py')
     path_to_listener_node_script = os.path.join(path_to_fixtures, 'listener_node.py')
 
@@ -60,18 +62,15 @@ def generate_test_description(rmw_implementation):
         executable=sys.executable,
         arguments=[path_to_talker_node_script],
         remappings=[('chatter', '_hidden_chatter')],
-        additional_env=additional_env
     )
     talker_node_action = Node(
         executable=sys.executable,
         arguments=[path_to_talker_node_script],
-        additional_env=additional_env
     )
     listener_node_action = Node(
         executable=sys.executable,
         arguments=[path_to_listener_node_script],
         remappings=[('chatter', 'chit_chatter')],
-        additional_env=additional_env
     )
 
     path_to_repeater_node_script = os.path.join(path_to_fixtures, 'repeater_node.py')
@@ -82,14 +81,12 @@ def generate_test_description(rmw_implementation):
         name='array_repeater',
         remappings=[('/array_repeater/output', '/arrays')],
         output='screen',
-        additional_env=additional_env
     )
     defaults_repeater_node_action = Node(
         executable=sys.executable,
         arguments=[path_to_repeater_node_script, 'test_msgs/msg/Defaults'],
         name='defaults_repeater',
         remappings=[('/defaults_repeater/output', '/defaults')],
-        additional_env=additional_env,
     )
     bounded_sequences_repeater_node_action = Node(
         executable=sys.executable,
@@ -98,7 +95,6 @@ def generate_test_description(rmw_implementation):
         ],
         name='bounded_sequences_repeater',
         remappings=[('/bounded_sequences_repeater/output', '/bounded_sequences')],
-        additional_env=additional_env
     )
     unbounded_sequences_repeater_node_action = Node(
         executable=sys.executable,
@@ -107,7 +103,6 @@ def generate_test_description(rmw_implementation):
         ],
         name='unbounded_sequences_repeater',
         remappings=[('/unbounded_sequences_repeater/output', '/unbounded_sequences')],
-        additional_env=additional_env
     )
 
     path_to_controller_node_script = os.path.join(path_to_fixtures, 'controller_node.py')
@@ -115,7 +110,6 @@ def generate_test_description(rmw_implementation):
     cmd_vel_controller_node_action = Node(
         executable=sys.executable,
         arguments=[path_to_controller_node_script],
-        additional_env=additional_env
     )
 
     return LaunchDescription([
@@ -124,6 +118,8 @@ def generate_test_description(rmw_implementation):
             cmd=['ros2', 'daemon', 'stop'],
             name='daemon-stop',
             on_exit=[
+                *set_env_actions,
+                EnableRmwIsolation(),
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
@@ -142,7 +138,6 @@ def generate_test_description(rmw_implementation):
                         cmd_vel_controller_node_action,
                         launch_testing.actions.ReadyToTest()
                     ],
-                    additional_env=additional_env
                 )
             ]
         ),
@@ -169,10 +164,6 @@ class TestROS2TopicCLI(unittest.TestCase):
         def launch_topic_command(self, arguments):
             topic_command_action = ExecuteProcess(
                 cmd=['ros2', 'topic', *arguments],
-                additional_env={
-                    'RMW_IMPLEMENTATION': rmw_implementation,
-                    'PYTHONUNBUFFERED': '1'
-                },
                 name='ros2topic-cli',
                 output='screen'
             )
@@ -305,6 +296,10 @@ class TestROS2TopicCLI(unittest.TestCase):
 
     @launch_testing.markers.retry_on_failure(times=5)
     def test_topic_endpoint_info_verbose(self):
+        # Hash value below can be found in std_msgs/msg/String.json
+        STD_MSGS_STRING_TYPE_HASH_STR = 'RIHS01_' \
+            'df668c740482bbd48fb39d76a70dfd4bd59db1288021743503259e948f6b1a18'
+
         with self.launch_topic_command(arguments=['info', '-v', '/chatter']) as topic_command:
             assert topic_command.wait_for_shutdown(timeout=10)
         assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
@@ -317,6 +312,7 @@ class TestROS2TopicCLI(unittest.TestCase):
                 re.compile(r'Node name: \w+'),
                 'Node namespace: /',
                 'Topic type: std_msgs/msg/String',
+                f'Topic type hash: {STD_MSGS_STRING_TYPE_HASH_STR}',
                 re.compile(r'Endpoint type: (INVALID|PUBLISHER|SUBSCRIPTION)'),
                 re.compile(r'GID: [\w\.]+'),
                 'QoS profile:',
@@ -585,6 +581,20 @@ class TestROS2TopicCLI(unittest.TestCase):
         assert topic_command.wait_for_shutdown(timeout=10)
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_multi_fields(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/defaults', '--field', 'int8_value', '--field', 'uint8_value'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '-50',
+                    '200',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_topic_echo_field_nested(self):
         with self.launch_topic_command(
             arguments=['echo', '/cmd_vel', '--field', 'twist.angular'],
@@ -600,9 +610,113 @@ class TestROS2TopicCLI(unittest.TestCase):
         assert topic_command.wait_for_shutdown(timeout=10)
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[2]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '-1.125',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_multi_fields_nested(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/cmd_vel', '--field', 'twist.linear.x',
+                       '--field', 'twist.linear.y'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '1.0',
+                    '0.0',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_multi_fields_array(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[2]', '--field',
+                       'string_values_default.[1]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    '-1.125',
+                    'max value',
+                    '---',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_topic_echo_field_not_a_member(self):
         with self.launch_topic_command(
             arguments=['echo', '/arrays', '--field', 'not_member'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'not_member': 'Arrays' object has no attribute 'not_member'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array_not_an_array(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[0].[0]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'float32_values_default.[0].[0]': invalid index to "
+                    'scalar variable.',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array_index_out_of_bounds(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[3]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'float32_values_default.[3]': index 3 is out of bounds "
+                    'for axis 0 with size 3',
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_field_array_no_index(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'float32_values_default.[abc]'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'float32_values_default.[abc]': 'numpy.ndarray' object "
+                    "has no attribute '[abc]'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_multi_fields_not_a_member(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'not_member', '--field', 'alignment_check'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field 'not_member': 'Arrays' object has no attribute 'not_member'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'alignment_check', '--field', 'not_member'],
         ) as topic_command:
             assert topic_command.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
@@ -624,6 +738,27 @@ class TestROS2TopicCLI(unittest.TestCase):
 
         with self.launch_topic_command(
             arguments=['echo', '/arrays', '--field', '.'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field value '.'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+    def test_topic_echo_multi_fields_invalid(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', '/', '--field', 'alignment_check'],
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    "Invalid field '/': 'Arrays' object has no attribute '/'",
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'alignment_check', '--field', '.'],
         ) as topic_command:
             assert topic_command.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
@@ -700,13 +835,12 @@ class TestROS2TopicCLI(unittest.TestCase):
         assert topic_command.exit_code == launch_testing.asserts.EXIT_OK
 
     def test_topic_pub_once_matching_two_listeners(
-        self, launch_service, proc_info, proc_output, path_to_listener_node_script, additional_env
+        self, launch_service, proc_info, proc_output, path_to_listener_node_script
     ):
         second_listener_node_action = Node(
             executable=sys.executable,
             arguments=[path_to_listener_node_script],
             remappings=[('chatter', 'chit_chatter')],
-            additional_env=additional_env,
             name='second_listener',
         )
         with launch_testing.tools.launch_process(
@@ -810,6 +944,35 @@ class TestROS2TopicCLI(unittest.TestCase):
         assert math.isclose(average_rate, 1., rel_tol=1e-2)
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_multiple_topics_hz(self):
+        header_pattern = re.compile(r'\s+topic\s+rate\s+min_delta\s+max_delta\s+std_dev\s+window')
+        hline_pattern = re.compile(r'=+')
+        chatter_line_pattern = re.compile(
+          r'/chatter\s+(\d+.\d{3})\s+\d+.\d{3}\s+\d+.\d{3}\s+\d+.\d{5}\s+\d+\s+')
+        hidden_chatter_line_pattern = re.compile(
+          r'/_hidden_chatter\s+(\d+.\d{3})\s+\d+.\d{3}\s+\d+.\d{3}\s+\d+.\d{5}\s+\d+\s+')
+        with self.launch_topic_command(
+            arguments=['hz', '/chatter', '/_hidden_chatter']
+        ) as topic_command:
+            assert topic_command.wait_for_output(functools.partial(
+                launch_testing.tools.expect_output, expected_lines=[
+                    'Subscribed to [/chatter]',
+                    'Subscribed to [/_hidden_chatter]',
+                    header_pattern, hline_pattern,
+                    chatter_line_pattern, hidden_chatter_line_pattern
+                ], strict=True
+            ), timeout=10)
+        assert topic_command.wait_for_shutdown(timeout=10)
+
+        chatter_line = topic_command.output.splitlines()[4]
+        chatter_average_rate = float(chatter_line_pattern.match(chatter_line).group(1))
+        assert math.isclose(chatter_average_rate, 1., rel_tol=1e-2)
+        hidden_chatter_line = topic_command.output.splitlines()[5]
+        hidden_chatter_average_rate = float(hidden_chatter_line_pattern.match(
+            hidden_chatter_line).group(1))
+        assert math.isclose(hidden_chatter_average_rate, 1., rel_tol=1e-2)
+
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_filtered_topic_hz(self):
         average_rate_line_pattern = re.compile(r'average rate: (\d+.\d{3})')
         stats_line_pattern = re.compile(
@@ -840,7 +1003,7 @@ class TestROS2TopicCLI(unittest.TestCase):
             assert topic_command.wait_for_output(functools.partial(
                 launch_testing.tools.expect_output, expected_lines=[
                     'Subscribed to [/defaults]',
-                    re.compile(r'\d{2} B/s from \d+ messages'),
+                    re.compile(r'\d{2,3} B/s from \d+ messages'),
                     re.compile(r'\s*Message size mean: \d{2} B min: \d{2} B max: \d{2} B')
                 ], strict=True
             ), timeout=10)

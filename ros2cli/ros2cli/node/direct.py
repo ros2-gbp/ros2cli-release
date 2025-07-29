@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+from typing import Optional
 
 import rclpy
 import rclpy.action
@@ -24,7 +25,7 @@ DEFAULT_TIMEOUT = 0.5
 
 class DirectNode:
 
-    def __init__(self, args, *, node_name=None):
+    def __init__(self, args, *, node_name: Optional[str] = None):
         timeout_reached = False
 
         def timer_callback():
@@ -40,6 +41,7 @@ class DirectNode:
         start_parameter_services = getattr(
             args, 'start_parameter_services', False)
         use_sim_time = getattr(args, 'use_sim_time', False)
+        start_type_description_service = getattr(args, 'start_type_description_service', True)
 
         if node_name is None:
             node_name = NODE_NAME_PREFIX + node_name_suffix
@@ -48,7 +50,8 @@ class DirectNode:
             node_name,
             start_parameter_services=start_parameter_services,
             parameter_overrides=[
-                Parameter('use_sim_time', value=use_sim_time)
+                Parameter('use_sim_time', value=use_sim_time),
+                Parameter('start_type_description_service', value=start_type_description_service),
             ], automatically_declare_parameters_from_overrides=True)
 
         timeout = getattr(args, 'spin_time', DEFAULT_TIMEOUT)
@@ -65,7 +68,7 @@ class DirectNode:
     # TODO(hidmic): generalize/standardize rclpy graph API
     #               to not have to make a special case for
     #               rclpy.action
-    def get_action_names_and_types(self):
+    def get_action_names_and_types(self) -> list[tuple[str, list[str]]]:
         return rclpy.action.get_action_names_and_types(self.node)
 
     def get_action_client_names_and_types_by_node(self, remote_node_name, remote_node_namespace):

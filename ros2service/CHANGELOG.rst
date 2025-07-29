@@ -2,34 +2,131 @@
 Changelog for package ros2service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.18.13 (2025-07-16)
---------------------
+0.40.0 (2025-07-29)
+-------------------
+* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
+* Contributors: Scott K Logan, mosfet80
 
-0.18.12 (2025-03-25)
---------------------
+0.39.2 (2025-07-01)
+-------------------
+* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
+* Contributors: Christophe Bedard
 
-0.18.11 (2024-07-26)
---------------------
+0.39.1 (2025-06-19)
+-------------------
+* Relax the check from exact to partial match. (`#1055 <https://github.com/ros2/ros2cli/issues/1055>`_)
+* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
+* move QoS methods from ros2topic.api to ros2cli.qos. (`#1053 <https://github.com/ros2/ros2cli/issues/1053>`_)
+* add QoS option to ros2service/ros2action echo commands. (`#1036 <https://github.com/ros2/ros2cli/issues/1036>`_)
+* Contributors: Michael Carlstrom, Tomoya Fujita
 
-0.18.10 (2024-05-15)
---------------------
-
-0.18.9 (2024-02-16)
+0.39.0 (2025-04-25)
 -------------------
 
-0.18.8 (2024-01-24)
+0.38.0 (2025-04-25)
+-------------------
+* Use `get_service` in `ros2service call` (`#994 <https://github.com/ros2/ros2cli/issues/994>`_)
+* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
+* Support QoS options for `ros2 service call` (`#966 <https://github.com/ros2/ros2cli/issues/966>`_)
+* Contributors: Michael Carlstrom, Michael Carroll, Tomoya Fujita
+
+0.37.0 (2025-02-02)
+-------------------
+* Maintaining consistency of automatically putting time stamps in the service and action calls similiar to publishing in rostopics. (`#961 <https://github.com/ros2/ros2cli/issues/961>`_)
+* Contributors: Sukhvansh Jain, Tomoya Fujita
+
+0.36.1 (2024-12-20)
 -------------------
 
-0.18.7 (2023-07-18)
+0.36.0 (2024-11-20)
 -------------------
 
-0.18.6 (2023-04-25)
+0.35.0 (2024-10-03)
 -------------------
 
-0.18.5 (2023-01-10)
+0.34.1 (2024-07-29)
+-------------------
+* Switch to using the rclpy.init context manager. (`#920 <https://github.com/ros2/ros2cli/issues/920>`_)
+* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
+* Contributors: Chris Lalancette
+
+0.34.0 (2024-06-17)
 -------------------
 
-0.18.4 (2022-11-07)
+0.33.0 (2024-04-26)
+-------------------
+
+0.32.0 (2024-04-16)
+-------------------
+
+0.31.2 (2024-03-27)
+-------------------
+
+0.31.1 (2024-02-07)
+-------------------
+
+0.31.0 (2024-01-24)
+-------------------
+
+0.30.1 (2023-12-26)
+-------------------
+
+0.30.0 (2023-11-06)
+-------------------
+* Add ros2 service info (`#771 <https://github.com/ros2/ros2cli/issues/771>`_)
+* Contributors: Minju, Lee
+
+0.29.1 (2023-10-04)
+-------------------
+
+0.29.0 (2023-08-21)
+-------------------
+* Load a message/request/goal from standard input (`#844 <https://github.com/ros2/ros2cli/issues/844>`_)
+* Contributors: ymd-stella
+
+0.28.0 (2023-07-11)
+-------------------
+* Fix tests with get_type_description service and param present (`#838 <https://github.com/ros2/ros2cli/issues/838>`_)
+* Contributors: Emerson Knapp
+
+0.27.0 (2023-06-07)
+-------------------
+* [service introspection] ros2 service echo (`#745 <https://github.com/ros2/ros2cli/issues/745>`_)
+* Contributors: Brian
+
+0.26.1 (2023-05-11)
+-------------------
+
+0.26.0 (2023-04-28)
+-------------------
+
+0.25.0 (2023-04-18)
+-------------------
+* Make all of the dependencies in pure Python packages exec_depend. (`#823 <https://github.com/ros2/ros2cli/issues/823>`_)
+* Contributors: Chris Lalancette
+
+0.24.1 (2023-04-12)
+-------------------
+
+0.24.0 (2023-04-11)
+-------------------
+
+0.23.0 (2023-03-02)
+-------------------
+
+0.22.0 (2023-02-14)
+-------------------
+* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
+* Contributors: Audrow Nash
+
+0.21.0 (2022-11-02)
+-------------------
+
+0.20.0 (2022-09-13)
+-------------------
+
+0.19.0 (2022-04-29)
 -------------------
 
 0.18.3 (2022-04-08)

@@ -5,7 +5,7 @@ package_name = 'ros2pkg'
 
 setup(
     name=package_name,
-    version='0.18.13',
+    version='0.40.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -16,22 +16,25 @@ setup(
     zip_safe=True,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
-    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
-    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
+    maintainer='Audrow Nash, Geoffrey Biggs',
+    maintainer_email='audrow@openrobotics.org, geoff@openrobotics.org',
     url='https://github.com/ros2/ros2cli/tree/master/ros2pkg',
     download_url='https://github.com/ros2/ros2cli/releases',
     keywords=[],
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
     ],
     description='The pkg command for ROS 2 command line tools.',
     long_description="""\
 The package provides the pkg command for the ROS 2 command line tools.""",
     license='Apache License, Version 2.0',
-    tests_require=['pytest'],
+    extras_require={
+        'test': [
+            'pytest',
+        ],
+    },
     entry_points={
         'ros2cli.command': [
             'pkg = ros2pkg.command.pkg:PkgCommand',
@@ -50,6 +53,7 @@ The package provides the pkg command for the ROS 2 command line tools.""",
     package_data={
         'ros2pkg': [
             'resource/**/*',
+            'py.typed'
         ],
     },
 )
