@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.8)
 project(@(project_name))
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -28,10 +28,10 @@ target_include_directories(@(cpp_library_name) PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 @[  if dependencies]@
-target_link_libraries(
-  @(cpp_library_name) PUBLIC
+ament_target_dependencies(
+  @(cpp_library_name)
 @[    for dep in dependencies]@
-  ${@(dep)_TARGETS}
+  "@(dep)"
 @[    end for]@
 )
 @[  end if]@
@@ -63,10 +63,10 @@ target_link_libraries(@(cpp_node_name) @(cpp_library_name))
 @[  else]@
 target_compile_features(@(cpp_node_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 @[    if dependencies]@
-target_link_libraries(
+ament_target_dependencies(
   @(cpp_node_name)
 @[      for dep in dependencies]@
-  ${@(dep)_TARGETS}
+  "@(dep)"
 @[      end for]@
 )
 @[    end if]@

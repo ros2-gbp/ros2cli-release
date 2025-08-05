@@ -17,11 +17,7 @@ setup(
     maintainer_email='@maintainer_email',
     description='@package_description',
     license='@package_license',
-    extras_require={
-        'test': [
-            'pytest',
-        ],
-    },
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
 @[if node_name]@
