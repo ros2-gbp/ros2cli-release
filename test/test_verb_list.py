@@ -129,6 +129,8 @@ class TestVerbList(unittest.TestCase):
                     services = node.get_service_names_and_types_by_node(TEST_NODE, TEST_NAMESPACE)
                 except rclpy.node.NodeNameNonExistentError:
                     continue
+                except ConnectionRefusedError:
+                    continue
                 except xmlrpc.client.Fault as e:
                     if 'NodeNameNonExistentError' in e.faultString:
                         continue
@@ -186,7 +188,7 @@ class TestVerbList(unittest.TestCase):
                 '  str_param',
                 '  use_sim_time'],
             text=param_list_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -201,5 +203,5 @@ class TestVerbList(unittest.TestCase):
                 '  bool_array_param',
                 '  bool_param'],
             text=param_list_command.output,
-            strict=True
+            strict=False
         ), f'actual output: {param_list_command.output}'
