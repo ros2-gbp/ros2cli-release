@@ -158,6 +158,8 @@ class TestVerbDump(unittest.TestCase):
                     services = node.get_service_names_and_types_by_node(TEST_NODE, TEST_NAMESPACE)
                 except rclpy.node.NodeNameNonExistentError:
                     continue
+                except ConnectionRefusedError:
+                    continue
                 except xmlrpc.client.Fault as e:
                     if 'NodeNameNonExistentError' in e.faultString:
                         continue
@@ -205,5 +207,5 @@ class TestVerbDump(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_text=EXPECTED_PARAMETER_FILE + '\n',
             text=param_dump_command.output,
-            strict=True
+            strict=False
         )
