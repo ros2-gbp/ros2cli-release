@@ -20,12 +20,16 @@ from geometry_msgs.msg import PointStamped  # Used because delay requires a mess
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
+from launch.actions import RegisterEventHandler
+from launch.actions import ResetEnvironment
+from launch.event_handlers import OnShutdown
 
 import launch_testing
 import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
+from launch_testing_ros.actions import EnableRmwIsolation
 import launch_testing_ros.tools
 
 import pytest
@@ -61,6 +65,16 @@ def generate_test_description():
             cmd=['ros2', 'daemon', 'stop'],
             name='daemon-stop',
             on_exit=[
+                EnableRmwIsolation(),
+                RegisterEventHandler(OnShutdown(on_shutdown=[
+                    # Stop daemon in isolated environment with proper ROS_DOMAIN_ID
+                    ExecuteProcess(
+                        cmd=['ros2', 'daemon', 'stop'],
+                        name='daemon-stop-isolated',
+                    ),
+                    # This must be done after stopping the daemon in the isolated environment
+                    ResetEnvironment(),
+                ])),
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
@@ -142,6 +156,15 @@ class TestROS2TopicBwDelayHz(unittest.TestCase):
                     publisher.publish(msg)
 
                 publish_timer = self.node.create_timer(0.5, publish_message)
+
+                # Wait for the publisher to be discovered
+                publisher_count = 0
+                timeout_count = 0
+                while publisher_count == 0 and timeout_count < 10:
+                    self.executor.spin_once(timeout_sec=0.1)
+                    publisher_count = self.node.count_publishers(topic)
+                    timeout_count += 1
+                assert publisher_count > 0, 'Publisher was not discovered'
 
                 try:
                     command_action = ExecuteProcess(
