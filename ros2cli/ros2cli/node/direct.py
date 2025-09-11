@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-from typing import Optional
 
 import rclpy
 import rclpy.action
@@ -25,7 +24,7 @@ DEFAULT_TIMEOUT = 0.5
 
 class DirectNode:
 
-    def __init__(self, args, *, node_name: Optional[str] = None):
+    def __init__(self, args, *, node_name=None):
         timeout_reached = False
 
         def timer_callback():
@@ -68,7 +67,7 @@ class DirectNode:
     # TODO(hidmic): generalize/standardize rclpy graph API
     #               to not have to make a special case for
     #               rclpy.action
-    def get_action_names_and_types(self) -> list[tuple[str, list[str]]]:
+    def get_action_names_and_types(self):
         return rclpy.action.get_action_names_and_types(self.node)
 
     def get_action_client_names_and_types_by_node(self, remote_node_name, remote_node_namespace):

@@ -2,22 +2,10 @@
 Changelog for package ros2cli_test_interfaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.40.1 (2025-09-11)
+0.38.1 (2025-09-11)
 -------------------
-
-0.40.0 (2025-07-29)
--------------------
-* fix cmake deprecation (`#1082 <https://github.com/ros2/ros2cli/issues/1082>`_)
-* Contributors: mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-
-0.39.1 (2025-06-19)
--------------------
-
-0.39.0 (2025-04-25)
--------------------
+* fix cmake deprecation (`#1082 <https://github.com/ros2/ros2cli/issues/1082>`_) (`#1083 <https://github.com/ros2/ros2cli/issues/1083>`_)
+* Contributors: mergify[bot]
 
 0.38.0 (2025-04-25)
 -------------------
