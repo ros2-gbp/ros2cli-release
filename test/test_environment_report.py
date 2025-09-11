@@ -16,9 +16,7 @@ import contextlib
 import os
 import sys
 from typing import Any
-from typing import Dict
 from typing import Generator
-from typing import Tuple
 import unittest
 
 from launch import LaunchDescription
@@ -29,15 +27,12 @@ from launch.actions import ResetEnvironment
 from launch.actions import SetEnvironmentVariable
 from launch.event_handlers import OnShutdown
 
-from launch_ros.actions import Node
-
 import launch_testing
 import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
 from launch_testing_ros.actions import EnableRmwIsolation
-import launch_testing_ros.tools
 
 import pytest
 
@@ -53,11 +48,14 @@ if sys.platform.startswith('win'):
         allow_module_level=True)
 
 
+CYCLONEDDS_XML = '<CycloneDDS><Domain><General></General></Domain></CycloneDDS>'
+
+
 @pytest.mark.rostest
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
-def generate_test_description(rmw_implementation: str) -> Tuple[LaunchDescription,
-                                                                Dict[str, Any]]:
-    path_to_fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
+@launch_testing.markers.keep_alive
+def generate_test_description(rmw_implementation: str) -> tuple[LaunchDescription,
+                                                                dict[str, Any]]:
     additional_env = get_rmw_additional_env(rmw_implementation)
     additional_env['PYTHONUNBUFFERED'] = '1'
     set_env_actions = [SetEnvironmentVariable(k, v) for k, v in additional_env.items()]
@@ -83,11 +81,16 @@ def generate_test_description(rmw_implementation: str) -> Tuple[LaunchDescriptio
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
+                    additional_env=additional_env,
                     on_exit=[
-                        Node(
-                            executable=sys.executable,
-                            arguments=[os.path.join(path_to_fixtures, 'report_node.py')],
-                        ),
+                        SetEnvironmentVariable('ROS_AUTOMATIC_DISCOVERY_RANGE', 'SUBNET'),
+                        SetEnvironmentVariable('ROS_DISTRO', 'rolling'),
+                        SetEnvironmentVariable('ROS_DISABLE_LOANED_MESSAGES', '0'),
+                        SetEnvironmentVariable('RCUTILS_COLORIZED_OUTPUT', '0'),
+                        SetEnvironmentVariable('FASTDDS_BUILTIN_TRANSPORTS', 'UDPv6'),
+                        SetEnvironmentVariable('ZENOH_ROUTER_CHECK_ATTEMPTS', '10'),
+                        SetEnvironmentVariable('RMW_CONNEXT_INITIAL_PEERS', 'CONNEXTBOO'),
+                        SetEnvironmentVariable('CYCLONEDDS_URI', CYCLONEDDS_XML),
                         launch_testing.actions.ReadyToTest()
                     ]
                 )
@@ -96,7 +99,7 @@ def generate_test_description(rmw_implementation: str) -> Tuple[LaunchDescriptio
     ]), locals()
 
 
-class TestROS2DoctorReport(unittest.TestCase):
+class TestEnvironmentReport(unittest.TestCase):
 
     @classmethod
     def setUpClass(
@@ -107,43 +110,43 @@ class TestROS2DoctorReport(unittest.TestCase):
             rmw_implementation: str,
     ) -> None:
         cls.rmw_implementation = rmw_implementation
-        rmw_implementation_filter = launch_testing_ros.tools.basic_output_filter(
-            filtered_patterns=['WARNING: topic .* does not appear to be published yet'],
-            filtered_rmw_implementation=rmw_implementation
-        )
 
         @contextlib.contextmanager
         def launch_doctor_command(
             self,
             arguments
         ) -> Generator[launch_testing.tools.process.ProcessProxy, None, None]:
+            additional_env = get_rmw_additional_env(rmw_implementation)
+            additional_env['PYTHONUNBUFFERED'] = '1'
             doctor_command_action = ExecuteProcess(
                 cmd=['ros2', 'doctor', *arguments],
-                name='ros2doctor-cli',
+                additional_env=additional_env,
+                name='ros2doctor-environment-report',
                 output='screen'
             )
             with launch_testing.tools.launch_process(
-                    launch_service, doctor_command_action, proc_info, proc_output,
-                    output_filter=rmw_implementation_filter
+                    launch_service, doctor_command_action, proc_info, proc_output
             ) as doctor_command:
                 yield doctor_command
+
         cls.launch_doctor_command = launch_doctor_command
 
-    @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_check(self) -> None:
-        with self.launch_doctor_command(
-                arguments=[]
-        ) as doctor_command:
-            assert doctor_command.wait_for_shutdown(timeout=10)
-        assert doctor_command.exit_code == launch_testing.asserts.EXIT_OK
-        assert doctor_command.output
+        if rmw_implementation == 'rmw_cyclonedds_cpp':
+            cls.expected_line = f'CYCLONEDDS_URI={CYCLONEDDS_XML}'
+        elif rmw_implementation == 'rmw_connextdds':
+            cls.expected_line = 'RMW_CONNEXT_INITIAL_PEERS=CONNEXTBOO'
+        elif rmw_implementation == 'rmw_zenoh_cpp':
+            config = os.environ['ZENOH_CONFIG_OVERRIDE']
+            cls.expected_line = f'RUST_LOG=z=error, ZENOH_CONFIG_OVERRIDE={config}, '
+            'ZENOH_ROUTER_CHECK_ATTEMPTS=10'
+        elif rmw_implementation == 'rmw_fastrtps_cpp':
+            cls.expected_line = 'FASTDDS_BUILTIN_TRANSPORTS=UDPv6'
+        else:
+            cls.expected_line = ''
 
-        lines_list = [line for line in doctor_command.output.splitlines() if line]
-        assert 'All' in lines_list[-1]
-        assert 'checks passed' in lines_list[-1]
-
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
-    def test_report(self) -> None:
+    def test_environment_report(self) -> None:
+
         for argument in ['-r', '--report']:
             with self.launch_doctor_command(
                     arguments=[argument]
@@ -151,33 +154,21 @@ class TestROS2DoctorReport(unittest.TestCase):
                 assert doctor_command.wait_for_shutdown(timeout=10)
             assert doctor_command.exit_code == launch_testing.asserts.EXIT_OK
 
+            # Due to isolation ROS_DOMAIN_ID is unique.
+            # ROS_DOMAIN_ID Does not seem to be set for zenoh with EnableRmwIsolation.
+            domain_id_line = ''
+            if self.rmw_implementation == 'rmw_zenoh_cpp':
+                domain_id_line = ''
+            else:
+                domain_id = os.environ['ROS_DOMAIN_ID']
+                domain_id_line = f', ROS_DOMAIN_ID={domain_id}'
+
             assert launch_testing.tools.expect_output(
                 expected_lines=[
-                    'topic               : /msg',
-                    'publisher count     : 1',
-                    'subscriber count    : 1'
+                    'ROS environment variables        : ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET, '
+                    f'ROS_DISABLE_LOANED_MESSAGES=0, ROS_DISTRO=rolling{domain_id_line}',
+                    'rcutils environment variables    : RCUTILS_COLORIZED_OUTPUT=0',
+                    f'rmw environment variables        : {self.expected_line}'
                 ],
                 text=doctor_command.output
             )
-
-            assert launch_testing.tools.expect_output(
-                expected_lines=[
-                    'service          : /bar',
-                    'service count    : 1',
-                    'client count     : 0',
-                    'service          : /baz',
-                    'service count    : 0',
-                    'client count     : 1',
-                    'service          : /report_node/get_type_description',
-                    'service count    : 1',
-                    'client count     : 0'
-                ],
-                text=doctor_command.output)
-
-            assert launch_testing.tools.expect_output(
-                expected_lines=[
-                    'action                 : /fibonacci',
-                    'action server count    : 1',
-                    'action client count    : 1'
-                ],
-                text=doctor_command.output)
