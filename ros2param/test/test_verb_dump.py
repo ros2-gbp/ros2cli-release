@@ -33,7 +33,6 @@ import pytest
 
 import rclpy
 from rclpy.utilities import get_available_rmw_implementations
-from ros2cli.helpers import get_rmw_additional_env
 
 from ros2cli.node.strategy import NodeStrategy
 
@@ -85,7 +84,7 @@ if sys.platform.startswith('win'):
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
 def generate_test_description(rmw_implementation):
     path_to_fixtures = os.path.join(os.path.dirname(__file__), 'fixtures')
-    additional_env = get_rmw_additional_env(rmw_implementation)
+    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
 
     # Parameter node test fixture
     path_to_parameter_node_script = os.path.join(path_to_fixtures, 'parameter_node.py')
@@ -135,7 +134,9 @@ class TestVerbDump(unittest.TestCase):
         def launch_param_dump_command(self, arguments):
             param_dump_command_action = ExecuteProcess(
                 cmd=['ros2', 'param', 'dump', *arguments],
-                additional_env=get_rmw_additional_env(rmw_implementation),
+                additional_env={
+                    'RMW_IMPLEMENTATION': rmw_implementation,
+                },
                 name='ros2param-dump-cli',
                 output='screen'
             )
@@ -207,5 +208,5 @@ class TestVerbDump(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_text=EXPECTED_PARAMETER_FILE + '\n',
             text=param_dump_command.output,
-            strict=False
+            strict=True
         )

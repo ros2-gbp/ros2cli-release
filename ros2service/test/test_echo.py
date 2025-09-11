@@ -33,7 +33,6 @@ import launch_testing_ros.tools
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
-from ros2cli.helpers import get_rmw_additional_env
 
 EXPECTED_OUTPUT = [
     'info:',
@@ -92,7 +91,7 @@ def generate_test_description(rmw_implementation):
     path_to_introspectable_script = os.path.join(
         os.path.dirname(__file__), 'fixtures', 'introspectable.py'
     )
-    additional_env = get_rmw_additional_env(rmw_implementation)
+    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
     return LaunchDescription([
         # Always restart daemon to isolate tests.
         ExecuteProcess(
@@ -131,11 +130,12 @@ class TestROS2ServiceEcho(unittest.TestCase):
     ):
         @contextlib.contextmanager
         def launch_service_command(self, arguments):
-            additional_env = get_rmw_additional_env(rmw_implementation)
-            additional_env['PYTHONUNBUFFERED'] = '1'
             service_command_action = ExecuteProcess(
                 cmd=['ros2', 'service', *arguments],
-                additional_env=additional_env,
+                additional_env={
+                    'RMW_IMPLEMENTATION': rmw_implementation,
+                    'PYTHONUNBUFFERED': '1'
+                },
                 name='ros2service-echo',
                 output='screen'
             )
@@ -161,7 +161,7 @@ class TestROS2ServiceEcho(unittest.TestCase):
                 functools.partial(
                     launch_testing.tools.expect_output,
                     expected_lines=EXPECTED_OUTPUT,
-                    strict=False
+                    strict=True
                 ),
                 timeout=10,
             )
@@ -177,7 +177,7 @@ class TestROS2ServiceEcho(unittest.TestCase):
                 functools.partial(
                     launch_testing.tools.expect_output,
                     expected_lines=EXPECTED_OUTPUT,
-                    strict=False
+                    strict=True
                 ),
                 timeout=10,
             )

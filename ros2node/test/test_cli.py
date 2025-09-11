@@ -34,7 +34,6 @@ import launch_testing_ros.tools
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
-from ros2cli.helpers import get_rmw_additional_env
 
 
 # Skip cli tests on Windows while they exhibit pathological behavior
@@ -51,7 +50,7 @@ def generate_test_description(rmw_implementation):
     path_to_complex_node_script = os.path.join(
         os.path.dirname(__file__), 'fixtures', 'complex_node.py'
     )
-    additional_env = get_rmw_additional_env(rmw_implementation)
+    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
     return LaunchDescription([
         # Always restart daemon to isolate tests.
         ExecuteProcess(
@@ -96,12 +95,12 @@ class TestROS2NodeCLI(unittest.TestCase):
     ):
         @contextlib.contextmanager
         def launch_node_command(self, arguments):
-            additional_env = get_rmw_additional_env(rmw_implementation)
-            additional_env['PYTHONUNBUFFERED'] = '1'
-
             node_command_action = ExecuteProcess(
                 cmd=['ros2', 'node', *arguments],
-                additional_env=additional_env,
+                additional_env={
+                    'RMW_IMPLEMENTATION': rmw_implementation,
+                    'PYTHONUNBUFFERED': '1'
+                },
                 name='ros2node-cli',
                 output='screen'
             )
