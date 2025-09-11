@@ -29,6 +29,7 @@
 # This file is originally from:
 # https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
 
+from argparse import ArgumentTypeError
 import sys
 import threading
 import traceback
@@ -38,11 +39,20 @@ from rclpy.qos import qos_profile_sensor_data
 from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
 from ros2topic.api import get_msg_class
-from ros2topic.api import positive_int
 from ros2topic.api import TopicNameCompleter
 from ros2topic.verb import VerbExtension
 
 DEFAULT_WINDOW_SIZE = 100
+
+
+def positive_int(string):
+    try:
+        value = int(string)
+    except ValueError:
+        value = -1
+    if value <= 0:
+        raise ArgumentTypeError('value must be a positive integer')
+    return value
 
 
 def str_bytes(num_bytes):
@@ -102,9 +112,9 @@ class ROSTopicBandwidth(object):
                 t = self.clock.now()
                 self.times.append(t)
                 # TODO(yechun1): Subscribing to the msgs and calculate the length may be
-                # inefficient. Optimize here if a better solution is found.
+                # inefficiency. To optimize here if found better solution.
                 self.sizes.append(len(data))  # AnyMsg instance
-                assert len(self.times) == len(self.sizes)
+                assert(len(self.times) == len(self.sizes))
 
                 if len(self.times) > self.window_size:
                     self.times.pop(0)
@@ -112,10 +122,10 @@ class ROSTopicBandwidth(object):
             except Exception:
                 traceback.print_exc()
 
-    def get_bw(self):
-        """Get the average publishing bw."""
+    def print_bw(self):
+        """Print the average publishing bw to screen."""
         if len(self.times) < 2:
-            return None, None, None, None, None
+            return
         with self.lock:
             n = len(self.times)
             tn = self.clock.now()
@@ -133,14 +143,6 @@ class ROSTopicBandwidth(object):
             # min and max
             max_s = max(self.sizes)
             min_s = min(self.sizes)
-
-        return bytes_per_s, n, mean, min_s, max_s
-
-    def print_bw(self):
-        """Print the average publishing bw to screen."""
-        (bytes_per_s, n, mean, min_s, max_s) = self.get_bw()
-        if bytes_per_s is None:
-            return
 
         # min/max and even mean are likely to be much smaller,
         # but for now I prefer unit consistency
