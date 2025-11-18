@@ -5,19 +5,20 @@ package_name = 'ros2doctor'
 
 setup(
     name=package_name,
-    version='0.18.15',
+    version='0.40.2',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
     ],
+    package_data={'': ['py.typed']},
     install_requires=['ros2cli'],
     zip_safe=True,
     author='Claire Wang',
     author_email='clairewang@openrobotics.org',
-    maintainer='Aditya Pande, Audrow Nash, Michael Jeronimo',
-    maintainer_email='aditya.pande@openrobotics.org, audrow@openrobotics.org, michael.jeronimo@openrobotics.org',  # noqa: E501
+    maintainer='Audrow Nash, Geoffrey Biggs',
+    maintainer_email='audrow@openrobotics.org, geoff@openrobotics.org',
     url='',
     download_url='',
     keywords=[],
@@ -53,8 +54,11 @@ setup(
             'NetworkReport = ros2doctor.api.network:NetworkReport',
             'RMWReport = ros2doctor.api.rmw:RMWReport',
             'TopicReport = ros2doctor.api.topic:TopicReport',
+            'ServiceReport = ros2doctor.api.service:ServiceReport',
+            'ActionReport = ros2doctor.api.action:ActionReport',
             'QoSCompatibilityReport = ros2doctor.api.qos_compatibility:QoSCompatibilityReport',
             'PackageReport = ros2doctor.api.package:PackageReport',
+            'EnvironmentReport = ros2doctor.api.environment:EnvironmentReport'
         ],
         'ros2cli.extension_point': [
             'ros2doctor.verb = ros2doctor.verb:VerbExtension',

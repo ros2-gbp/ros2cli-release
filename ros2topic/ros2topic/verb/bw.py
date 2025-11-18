@@ -29,30 +29,23 @@
 # This file is originally from:
 # https://github.com/ros/ros_comm/blob/6e5016f4b2266d8a60c9a1e163c4928b8fc7115e/tools/rostopic/src/rostopic/__init__.py
 
-from argparse import ArgumentTypeError
 import sys
 import threading
 import traceback
 
 import rclpy
-from rclpy.qos import qos_profile_sensor_data
+
 from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
+from ros2cli.qos import add_qos_arguments
+from ros2cli.qos import choose_qos
+
 from ros2topic.api import get_msg_class
+from ros2topic.api import positive_int
 from ros2topic.api import TopicNameCompleter
 from ros2topic.verb import VerbExtension
 
 DEFAULT_WINDOW_SIZE = 100
-
-
-def positive_int(string):
-    try:
-        value = int(string)
-    except ValueError:
-        value = -1
-    if value <= 0:
-        raise ArgumentTypeError('value must be a positive integer')
-    return value
 
 
 def str_bytes(num_bytes):
@@ -79,19 +72,21 @@ class BwVerb(VerbExtension):
             "and may not exactly match the publisher's bandwidth."
         )
         arg = parser.add_argument(
-            'topic',
+            'topic_name',
             help='Topic name to monitor for bandwidth utilization')
         arg.completer = TopicNameCompleter(
             include_hidden_topics_key='include_hidden_topics')
+        add_qos_arguments(parser, 'subscribe', 'sensor_data')
         parser.add_argument(
-            '--window', '-w', type=positive_int, default=DEFAULT_WINDOW_SIZE,
+            '--window', '-w', dest='window_size', type=positive_int, default=DEFAULT_WINDOW_SIZE,
             help='maximum window size, in # of messages, for calculating rate '
                  f'(default: {DEFAULT_WINDOW_SIZE})', metavar='WINDOW')
         add_direct_node_arguments(parser)
 
     def main(self, *, args):
         with DirectNode(args) as node:
-            _rostopic_bw(node.node, args.topic, window_size=args.window)
+            qos_profile = choose_qos(node.node, topic_name=args.topic_name, qos_args=args)
+            _rostopic_bw(node.node, args.topic_name, qos_profile, window_size=args.window_size)
 
 
 class ROSTopicBandwidth(object):
@@ -112,9 +107,9 @@ class ROSTopicBandwidth(object):
                 t = self.clock.now()
                 self.times.append(t)
                 # TODO(yechun1): Subscribing to the msgs and calculate the length may be
-                # inefficiency. To optimize here if found better solution.
+                # inefficient. Optimize here if a better solution is found.
                 self.sizes.append(len(data))  # AnyMsg instance
-                assert(len(self.times) == len(self.sizes))
+                assert len(self.times) == len(self.sizes)
 
                 if len(self.times) > self.window_size:
                     self.times.pop(0)
@@ -122,10 +117,10 @@ class ROSTopicBandwidth(object):
             except Exception:
                 traceback.print_exc()
 
-    def print_bw(self):
-        """Print the average publishing bw to screen."""
+    def get_bw(self):
+        """Get the average publishing bw."""
         if len(self.times) < 2:
-            return
+            return None, None, None, None, None
         with self.lock:
             n = len(self.times)
             tn = self.clock.now()
@@ -144,6 +139,14 @@ class ROSTopicBandwidth(object):
             max_s = max(self.sizes)
             min_s = min(self.sizes)
 
+        return bytes_per_s, n, mean, min_s, max_s
+
+    def print_bw(self):
+        """Print the average publishing bw to screen."""
+        (bytes_per_s, n, mean, min_s, max_s) = self.get_bw()
+        if bytes_per_s is None:
+            return
+
         # min/max and even mean are likely to be much smaller,
         # but for now I prefer unit consistency
         if bytes_per_s < 1000:
@@ -159,7 +162,7 @@ class ROSTopicBandwidth(object):
         print(f'{bw} from {n} messages\n\tMessage size mean: {mean} min: {min_s} max: {max_s}')
 
 
-def _rostopic_bw(node, topic, window_size=DEFAULT_WINDOW_SIZE):
+def _rostopic_bw(node, topic, qos_profile, window_size=DEFAULT_WINDOW_SIZE):
     """Periodically print the received bandwidth of a topic to console until shutdown."""
     # pause bw until topic is published
     msg_class = get_msg_class(node, topic, blocking=True, include_hidden_topics=True)
@@ -172,7 +175,7 @@ def _rostopic_bw(node, topic, window_size=DEFAULT_WINDOW_SIZE):
         msg_class,
         topic,
         rt.callback,
-        qos_profile_sensor_data,
+        qos_profile,
         raw=True
     )
 

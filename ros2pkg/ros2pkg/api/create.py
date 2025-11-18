@@ -18,6 +18,12 @@ import sys
 
 import em
 try:
+    from em import Configuration
+    em_has_configuration = True
+except ImportError:
+    em_has_configuration = False
+
+try:
     import importlib.resources as importlib_resources
 except ModuleNotFoundError:
     import importlib_resources
@@ -25,14 +31,25 @@ except ModuleNotFoundError:
 
 def _expand_template(template_file, data, output_file):
     output = StringIO()
-    interpreter = em.Interpreter(
-        output=output,
-        options={
-            em.BUFFERED_OPT: True,
-            em.RAW_OPT: True,
-        },
-        globals=data,
-    )
+    if em_has_configuration:
+        config = Configuration(
+            defaultStdout=output,
+            deleteOnError=True,
+            rawErrors=True,
+            useProxy=True)
+        interpreter = em.Interpreter(
+            config=config,
+            dispatcher=False,
+            globals=data)
+    else:
+        interpreter = em.Interpreter(
+            output=output,
+            options={
+                em.BUFFERED_OPT: True,
+                em.RAW_OPT: True,
+            },
+            globals=data)
+
     with open(template_file, 'r') as h:
         try:
             interpreter.file(h)
@@ -152,6 +169,11 @@ def populate_ament_python(package, package_directory, source_directory, python_n
                           source_directory,
                           '__init__.py',
                           {})
+    _create_template_file('ament_python',
+                          'py.typed.em',
+                          source_directory,
+                          'py.typed',
+                          {})
 
     test_directory = _create_folder('test', package_directory)
     _create_template_file('ament_python',
@@ -165,9 +187,19 @@ def populate_ament_python(package, package_directory, source_directory, python_n
                           'test_flake8.py',
                           {})
     _create_template_file('ament_python',
+                          'test_mypy.py.em',
+                          test_directory,
+                          'test_mypy.py',
+                          {})
+    _create_template_file('ament_python',
                           'test_pep257.py.em',
                           test_directory,
                           'test_pep257.py',
+                          {})
+    _create_template_file('ament_python',
+                          'test_xmllint.py.em',
+                          test_directory,
+                          'test_xmllint.py',
                           {})
 
 

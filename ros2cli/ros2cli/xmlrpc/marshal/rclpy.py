@@ -17,8 +17,9 @@ from xmlrpc.client import Marshaller
 from xmlrpc.client import Unmarshaller
 
 import rclpy.duration
+import rclpy.endpoint_info
 import rclpy.qos
-import rclpy.topic_endpoint_info
+import rclpy.type_hash
 
 from .generic import dump_any_enum
 from .generic import dump_any_with_slots
@@ -65,13 +66,32 @@ for enum_type in policy_types:
     Marshaller.dispatch[enum_type] = dump_any_enum
 
 
-Unmarshaller.dispatch[fullname(rclpy.topic_endpoint_info.TopicEndpointInfo)] = \
-    functools.partial(end_any_with_slots, type_=rclpy.topic_endpoint_info.TopicEndpointInfo)
+Unmarshaller.dispatch[fullname(rclpy.endpoint_info.TopicEndpointInfo)] = \
+    functools.partial(end_any_with_slots, type_=rclpy.endpoint_info.TopicEndpointInfo)
 
-Marshaller.dispatch[rclpy.topic_endpoint_info.TopicEndpointInfo] = \
+Marshaller.dispatch[rclpy.endpoint_info.TopicEndpointInfo] = \
     functools.partial(dump_any_with_slots, transform=lambda slot: slot.lstrip('_'))
 
-Unmarshaller.dispatch[fullname(rclpy.topic_endpoint_info.TopicEndpointTypeEnum)] = \
-    functools.partial(end_any_enum, enum_=rclpy.topic_endpoint_info.TopicEndpointTypeEnum)
+Unmarshaller.dispatch[fullname(rclpy.endpoint_info.ServiceEndpointInfo)] = \
+    functools.partial(end_any_with_slots, type_=rclpy.endpoint_info.ServiceEndpointInfo)
 
-Marshaller.dispatch[rclpy.topic_endpoint_info.TopicEndpointTypeEnum] = dump_any_enum
+Marshaller.dispatch[rclpy.endpoint_info.ServiceEndpointInfo] = \
+    functools.partial(dump_any_with_slots, transform=lambda slot: slot.lstrip('_'))
+
+Unmarshaller.dispatch[fullname(rclpy.endpoint_info.EndpointTypeEnum)] = \
+    functools.partial(end_any_enum, enum_=rclpy.endpoint_info.EndpointTypeEnum)
+
+Marshaller.dispatch[rclpy.endpoint_info.EndpointTypeEnum] = dump_any_enum
+
+
+def end_type_hash(unmarshaller, data):
+    values = unmarshaller._stack[-1]
+    unmarshaller._stack[-1] = rclpy.type_hash.TypeHash(
+        version=int(values['version']), value=values['value'].data)
+    unmarshaller._value = 0
+
+
+Unmarshaller.dispatch[fullname(rclpy.type_hash.TypeHash)] = end_type_hash
+
+Marshaller.dispatch[rclpy.type_hash.TypeHash] = \
+    functools.partial(dump_any_with_slots, transform=lambda slot: slot.lstrip('_'))
