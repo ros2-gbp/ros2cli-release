@@ -15,7 +15,6 @@
 from ros2cli.command import add_subparsers_on_demand
 from ros2cli.command import CommandExtension
 from ros2doctor.api import generate_reports
-from ros2doctor.api import print_warning_notice
 from ros2doctor.api import run_checks
 from ros2doctor.api.format import format_print
 
@@ -58,8 +57,6 @@ class DoctorCommand(CommandExtension):
             all_reports = generate_reports(exclude_packages=ep)
             for report_obj in all_reports:
                 format_print(report_obj)
-            # Warn user about sensitive data in the report
-            print_warning_notice()
             return
 
         # `ros2 doctor

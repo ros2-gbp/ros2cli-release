@@ -2,48 +2,18 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.40.4 (2026-01-07)
+0.38.2 (2026-01-07)
 -------------------
-* add "--all/-a" option to "ros2 topic bw" with screen refresh. (`#1130 <https://github.com/ros2/ros2cli/issues/1130>`_)
-* Contributors: nomumu
+* add "--all/-a" option to "ros2 topic hz" with screen refresh. (backport `#1122 <https://github.com/ros2/ros2cli/issues/1122>`_) (`#1144 <https://github.com/ros2/ros2cli/issues/1144>`_)
+* return explicitly from internal functions. (backport `#1128 <https://github.com/ros2/ros2cli/issues/1128>`_) (`#1134 <https://github.com/ros2/ros2cli/issues/1134>`_)
+* Use rmw_test_fixture to isolate ros2cli tests (backport `#1062 <https://github.com/ros2/ros2cli/issues/1062>`_) (`#1106 <https://github.com/ros2/ros2cli/issues/1106>`_)
+* Contributors: Tomoya Fujita, mergify[bot]
 
-0.40.3 (2025-12-09)
+0.38.1 (2025-09-11)
 -------------------
-* return explicitly from internal functions. (`#1128 <https://github.com/ros2/ros2cli/issues/1128>`_)
-* support multiple topics for "ros2 topic bw". (`#1124 <https://github.com/ros2/ros2cli/issues/1124>`_)
-* add "--all/-a" option to "ros2 topic hz" with screen refresh. (`#1122 <https://github.com/ros2/ros2cli/issues/1122>`_)
-* Contributors: Tomoya Fujita
-
-0.40.2 (2025-11-18)
--------------------
-
-0.40.1 (2025-09-11)
--------------------
-* Fujitatomoya/clearup isolated ros2daemon (`#1098 <https://github.com/ros2/ros2cli/issues/1098>`_)
-* wait for the publisher before test command is executed. (`#1094 <https://github.com/ros2/ros2cli/issues/1094>`_)
-* Enable test isolation on a few remaining ros2topic tests (`#1087 <https://github.com/ros2/ros2cli/issues/1087>`_)
-* Restore environment variables after launch tests (`#1086 <https://github.com/ros2/ros2cli/issues/1086>`_)
-* Contributors: Scott K Logan, Tomoya Fujita
-
-0.40.0 (2025-07-29)
--------------------
-* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Contributors: Scott K Logan, mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* move QoS methods from ros2topic.api to ros2cli.qos. (`#1053 <https://github.com/ros2/ros2cli/issues/1053>`_)
-* Contributors: Michael Carlstrom, Tomoya Fujita
-
-0.39.0 (2025-04-25)
--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
+* wait for the publisher before test command is executed. (`#1094 <https://github.com/ros2/ros2cli/issues/1094>`_) (`#1095 <https://github.com/ros2/ros2cli/issues/1095>`_)
+* Contributors: mergify[bot]
 
 0.38.0 (2025-04-25)
 -------------------

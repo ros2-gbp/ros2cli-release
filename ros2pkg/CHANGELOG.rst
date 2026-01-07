@@ -2,42 +2,18 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.40.4 (2026-01-07)
+0.38.2 (2026-01-07)
 -------------------
+* Add Native ROS2 Rust Package Create Capability (`#1107 <https://github.com/ros2/ros2cli/issues/1107>`_) (`#1135 <https://github.com/ros2/ros2cli/issues/1135>`_)
+* Remove importlib packages (backport `#1117 <https://github.com/ros2/ros2cli/issues/1117>`_) (`#1119 <https://github.com/ros2/ros2cli/issues/1119>`_)
+* add mypy (`#1109 <https://github.com/ros2/ros2cli/issues/1109>`_) (`#1110 <https://github.com/ros2/ros2cli/issues/1110>`_)
+* Contributors: mergify[bot]
 
-0.40.3 (2025-12-09)
+0.38.1 (2025-09-11)
 -------------------
-* Add Native ROS2 Rust Package Create Capability (`#1107 <https://github.com/ros2/ros2cli/issues/1107>`_)
-* Remove importlib packages (`#1117 <https://github.com/ros2/ros2cli/issues/1117>`_)
-* Contributors: Michael Carlstrom, Parth Patel
-
-0.40.2 (2025-11-18)
--------------------
-* add mypy (`#1109 <https://github.com/ros2/ros2cli//issues/1109>`_)
-* Contributors: Michael Carlstrom
-
-0.40.1 (2025-09-11)
--------------------
-
-0.40.0 (2025-07-29)
--------------------
-* fix cmake deprecation (`#1082 <https://github.com/ros2/ros2cli/issues/1082>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Contributors: mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Reduce boilerplate in install(TARGETS for library (`#1056 <https://github.com/ros2/ros2cli/issues/1056>`_)
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* Contributors: Michael Carlstrom, Silvio Traversaro
-
-0.39.0 (2025-04-25)
--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
+* fix cmake deprecation (`#1082 <https://github.com/ros2/ros2cli/issues/1082>`_) (`#1083 <https://github.com/ros2/ros2cli/issues/1083>`_)
+* Contributors: mergify[bot]
 
 0.38.0 (2025-04-25)
 -------------------

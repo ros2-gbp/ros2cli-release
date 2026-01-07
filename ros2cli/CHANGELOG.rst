@@ -2,49 +2,20 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.40.4 (2026-01-07)
+0.38.2 (2026-01-07)
 -------------------
+* fix: Also catch a TimeoutError (`#1092 <https://github.com/ros2/ros2cli/issues/1092>`_) (`#1157 <https://github.com/ros2/ros2cli/issues/1157>`_)
+* Remove importlib packages (backport `#1117 <https://github.com/ros2/ros2cli/issues/1117>`_) (`#1119 <https://github.com/ros2/ros2cli/issues/1119>`_)
+* skip history and depth check for rmw_connextdds. (`#1064 <https://github.com/ros2/ros2cli/issues/1064>`_) (`#1127 <https://github.com/ros2/ros2cli/issues/1127>`_)
+* Fix handling of empty ROS_DOMAIN_ID in ros2cli (`#1112 <https://github.com/ros2/ros2cli/issues/1112>`_) (`#1113 <https://github.com/ros2/ros2cli/issues/1113>`_)
+* Use rmw_test_fixture to isolate ros2cli tests (backport `#1062 <https://github.com/ros2/ros2cli/issues/1062>`_) (`#1106 <https://github.com/ros2/ros2cli/issues/1106>`_)
+* Contributors: mergify[bot]
 
-0.40.3 (2025-12-09)
+0.38.1 (2025-09-11)
 -------------------
-* skip history and depth check for rmw_connextdds. (`#1064 <https://github.com/ros2/ros2cli/issues/1064>`_)
-* Remove importlib packages (`#1117 <https://github.com/ros2/ros2cli/issues/1117>`_)
-* Contributors: Michael Carlstrom, Tomoya Fujita
-
-0.40.2 (2025-11-18)
--------------------
-* add verbose in service-info verb (`#916 <https://github.com/ros2/ros2cli//issues/916>`_)
-* Fix handling of empty ROS_DOMAIN_ID in ros2cli (`#1112 <https://github.com/ros2/ros2cli//issues/1112>`_)
-* Contributors: Minju, Lee, Scott K Logan
-
-0.40.1 (2025-09-11)
--------------------
-* fix: Also catch a TimeoutError (`#1092 <https://github.com/ros2/ros2cli/issues/1092>`_)
-* Contributors: Kaju-Bubanja
-
-0.40.0 (2025-07-29)
--------------------
-* [ros2doctor] Add Action Report (`#1076 <https://github.com/ros2/ros2cli/issues/1076>`_)
-* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Add Service report similar to topic report (`#1059 <https://github.com/ros2/ros2cli/issues/1059>`_)
-* Contributors: Michael Carlstrom, Scott K Logan, mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* move QoS methods from ros2topic.api to ros2cli.qos. (`#1053 <https://github.com/ros2/ros2cli/issues/1053>`_)
-* Assert HistoryQoS in test_ros2cli_daemon (`#1040 <https://github.com/ros2/ros2cli/issues/1040>`_)
-* remove add_subparsers from ros2cli. (`#1032 <https://github.com/ros2/ros2cli/issues/1032>`_)
-* Contributors: Mario Domínguez López, Michael Carlstrom, Tomoya Fujita
-
-0.39.0 (2025-04-25)
--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
+* Assert HistoryQoS in test_ros2cli_daemon (`#1040 <https://github.com/ros2/ros2cli/issues/1040>`_) (`#1044 <https://github.com/ros2/ros2cli/issues/1044>`_)
+* Contributors: mergify[bot]
 
 0.38.0 (2025-04-25)
 -------------------

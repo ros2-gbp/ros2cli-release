@@ -2,49 +2,18 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.40.4 (2026-01-07)
+0.38.2 (2026-01-07)
 -------------------
+* Remove importlib packages (backport `#1117 <https://github.com/ros2/ros2cli/issues/1117>`_) (`#1119 <https://github.com/ros2/ros2cli/issues/1119>`_)
+* Harden ros2doctor system calls. (`#1118 <https://github.com/ros2/ros2cli/issues/1118>`_) (`#1138 <https://github.com/ros2/ros2cli/issues/1138>`_)
+* Use rmw_test_fixture to isolate ros2cli tests (backport `#1062 <https://github.com/ros2/ros2cli/issues/1062>`_) (`#1106 <https://github.com/ros2/ros2cli/issues/1106>`_)
+* Contributors: mergify[bot]
 
-0.40.3 (2025-12-09)
+0.38.1 (2025-09-11)
 -------------------
-* Remove importlib packages (`#1117 <https://github.com/ros2/ros2cli/issues/1117>`_)
-* Harden ros2doctor system calls. (`#1118 <https://github.com/ros2/ros2cli/issues/1118>`_)
-* Contributors: Michael Carlstrom, Tomoya Fujita
-
-0.40.2 (2025-11-18)
--------------------
-* Add error handling when parsing package locally (`#1108 <https://github.com/ros2/ros2cli//issues/1108>`_)
-* Contributors: mini-1235
-
-0.40.1 (2025-09-11)
--------------------
-* Fujitatomoya/clearup isolated ros2daemon (`#1098 <https://github.com/ros2/ros2cli/issues/1098>`_)
-* [ros2doctor] Environment Report (`#1045 <https://github.com/ros2/ros2cli/issues/1045>`_)
-* Restore environment variables after launch tests (`#1086 <https://github.com/ros2/ros2cli/issues/1086>`_)
-* Contributors: Michael Carlstrom, Scott K Logan, Tomoya Fujita
-
-0.40.0 (2025-07-29)
--------------------
-* add warning notice for ros2 doctor --report. (`#1079 <https://github.com/ros2/ros2cli/issues/1079>`_)
-* [ros2doctor] Add Action Report (`#1076 <https://github.com/ros2/ros2cli/issues/1076>`_)
-* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Add Service report similar to topic report (`#1059 <https://github.com/ros2/ros2cli/issues/1059>`_)
-* Contributors: Michael Carlstrom, Scott K Logan, Tomoya Fujita, mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* Fix stringifying InterfaceFlags when the flags are empty. (`#1026 <https://github.com/ros2/ros2cli/issues/1026>`_)
-* Contributors: Chris Lalancette, Michael Carlstrom
-
-0.39.0 (2025-04-25)
--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
+* Fix stringifying InterfaceFlags when the flags are empty. (`#1026 <https://github.com/ros2/ros2cli/issues/1026>`_) (`#1027 <https://github.com/ros2/ros2cli/issues/1027>`_)
+* Contributors: mergify[bot]
 
 0.38.0 (2025-04-25)
 -------------------
