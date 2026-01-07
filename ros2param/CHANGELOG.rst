@@ -2,124 +2,54 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.7 (2026-01-07)
--------------------
-* skip test_verb_load_wildcard for rmw_connextdds. (`#1150 <https://github.com/ros2/ros2cli/issues/1150>`_) (`#1154 <https://github.com/ros2/ros2cli/issues/1154>`_)
+0.18.16 (2026-01-07)
+--------------------
+* skip test_verb_load_wildcard for rmw_connextdds. (`#1150 <https://github.com/ros2/ros2cli/issues/1150>`_) (`#1153 <https://github.com/ros2/ros2cli/issues/1153>`_)
 * Contributors: mergify[bot]
 
-0.32.6 (2025-09-11)
--------------------
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
+0.18.15 (2025-11-12)
+--------------------
+
+0.18.14 (2025-09-11)
+--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1103 <https://github.com/ros2/ros2cli/issues/1103>`_)
 * Contributors: mergify[bot]
 
-0.32.5 (2025-08-05)
--------------------
-* catch ConnectionRefusedError, so that it can fall back to DirectNode. (`#1014 <https://github.com/ros2/ros2cli/issues/1014>`_) (`#1021 <https://github.com/ros2/ros2cli/issues/1021>`_)
-  (cherry picked from commit 0a5b5603d9651c8b98e574142325069a04f31101)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-* fails the test properly to avoid TypeError exception. (backport `#1016 <https://github.com/ros2/ros2cli/issues/1016>`_) (`#1018 <https://github.com/ros2/ros2cli/issues/1018>`_)
-  * fails the test properly to avoid TypeError exception. (`#1016 <https://github.com/ros2/ros2cli/issues/1016>`_)
-  (cherry picked from commit 7ced7454ad1813171cc4e583f7b7bd4c4c43c66f)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
+0.18.13 (2025-07-16)
+--------------------
+* catch ConnectionRefusedError, so that it can fall back to DirectNode. (`#1014 <https://github.com/ros2/ros2cli/issues/1014>`_) (`#1022 <https://github.com/ros2/ros2cli/issues/1022>`_)
+* fails the test properly to avoid TypeError exception. (backport `#1016 <https://github.com/ros2/ros2cli/issues/1016>`_) (`#1019 <https://github.com/ros2/ros2cli/issues/1019>`_)
 * Contributors: mergify[bot]
 
-0.32.4 (2025-04-24)
--------------------
-
-0.32.3 (2025-04-02)
--------------------
-
-0.32.2 (2024-12-18)
--------------------
-* cosmetic fixes for ros2param dump command. (`#933 <https://github.com/ros2/ros2cli/issues/933>`_) (`#940 <https://github.com/ros2/ros2cli/issues/940>`_)
-  * cosmetic fixes for ros2param dump command.
-  * pass through no parameters available case.
-  * bug fix from review comment.
-  * remove unnecessary initial assignment.
-  ---------
-  (cherry picked from commit 8e46bf2608d04e81a3d088ccc5087dbde9f3e32f)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-* Contributors: mergify[bot]
-
-0.32.1 (2024-05-13)
--------------------
-
-0.32.0 (2024-04-16)
--------------------
-
-0.31.2 (2024-03-27)
--------------------
-* ros2 param dump should handle empty list as exception. (`#881 <https://github.com/ros2/ros2cli/issues/881>`_)
+0.18.12 (2025-03-25)
+--------------------
+* Allow space or empty strings when using ros2 param set. (`#984 <https://github.com/ros2/ros2cli/issues/984>`_)
 * Contributors: Tomoya Fujita
 
-0.31.1 (2024-02-07)
+0.18.11 (2024-07-26)
+--------------------
+
+0.18.10 (2024-05-15)
+--------------------
+
+0.18.9 (2024-02-16)
 -------------------
 
-0.31.0 (2024-01-24)
+0.18.8 (2024-01-24)
 -------------------
 
-0.30.1 (2023-12-26)
+0.18.7 (2023-07-18)
+-------------------
+* Update ros2 param dump dosctring. (`#837 <https://github.com/ros2/ros2cli/issues/837>`_) (`#840 <https://github.com/ros2/ros2cli/issues/840>`_)
+* Contributors: mergify[bot]
+
+0.18.6 (2023-04-25)
 -------------------
 
-0.30.0 (2023-11-06)
--------------------
-* Warning: get_parameter_value() is deprecated. (`#866 <https://github.com/ros2/ros2cli/issues/866>`_)
-* Contributors: Tomoya Fujita
-
-0.29.1 (2023-10-04)
+0.18.5 (2023-01-10)
 -------------------
 
-0.29.0 (2023-08-21)
--------------------
-
-0.28.0 (2023-07-11)
--------------------
-* Fix tests with get_type_description service and param present (`#838 <https://github.com/ros2/ros2cli/issues/838>`_)
-* Update ros2 param dump dosctring. (`#837 <https://github.com/ros2/ros2cli/issues/837>`_)
-* Contributors: Emerson Knapp, Murilo M Marinho
-
-0.27.0 (2023-06-07)
--------------------
-
-0.26.1 (2023-05-11)
--------------------
-
-0.26.0 (2023-04-28)
--------------------
-
-0.25.0 (2023-04-18)
--------------------
-* remove deprecated options (`#824 <https://github.com/ros2/ros2cli/issues/824>`_)
-* Make all of the dependencies in pure Python packages exec_depend. (`#823 <https://github.com/ros2/ros2cli/issues/823>`_)
-* Contributors: Chris Lalancette, Tomoya Fujita
-
-0.24.1 (2023-04-12)
--------------------
-
-0.24.0 (2023-04-11)
--------------------
-
-0.23.0 (2023-03-02)
--------------------
-* add timeout option for ros2param to find node. (`#802 <https://github.com/ros2/ros2cli/issues/802>`_)
-* Contributors: Tomoya Fujita
-
-0.22.0 (2023-02-14)
--------------------
-* Fix printing of integer and double arrays. (`#804 <https://github.com/ros2/ros2cli/issues/804>`_)
-* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
-* Contributors: Audrow Nash, Chris Lalancette
-
-0.21.0 (2022-11-02)
--------------------
-
-0.20.0 (2022-09-13)
--------------------
-* refactor: make ros2param use rclpy.parameter_client (`#716 <https://github.com/ros2/ros2cli/issues/716>`_)
-* Contributors: Brian
-
-0.19.0 (2022-04-29)
+0.18.4 (2022-11-07)
 -------------------
 
 0.18.3 (2022-04-08)

@@ -2,161 +2,67 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.7 (2026-01-07)
--------------------
-* return explicitly from internal functions. (backport `#1128 <https://github.com/ros2/ros2cli/issues/1128>`_) (backport `#1134 <https://github.com/ros2/ros2cli/issues/1134>`_) (`#1142 <https://github.com/ros2/ros2cli/issues/1142>`_)
+0.18.16 (2026-01-07)
+--------------------
+* return explicitly from internal functions. (backport `#1128 <https://github.com/ros2/ros2cli/issues/1128>`_) (backport `#1134 <https://github.com/ros2/ros2cli/issues/1134>`_) (`#1143 <https://github.com/ros2/ros2cli/issues/1143>`_)
 * Contributors: mergify[bot]
 
-0.32.6 (2025-09-11)
--------------------
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
+0.18.15 (2025-11-12)
+--------------------
+
+0.18.14 (2025-09-11)
+--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1103 <https://github.com/ros2/ros2cli/issues/1103>`_)
 * Contributors: mergify[bot]
 
-0.32.5 (2025-08-05)
--------------------
-
-0.32.4 (2025-04-24)
--------------------
-* Custom Completion Finder for fetching topic prototype. (backport `#995 <https://github.com/ros2/ros2cli/issues/995>`_) (`#1012 <https://github.com/ros2/ros2cli/issues/1012>`_)
-  * Custom Completion Finder for fetching topic prototype. (`#995 <https://github.com/ros2/ros2cli/issues/995>`_)
-  * Double yaml encoding for fetching topic prototype.
-  * Use a custom completer for yaml strings.
-  ---------
-  (cherry picked from commit 526401b42107014f56f9d77dcf3df005f360bc91)
-  # Conflicts:
-  #	ros2topic/ros2topic/verb/pub.py
-  * resolve conflicts for backport.
-  * Remove whitespace on blank lines
-  ---------
-  Co-authored-by: Leander Stephen D'Souza <leanderdsouza1234@gmail.com>
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-  Co-authored-by: Shane Loretz <shane.loretz@gmail.com>
-* ros2topic: Documented now and auto keywords (`#1008 <https://github.com/ros2/ros2cli/issues/1008>`_) (`#1011 <https://github.com/ros2/ros2cli/issues/1011>`_)
-  (cherry picked from commit 1a0dcf22b61534c9a391a7d60fbc95a972d23d06)
-  Co-authored-by: Martin Pecka <peci1@seznam.cz>
-* Conditional deserialization of message for `ros2 topic hz` (backport `#1005 <https://github.com/ros2/ros2cli/issues/1005>`_) (`#1006 <https://github.com/ros2/ros2cli/issues/1006>`_)
-  (cherry picked from commit bfc52454d07a1554226b56b64dfdbf5bcb6b3f6b)
-  Co-authored-by: Kostubh Khandelwal <123073764+exMachina316@users.noreply.github.com>
-  Co-authored-by: Christophe Bedard <bedard.christophe@gmail.com>
-* Revert "jazzy: Backport Patch CVE-2024-42002 (`#998 <https://github.com/ros2/ros2cli/issues/998>`_)" (`#1004 <https://github.com/ros2/ros2cli/issues/1004>`_)
-  This reverts commit f037c1961f2b108be734d20c8f770c5e9d523856.
-* jazzy: Backport Patch CVE-2024-42002 (`#998 <https://github.com/ros2/ros2cli/issues/998>`_)
-* Contributors: Christophe Bedard, Michael Carroll, mergify[bot]
-
-0.32.3 (2025-04-02)
--------------------
-* Adapt tests to Zenoh (backport `#988 <https://github.com/ros2/ros2cli/issues/988>`_) (`#991 <https://github.com/ros2/ros2cli/issues/991>`_)
-  * Adapt tests to Zenoh (`#988 <https://github.com/ros2/ros2cli/issues/988>`_)
-  (cherry picked from commit 31d814d1c9e7cbe1bab9180ffb5f101707e02df4)
-* Adjust topic hz and bw command description. (`#987 <https://github.com/ros2/ros2cli/issues/987>`_) (`#990 <https://github.com/ros2/ros2cli/issues/990>`_)
-  (cherry picked from commit 9a0c044ff08c89795fdfc66feb6cfe5fd3842f3a)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
-* start the simulation from 1 second for the test. (`#975 <https://github.com/ros2/ros2cli/issues/975>`_) (`#976 <https://github.com/ros2/ros2cli/issues/976>`_)
-  (cherry picked from commit 2c9c1933af37ae8a502a1c3abf2acf4ea810dc9e)
-  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+0.18.13 (2025-07-16)
+--------------------
+* ros2topic: Documented now and auto keywords (`#1008 <https://github.com/ros2/ros2cli/issues/1008>`_) (`#1010 <https://github.com/ros2/ros2cli/issues/1010>`_)
+* Conditional deserialization of message for `ros2 topic hz` (backport `#1005 <https://github.com/ros2/ros2cli/issues/1005>`_) (`#1007 <https://github.com/ros2/ros2cli/issues/1007>`_)
 * Contributors: mergify[bot]
 
-0.32.2 (2024-12-18)
+0.18.12 (2025-03-25)
+--------------------
+* Adjust topic hz and bw command description. (`#987 <https://github.com/ros2/ros2cli/issues/987>`_) (`#989 <https://github.com/ros2/ros2cli/issues/989>`_)
+* start the simulation from 1 second for the test. (`#975 <https://github.com/ros2/ros2cli/issues/975>`_) (`#977 <https://github.com/ros2/ros2cli/issues/977>`_)
+* Contributors: mergify[bot]
+
+0.18.11 (2024-07-26)
+--------------------
+
+0.18.10 (2024-05-15)
+--------------------
+
+0.18.9 (2024-02-16)
 -------------------
 
-0.32.1 (2024-05-13)
+0.18.8 (2024-01-24)
 -------------------
 
-0.32.0 (2024-04-16)
+0.18.7 (2023-07-18)
 -------------------
 
-0.31.2 (2024-03-27)
+0.18.6 (2023-04-25)
 -------------------
 
-0.31.1 (2024-02-07)
+0.18.5 (2023-01-10)
 -------------------
-* Remove parentheses from assert statement. (`#878 <https://github.com/ros2/ros2cli/issues/878>`_)
-* Contributors: Chris Lalancette
+* Extend timeout to shutdown the command line process. (`#783 <https://github.com/ros2/ros2cli/issues/783>`_) (`#784 <https://github.com/ros2/ros2cli/issues/784>`_)
+* Add support use_sim_time for ros2 topic hz/bw/pub. (`#754 <https://github.com/ros2/ros2cli/issues/754>`_) (`#777 <https://github.com/ros2/ros2cli/issues/777>`_)
+* Contributors: Tomoya Fujita, mergify[bot]
 
-0.31.0 (2024-01-24)
+0.18.4 (2022-11-07)
 -------------------
-
-0.30.1 (2023-12-26)
--------------------
-
-0.30.0 (2023-11-06)
--------------------
-
-0.29.1 (2023-10-04)
--------------------
-
-0.29.0 (2023-08-21)
--------------------
-* Load a message/request/goal from standard input (`#844 <https://github.com/ros2/ros2cli/issues/844>`_)
-* Contributors: ymd-stella
-
-0.28.0 (2023-07-11)
--------------------
-* Add marshalling functions for rclpy.type_hash.TypeHash (rep2011) (`#816 <https://github.com/ros2/ros2cli/issues/816>`_)
-* Contributors: Hans-Joachim Krauch
-
-0.27.0 (2023-06-07)
--------------------
-* [service introspection] ros2 service echo (`#745 <https://github.com/ros2/ros2cli/issues/745>`_)
-* Contributors: Brian
-
-0.26.1 (2023-05-11)
--------------------
-
-0.26.0 (2023-04-28)
--------------------
-
-0.25.0 (2023-04-18)
--------------------
-* remove deprecated options (`#824 <https://github.com/ros2/ros2cli/issues/824>`_)
-* Make all of the dependencies in pure Python packages exec_depend. (`#823 <https://github.com/ros2/ros2cli/issues/823>`_)
-* Contributors: Chris Lalancette, Tomoya Fujita
-
-0.24.1 (2023-04-12)
--------------------
-* Expect type hash cli output in test (`#822 <https://github.com/ros2/ros2cli/issues/822>`_)
-* Contributors: Emerson Knapp
-
-0.24.0 (2023-04-11)
--------------------
-* Fix the type annotation in pub.py. (`#814 <https://github.com/ros2/ros2cli/issues/814>`_)
-* Switch to using new event_handler instead of qos_event. (`#787 <https://github.com/ros2/ros2cli/issues/787>`_)
-* Contributors: Chris Lalancette
-
-0.23.0 (2023-03-02)
--------------------
-* avoid flaky test that subscriber might not receive the message (`#810 <https://github.com/ros2/ros2cli/issues/810>`_)
-* Adds a `--max-wait-time` option to `ros2 topic pub`  (`#800 <https://github.com/ros2/ros2cli/issues/800>`_)
-* Contributors: Arjo Chakravarty, Chen Lihui
-
-0.22.0 (2023-02-14)
--------------------
-* Fix some flake8 warnings related to style. (`#805 <https://github.com/ros2/ros2cli/issues/805>`_)
-* Adds a timeout feature to rostopic echo (`#792 <https://github.com/ros2/ros2cli/issues/792>`_)
-* Refactor common types (`#791 <https://github.com/ros2/ros2cli/issues/791>`_)
-* Allow configuring liveliness in ros2 topic echo and pub (`#788 <https://github.com/ros2/ros2cli/issues/788>`_)
-* Extend timeout to shutdown the command line process. (`#783 <https://github.com/ros2/ros2cli/issues/783>`_)
-* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
-* a couple of typo fixes. (`#774 <https://github.com/ros2/ros2cli/issues/774>`_)
-* Contributors: Arjo Chakravarty, Audrow Nash, Chris Lalancette, Ivan Santiago Paunovic, Tomoya Fujita
-
-0.21.0 (2022-11-02)
--------------------
-* Add support use_sim_time for ros2 topic hz/bw/pub. (`#754 <https://github.com/ros2/ros2cli/issues/754>`_)
-* Use set_message_fields from rosidl_runtime_py (`#761 <https://github.com/ros2/ros2cli/issues/761>`_)
-* Contributors: Esteve Fernandez, Lei Liu
-
-0.20.0 (2022-09-13)
--------------------
-* Expand auto to the current time when passed to a Header field (`#749 <https://github.com/ros2/ros2cli/issues/749>`_)
-* Add verbose option to echo that also prints the associated message info (`#707 <https://github.com/ros2/ros2cli/issues/707>`_)
-* Contributors: Esteve Fernandez, Ivan Santiago Paunovic
-
-0.19.0 (2022-04-29)
--------------------
-* update docs for bandwidth functions. (`#709 <https://github.com/ros2/ros2cli/issues/709>`_)
-* Split the bandwidth functions into a get and print. (`#708 <https://github.com/ros2/ros2cli/issues/708>`_)
-* Contributors: Chris Lalancette, Tomoya Fujita
+* [humble] Backport. Expand auto to the current time when passed to a Header field (`#751 <https://github.com/ros2/ros2cli/issues/751>`_)
+  * Expand auto to the current time when passed to a Header field
+  * Make sure that the stamp field is updated every time the message is published
+  * Added support for passing 'now' as a value to a 'builtin_interfaces.msg.Time'. Added comments and expand docstring
+  * Only update timestamp fields that have been passed 'now' as a value
+  * Fix lint errors
+  * Added tests
+  * Remove node argument from set_message_fields_expanded
+  * Fix flake8 errors
+* Contributors: Esteve Fernandez
 
 0.18.3 (2022-04-08)
 -------------------
