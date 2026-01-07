@@ -2,55 +2,33 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.38.2 (2026-01-07)
+0.32.7 (2026-01-07)
 -------------------
-* fix: Also catch a TimeoutError (`#1092 <https://github.com/ros2/ros2cli/issues/1092>`_) (`#1157 <https://github.com/ros2/ros2cli/issues/1157>`_)
-* Remove importlib packages (backport `#1117 <https://github.com/ros2/ros2cli/issues/1117>`_) (`#1119 <https://github.com/ros2/ros2cli/issues/1119>`_)
-* skip history and depth check for rmw_connextdds. (`#1064 <https://github.com/ros2/ros2cli/issues/1064>`_) (`#1127 <https://github.com/ros2/ros2cli/issues/1127>`_)
-* Fix handling of empty ROS_DOMAIN_ID in ros2cli (`#1112 <https://github.com/ros2/ros2cli/issues/1112>`_) (`#1113 <https://github.com/ros2/ros2cli/issues/1113>`_)
-* Use rmw_test_fixture to isolate ros2cli tests (backport `#1062 <https://github.com/ros2/ros2cli/issues/1062>`_) (`#1106 <https://github.com/ros2/ros2cli/issues/1106>`_)
+* Fix handling of empty ROS_DOMAIN_ID in ros2cli (`#1112 <https://github.com/ros2/ros2cli/issues/1112>`_) (`#1114 <https://github.com/ros2/ros2cli/issues/1114>`_)
 * Contributors: mergify[bot]
 
-0.38.1 (2025-09-11)
+0.32.6 (2025-09-11)
 -------------------
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
-* Assert HistoryQoS in test_ros2cli_daemon (`#1040 <https://github.com/ros2/ros2cli/issues/1040>`_) (`#1044 <https://github.com/ros2/ros2cli/issues/1044>`_)
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
 * Contributors: mergify[bot]
 
-0.38.0 (2025-04-25)
--------------------
-* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
-* Contributors: Michael Carroll
-
-0.37.0 (2025-02-02)
--------------------
-* Rename the test\_{daemon,direct}.py tests. (`#959 <https://github.com/ros2/ros2cli/issues/959>`_)
-* Contributors: Chris Lalancette
-
-0.36.1 (2024-12-20)
--------------------
-* replace removeprefix with string slicing. (`#953 <https://github.com/ros2/ros2cli/issues/953>`_)
-* Contributors: Tomoya Fujita
-
-0.36.0 (2024-11-20)
--------------------
-* Fix instability in the ros2 daemon. (`#947 <https://github.com/ros2/ros2cli/issues/947>`_)
-* Drop dependency on python3-pkg-resources (`#946 <https://github.com/ros2/ros2cli/issues/946>`_)
-* NodeStrategy supports node name argument. (`#941 <https://github.com/ros2/ros2cli/issues/941>`_)
-* Contributors: Chris Lalancette, Scott K Logan, Tomoya Fujita
-
-0.35.0 (2024-10-03)
+0.32.5 (2025-08-05)
 -------------------
 
-0.34.1 (2024-07-29)
--------------------
-* Switch to using the rclpy.init context manager. (`#920 <https://github.com/ros2/ros2cli/issues/920>`_)
-* Contributors: Chris Lalancette
-
-0.34.0 (2024-06-17)
+0.32.4 (2025-04-24)
 -------------------
 
-0.33.0 (2024-04-26)
+0.32.3 (2025-04-02)
+-------------------
+
+0.32.2 (2024-12-18)
+-------------------
+* replace removeprefix with string slicing. (`#953 <https://github.com/ros2/ros2cli/issues/953>`_) (`#955 <https://github.com/ros2/ros2cli/issues/955>`_)
+  (cherry picked from commit 35d6abd50a55181099aab82134fc507d8fd162bd)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
+
+0.32.1 (2024-05-13)
 -------------------
 
 0.32.0 (2024-04-16)

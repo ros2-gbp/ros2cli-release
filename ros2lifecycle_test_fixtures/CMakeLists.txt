@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.5)
 
 project(ros2lifecycle_test_fixtures)
 
@@ -19,8 +19,8 @@ find_package(rclcpp REQUIRED)
 add_executable(simple_lifecycle_node
   src/simple_lifecycle_node.cpp)
 
-target_link_libraries(simple_lifecycle_node PRIVATE
-  rclcpp_lifecycle::rclcpp_lifecycle)
+ament_target_dependencies(simple_lifecycle_node
+  "rclcpp_lifecycle")
 
 install(TARGETS
   simple_lifecycle_node

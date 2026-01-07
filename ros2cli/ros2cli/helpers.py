@@ -19,8 +19,6 @@ import os
 import sys
 import time
 
-from typing import Dict
-
 
 def get_ros_domain_id():
     return int(os.environ.get('ROS_DOMAIN_ID', 0))
@@ -120,16 +118,3 @@ def collect_stdin():
             break
         lines += line
     return lines
-
-
-def get_rmw_additional_env(rmw_implementation: str) -> Dict[str, str]:
-    """Get a dictionary of additional environment variables based on rmw."""
-    if rmw_implementation == 'rmw_zenoh_cpp':
-        return {
-            'RMW_IMPLEMENTATION': rmw_implementation,
-            'RUST_LOG': 'z=error'
-        }
-    else:
-        return {
-            'RMW_IMPLEMENTATION': rmw_implementation,
-        }

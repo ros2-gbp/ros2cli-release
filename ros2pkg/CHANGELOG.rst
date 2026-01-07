@@ -2,52 +2,37 @@
 Changelog for package ros2pkg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.38.2 (2026-01-07)
+0.32.7 (2026-01-07)
 -------------------
-* Add Native ROS2 Rust Package Create Capability (`#1107 <https://github.com/ros2/ros2cli/issues/1107>`_) (`#1135 <https://github.com/ros2/ros2cli/issues/1135>`_)
-* Remove importlib packages (backport `#1117 <https://github.com/ros2/ros2cli/issues/1117>`_) (`#1119 <https://github.com/ros2/ros2cli/issues/1119>`_)
-* add mypy (`#1109 <https://github.com/ros2/ros2cli/issues/1109>`_) (`#1110 <https://github.com/ros2/ros2cli/issues/1110>`_)
+* Add Native ROS2 Rust Package Create Capability (`#1107 <https://github.com/ros2/ros2cli/issues/1107>`_) (`#1136 <https://github.com/ros2/ros2cli/issues/1136>`_)
 * Contributors: mergify[bot]
 
-0.38.1 (2025-09-11)
+0.32.6 (2025-09-11)
 -------------------
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
-* fix cmake deprecation (`#1082 <https://github.com/ros2/ros2cli/issues/1082>`_) (`#1083 <https://github.com/ros2/ros2cli/issues/1083>`_)
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
 * Contributors: mergify[bot]
 
-0.38.0 (2025-04-25)
+0.32.5 (2025-08-05)
 -------------------
-* Use modern C++17 syntax. (`#982 <https://github.com/ros2/ros2cli/issues/982>`_)
-* Use target_link_libraries instead of ament_target_dependencies (`#973 <https://github.com/ros2/ros2cli/issues/973>`_)
-* Try to use the git global user.name for maintainer-name (`#968 <https://github.com/ros2/ros2cli/issues/968>`_)
-* Update minimum CMake version CMakeLists.txt.em (`#969 <https://github.com/ros2/ros2cli/issues/969>`_)
-* Contributors: Larry Gezelius, Sebastian Castro, Shane Loretz, Shynur
+* Support empy4 and empy3 (`#921 <https://github.com/ros2/ros2cli/issues/921>`_) (`#1034 <https://github.com/ros2/ros2cli/issues/1034>`_)
+  (cherry picked from commit f75f4e2499fcd0037eb4ae277d424b4618ae4af3)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
 
-0.37.0 (2025-02-02)
--------------------
-* Add ament_xmllint test by default to ament_python packages. (`#957 <https://github.com/ros2/ros2cli/issues/957>`_)
-* Contributors: Chris Lalancette
-
-0.36.1 (2024-12-20)
+0.32.4 (2025-04-24)
 -------------------
 
-0.36.0 (2024-11-20)
+0.32.3 (2025-04-02)
 -------------------
-* Drop dependency on python3-pkg-resources (`#946 <https://github.com/ros2/ros2cli/issues/946>`_)
-* Contributors: Scott K Logan
+* Update minimum CMake version CMakeLists.txt.em (`#969 <https://github.com/ros2/ros2cli/issues/969>`_) (`#971 <https://github.com/ros2/ros2cli/issues/971>`_)
+  (cherry picked from commit a91bbc1b25d1d45e727d430a86d9f05646e71288)
+  Co-authored-by: Sebastian Castro <4603398+sea-bass@users.noreply.github.com>
+* Contributors: mergify[bot]
 
-0.35.0 (2024-10-03)
--------------------
-* Support empy4 and empy3 (`#921 <https://github.com/ros2/ros2cli/issues/921>`_)
-* Contributors: Alejandro Hernández Cordero
-
-0.34.1 (2024-07-29)
+0.32.2 (2024-12-18)
 -------------------
 
-0.34.0 (2024-06-17)
--------------------
-
-0.33.0 (2024-04-26)
+0.32.1 (2024-05-13)
 -------------------
 
 0.32.0 (2024-04-16)

@@ -19,10 +19,6 @@ import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
-from launch.actions import RegisterEventHandler
-from launch.actions import ResetEnvironment
-from launch.actions import SetEnvironmentVariable
-from launch.event_handlers import OnShutdown
 
 from launch_ros.actions import Node
 
@@ -31,13 +27,11 @@ import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
-from launch_testing_ros.actions import EnableRmwIsolation
 import launch_testing_ros.tools
 
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
-from ros2cli.helpers import get_rmw_additional_env
 from ros2node.api import INFO_NONUNIQUE_WARNING_TEMPLATE
 
 
@@ -55,27 +49,13 @@ def generate_test_description(rmw_implementation):
     path_to_complex_node_script = os.path.join(
         os.path.dirname(__file__), 'fixtures', 'complex_node.py'
     )
-    additional_env = get_rmw_additional_env(rmw_implementation)
-    set_env_actions = [SetEnvironmentVariable(k, v) for k, v in additional_env.items()]
+    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
     return LaunchDescription([
         # Always restart daemon to isolate tests.
         ExecuteProcess(
             cmd=['ros2', 'daemon', 'stop'],
             name='daemon-stop',
             on_exit=[
-                *set_env_actions,
-                EnableRmwIsolation(),
-                RegisterEventHandler(OnShutdown(on_shutdown=[
-                    # Stop daemon in isolated environment with proper ROS_DOMAIN_ID
-                    ExecuteProcess(
-                        cmd=['ros2', 'daemon', 'stop'],
-                        name='daemon-stop-isolated',
-                        # Use the same isolated environment
-                        additional_env=dict(additional_env),
-                    ),
-                    # This must be done after stopping the daemon in the isolated environment
-                    ResetEnvironment(),
-                ])),
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
@@ -85,19 +65,23 @@ def generate_test_description(rmw_implementation):
                             executable=sys.executable,
                             arguments=[path_to_complex_node_script],
                             name='complex_node',
+                            additional_env=additional_env,
                         ),
                         Node(
                             executable=sys.executable,
                             arguments=[path_to_complex_node_script],
                             name='complex_node',
+                            additional_env=additional_env,
                         ),
                         Node(
                             executable=sys.executable,
                             arguments=[path_to_complex_node_script],
                             name='complex_node_2',
+                            additional_env=additional_env,
                         ),
                         launch_testing.actions.ReadyToTest(),
                     ],
+                    additional_env=additional_env
                 )
             ]
         ),
@@ -116,12 +100,12 @@ class TestROS2NodeCLIWithDuplicateNodeNames(unittest.TestCase):
     ):
         @contextlib.contextmanager
         def launch_node_command(self, arguments):
-            additional_env = {
-                'PYTHONUNBUFFERED': '1',
-            }
             node_command_action = ExecuteProcess(
                 cmd=['ros2', 'node', *arguments],
-                additional_env=additional_env,
+                additional_env={
+                    'RMW_IMPLEMENTATION': rmw_implementation,
+                    'PYTHONUNBUFFERED': '1'
+                },
                 name='ros2node-cli',
                 output='screen'
             )

@@ -2,58 +2,54 @@
 Changelog for package ros2action
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.38.2 (2026-01-07)
+0.32.7 (2026-01-07)
 -------------------
-* Use rmw_test_fixture to isolate ros2cli tests (backport `#1062 <https://github.com/ros2/ros2cli/issues/1062>`_) (`#1106 <https://github.com/ros2/ros2cli/issues/1106>`_)
+
+0.32.6 (2025-09-11)
+-------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
 * Contributors: mergify[bot]
 
-0.38.1 (2025-09-11)
+0.32.5 (2025-08-05)
 -------------------
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
-* fix ros2action send_goal signal handling. (`#1072 <https://github.com/ros2/ros2cli/issues/1072>`_) (`#1074 <https://github.com/ros2/ros2cli/issues/1074>`_)
-* Fujitatomoya/ros2 action send goal timeout (`#1067 <https://github.com/ros2/ros2cli/issues/1067>`_) (`#1068 <https://github.com/ros2/ros2cli/issues/1068>`_)
-* Relax the check from exact to partial match. (`#1055 <https://github.com/ros2/ros2cli/issues/1055>`_) (`#1057 <https://github.com/ros2/ros2cli/issues/1057>`_)
-* remove unnecessary '/' from ros2 action info. (`#1049 <https://github.com/ros2/ros2cli/issues/1049>`_) (`#1050 <https://github.com/ros2/ros2cli/issues/1050>`_)
-* add QoS option to ros2service/ros2action echo commands. (`#1036 <https://github.com/ros2/ros2cli/issues/1036>`_) (`#1038 <https://github.com/ros2/ros2cli/issues/1038>`_)
+* fix ros2action send_goal signal handling. (`#1072 <https://github.com/ros2/ros2cli/issues/1072>`_) (`#1075 <https://github.com/ros2/ros2cli/issues/1075>`_)
+  (cherry picked from commit 87e88c8a2f756deb1652274ba4920c85f5b179f2)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Fujitatomoya/ros2 action send goal timeout (backport `#1067 <https://github.com/ros2/ros2cli/issues/1067>`_) (`#1069 <https://github.com/ros2/ros2cli/issues/1069>`_)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* remove unnecessary '/' from ros2 action info. (backport `#1049 <https://github.com/ros2/ros2cli/issues/1049>`_) (`#1051 <https://github.com/ros2/ros2cli/issues/1051>`_)
+  * remove unnecessary '/' from ros2 action info. (`#1049 <https://github.com/ros2/ros2cli/issues/1049>`_)
+  (cherry picked from commit ad66780fd46d73368c82d8c6645505e6e600e0fb)
+  # Conflicts:
+  #	ros2action/ros2action/api/__init_\_.py
+  * Fixed merge
+  ---------
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
 * Contributors: mergify[bot]
 
-0.38.0 (2025-04-25)
--------------------
-* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
-* Support 'ros2 action echo' (`#978 <https://github.com/ros2/ros2cli/issues/978>`_)
-* Correct the license content (`#979 <https://github.com/ros2/ros2cli/issues/979>`_)
-* Contributors: Barry Xu, Michael Carroll
-
-0.37.0 (2025-02-02)
--------------------
-* Maintaining consistency of automatically putting time stamps in the service and action calls similiar to publishing in rostopics. (`#961 <https://github.com/ros2/ros2cli/issues/961>`_)
-* ros2action: add SIGINT handler to manage cancel request. (`#956 <https://github.com/ros2/ros2cli/issues/956>`_)
-* Contributors: Sukhvansh Jain, Tomoya Fujita
-
-0.36.1 (2024-12-20)
+0.32.4 (2025-04-24)
 -------------------
 
-0.36.0 (2024-11-20)
+0.32.3 (2025-04-02)
+-------------------
+* Correct the license content (`#979 <https://github.com/ros2/ros2cli/issues/979>`_) (`#980 <https://github.com/ros2/ros2cli/issues/980>`_)
+  (cherry picked from commit 1760f4adad4d3b3cb3173ec951c5324def833c16)
+  Co-authored-by: Barry Xu <barry.xu@sony.com>
+* ros2action: add SIGINT handler to manage cancel request. (`#956 <https://github.com/ros2/ros2cli/issues/956>`_) (`#962 <https://github.com/ros2/ros2cli/issues/962>`_)
+  (cherry picked from commit d930a74491b836bea2e6a8223a95259890676adb)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
+
+0.32.2 (2024-12-18)
 -------------------
 
-0.35.0 (2024-10-03)
+0.32.1 (2024-05-13)
 -------------------
-* node name print bug fix with ros2 action info. (`#926 <https://github.com/ros2/ros2cli/issues/926>`_)
-* Contributors: Tomoya Fujita
-
-0.34.1 (2024-07-29)
--------------------
-* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
-* support 'ros2 action find'. (`#917 <https://github.com/ros2/ros2cli/issues/917>`_)
-* Contributors: Chris Lalancette, Tomoya Fujita
-
-0.34.0 (2024-06-17)
--------------------
-
-0.33.0 (2024-04-26)
--------------------
-* call get_action_interfaces() properly. (`#898 <https://github.com/ros2/ros2cli/issues/898>`_)
-* Contributors: Tomoya Fujita
+* call get_action_interfaces() properly. (`#898 <https://github.com/ros2/ros2cli/issues/898>`_) (`#900 <https://github.com/ros2/ros2cli/issues/900>`_)
+  (cherry picked from commit 305ef763b83e42ebddc4802ac788869d178b6e93)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
 
 0.32.0 (2024-04-16)
 -------------------
