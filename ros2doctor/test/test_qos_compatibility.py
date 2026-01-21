@@ -122,6 +122,10 @@ class TestROS2DoctorQoSCompatibility(unittest.TestCase):
             filtered_rmw_implementation=rmw_implementation
         )
 
+        # skip zenoh because of the QoS compatibility
+        if rmw_implementation == 'rmw_zenoh_cpp':
+            raise unittest.SkipTest()
+
         @contextlib.contextmanager
         def launch_doctor_command(self, arguments):
             doctor_command_action = ExecuteProcess(
