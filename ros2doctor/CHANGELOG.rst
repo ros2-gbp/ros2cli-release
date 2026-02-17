@@ -2,114 +2,47 @@
 Changelog for package ros2doctor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.32.8 (2026-01-21)
--------------------
-
-0.32.7 (2026-01-07)
--------------------
-* Harden ros2doctor system calls. (backport `#1118 <https://github.com/ros2/ros2cli/issues/1118>`_) (`#1139 <https://github.com/ros2/ros2cli/issues/1139>`_)
+0.18.16 (2026-01-07)
+--------------------
+* Harden ros2doctor system calls. (backport `#1118 <https://github.com/ros2/ros2cli/issues/1118>`_) (`#1140 <https://github.com/ros2/ros2cli/issues/1140>`_)
 * Contributors: mergify[bot]
 
-0.32.6 (2025-09-11)
--------------------
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
+0.18.15 (2025-11-12)
+--------------------
+
+0.18.14 (2025-09-11)
+--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1103 <https://github.com/ros2/ros2cli/issues/1103>`_)
 * Contributors: mergify[bot]
 
-0.32.5 (2025-08-05)
+0.18.13 (2025-07-16)
+--------------------
+
+0.18.12 (2025-03-25)
+--------------------
+
+0.18.11 (2024-07-26)
+--------------------
+
+0.18.10 (2024-05-15)
+--------------------
+
+0.18.9 (2024-02-16)
 -------------------
 
-0.32.4 (2025-04-24)
+0.18.8 (2024-01-24)
 -------------------
 
-0.32.3 (2025-04-02)
--------------------
-* Skip QoS compatibility test on Zenoh (`#985 <https://github.com/ros2/ros2cli/issues/985>`_) (`#986 <https://github.com/ros2/ros2cli/issues/986>`_)
-  (cherry picked from commit 50411582ff6f72d1940a52070c26988dff65fee7)
-  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
-* Contributors: mergify[bot]
-
-0.32.2 (2024-12-18)
--------------------
-* New flag and code update for its use (`#942 <https://github.com/ros2/ros2cli/issues/942>`_) (`#943 <https://github.com/ros2/ros2cli/issues/943>`_)
-  (cherry picked from commit a3198b80f8a993ac01501d8e3fbdd76e7aaf92dc)
-  Co-authored-by: Angel LoGa <98213868+AngeLoGa@users.noreply.github.com>
-* Contributors: mergify[bot]
-
-0.32.1 (2024-05-13)
+0.18.7 (2023-07-18)
 -------------------
 
-0.32.0 (2024-04-16)
--------------------
-* Remove references to https://index.ros.org (`#897 <https://github.com/ros2/ros2cli/issues/897>`_)
-* Contributors: Chris Lalancette
-
-0.31.2 (2024-03-27)
+0.18.6 (2023-04-25)
 -------------------
 
-0.31.1 (2024-02-07)
+0.18.5 (2023-01-10)
 -------------------
 
-0.31.0 (2024-01-24)
--------------------
-
-0.30.1 (2023-12-26)
--------------------
-
-0.30.0 (2023-11-06)
--------------------
-* (ros2doctor) fix PackageCheck (`#860 <https://github.com/ros2/ros2cli/issues/860>`_)
-  * (ros2doctor)(package) improve result string generation
-* Contributors: Matthijs van der Burgh
-
-0.29.1 (2023-10-04)
--------------------
-
-0.29.0 (2023-08-21)
--------------------
-
-0.28.0 (2023-07-11)
--------------------
-
-0.27.0 (2023-06-07)
--------------------
-
-0.26.1 (2023-05-11)
--------------------
-* Shutdown ros2doctor hello when ctrl-c is received (`#826 <https://github.com/ros2/ros2cli/issues/826>`_)
-* Contributors: Michael Carroll
-
-0.26.0 (2023-04-28)
--------------------
-
-0.25.0 (2023-04-18)
--------------------
-* Make all of the dependencies in pure Python packages exec_depend. (`#823 <https://github.com/ros2/ros2cli/issues/823>`_)
-* Contributors: Chris Lalancette
-
-0.24.1 (2023-04-12)
--------------------
-
-0.24.0 (2023-04-11)
--------------------
-* Enable document generation using rosdoc2 (`#811 <https://github.com/ros2/ros2cli/issues/811>`_)
-  * Fix warnings for ros2component, ros2doctor, ros2interface, and ros2node
-* Contributors: Yadu
-
-0.23.0 (2023-03-02)
--------------------
-
-0.22.0 (2023-02-14)
--------------------
-* [rolling] Update maintainers - 2022-11-07 (`#776 <https://github.com/ros2/ros2cli/issues/776>`_)
-* Contributors: Audrow Nash
-
-0.21.0 (2022-11-02)
--------------------
-
-0.20.0 (2022-09-13)
--------------------
-
-0.19.0 (2022-04-29)
+0.18.4 (2022-11-07)
 -------------------
 
 0.18.3 (2022-04-08)
