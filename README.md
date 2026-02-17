@@ -1,3 +1,41 @@
+## ros2cli (humble) - 0.18.16-2
+
+The packages in the `ros2cli` repository were released into the `humble` distro by running `/usr/bin/bloom-release --rosdistro humble ros2cli` on `Tue, 17 Feb 2026 03:08:27 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2cli_test_interfaces`
+- `ros2component`
+- `ros2doctor`
+- `ros2interface`
+- `ros2lifecycle`
+- `ros2lifecycle_test_fixtures`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.18.16-1`
+- old version: `0.18.16-1`
+- new version: `0.18.16-2`
+
+Versions of tools used:
+
+- bloom version: `0.13.0`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.0.1`
+- vcstools version: `0.1.42`
+
+
 ## ros2cli (jazzy) - 0.32.8-1
 
 The packages in the `ros2cli` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release --track jazzy --rosdistro jazzy ros2cli` on `Wed, 21 Jan 2026 22:53:08 -0000`
