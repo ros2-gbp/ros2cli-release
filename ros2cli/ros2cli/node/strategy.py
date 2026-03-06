@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional
-
 from ros2cli.helpers import check_discovery_configuration
 from ros2cli.node.daemon import add_arguments as add_daemon_node_arguments
 from ros2cli.node.daemon import DaemonNode
@@ -25,7 +23,7 @@ from ros2cli.node.direct import DirectNode
 
 class NodeStrategy:
 
-    def __init__(self, args, *, node_name: Optional[str] = None):
+    def __init__(self, args, *, node_name=None):
         # Check for invalid discovery configuration
         check_discovery_configuration()
 

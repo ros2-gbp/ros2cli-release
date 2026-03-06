@@ -2,57 +2,25 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.40.5 (2026-03-07)
+0.38.3 (2026-03-07)
 -------------------
-* ros2 param set /node_name <param1 value1 param2 value2...> support. (`#1204 <https://github.com/ros2/ros2cli//issues/1204>`_)
-* ros2 param get /node_name <param1 param2 param3...> support. (`#1203 <https://github.com/ros2/ros2cli//issues/1203>`_)
-* Add per-node timeout option to ros2 param list (`#1170 <https://github.com/ros2/ros2cli//issues/1170>`_)
-* Fix Bash completion (`#1182 <https://github.com/ros2/ros2cli//issues/1182>`_)
-* Add fzf-based interactive selection to ros2cli commands (`#1151 <https://github.com/ros2/ros2cli//issues/1151>`_)
-* Support "ros2 param get <parameter>" across all nodes. (`#1174 <https://github.com/ros2/ros2cli//issues/1174>`_)
-* Fix ParameterNameCompleter. (`#1172 <https://github.com/ros2/ros2cli//issues/1172>`_)
-* Output node parameters upon each receipt (`#1162 <https://github.com/ros2/ros2cli//issues/1162>`_)
-* Contributors: Barry Xu, Taiga Arai, Tomoya Fujita, Tony Najjar
+* Fix ParameterNameCompleter. (`#1172 <https://github.com/ros2/ros2cli//issues/1172>`_) (`#1175 <https://github.com/ros2/ros2cli//issues/1175>`_)
+* Output node parameters upon each receipt (`#1162 <https://github.com/ros2/ros2cli//issues/1162>`_) (`#1164 <https://github.com/ros2/ros2cli//issues/1164>`_)
+* Contributors: mergify[bot]
 
-0.40.4 (2026-01-07)
+0.38.2 (2026-01-07)
 -------------------
-* skip test_verb_load_wildcard for rmw_connextdds. (`#1150 <https://github.com/ros2/ros2cli/issues/1150>`_)
-* Contributors: Tomoya Fujita
+* skip test_verb_load_wildcard for rmw_connextdds. (`#1150 <https://github.com/ros2/ros2cli/issues/1150>`_) (`#1152 <https://github.com/ros2/ros2cli/issues/1152>`_)
+* Use rmw_test_fixture to isolate ros2cli tests (backport `#1062 <https://github.com/ros2/ros2cli/issues/1062>`_) (`#1106 <https://github.com/ros2/ros2cli/issues/1106>`_)
+* Contributors: mergify[bot]
 
-0.40.3 (2025-12-09)
+0.38.1 (2025-09-11)
 -------------------
-
-0.40.2 (2025-11-18)
--------------------
-
-0.40.1 (2025-09-11)
--------------------
-* Fujitatomoya/clearup isolated ros2daemon (`#1098 <https://github.com/ros2/ros2cli/issues/1098>`_)
-* Restore environment variables after launch tests (`#1086 <https://github.com/ros2/ros2cli/issues/1086>`_)
-* Contributors: Scott K Logan, Tomoya Fujita
-
-0.40.0 (2025-07-29)
--------------------
-* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Contributors: Scott K Logan, mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Relax the check from exact to partial match. (`#1055 <https://github.com/ros2/ros2cli/issues/1055>`_)
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* fix misspelling. (`#1035 <https://github.com/ros2/ros2cli/issues/1035>`_)
-* catch ConnectionRefusedError, so that it can fall back to DirectNode. (`#1014 <https://github.com/ros2/ros2cli/issues/1014>`_)
-* fails the test properly to avoid TypeError exception. (`#1016 <https://github.com/ros2/ros2cli/issues/1016>`_)
-* Contributors: Michael Carlstrom, Tomoya Fujita
-
-0.39.0 (2025-04-25)
--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
+* Relax the check from exact to partial match. (`#1055 <https://github.com/ros2/ros2cli/issues/1055>`_) (`#1057 <https://github.com/ros2/ros2cli/issues/1057>`_)
+* catch ConnectionRefusedError, so that it can fall back to DirectNode. (`#1014 <https://github.com/ros2/ros2cli/issues/1014>`_) (`#1020 <https://github.com/ros2/ros2cli/issues/1020>`_)
+* fails the test properly to avoid TypeError exception. (`#1016 <https://github.com/ros2/ros2cli/issues/1016>`_) (`#1017 <https://github.com/ros2/ros2cli/issues/1017>`_)
+* Contributors: mergify[bot]
 
 0.38.0 (2025-04-25)
 -------------------

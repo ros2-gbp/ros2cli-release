@@ -15,8 +15,7 @@
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-
-from ros2cli.qos import qos_profile_from_short_keys
+from ros2topic.api import qos_profile_from_short_keys
 
 from std_msgs.msg import String
 
