@@ -1,0 +1,12 @@
+Source: ros-kilted-ros2lifecycle-test-fixtures
+Section: misc
+Priority: optional
+Maintainer: Audrow Nash <audrow@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-kilted-ament-cmake, ros-kilted-ament-lint-auto <!nocheck>, ros-kilted-ament-lint-common <!nocheck>, ros-kilted-rclcpp, ros-kilted-rclcpp-lifecycle, ros-kilted-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-kilted-ros2lifecycle-test-fixtures
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-kilted-rclcpp, ros-kilted-rclcpp-lifecycle, ros-kilted-ros-workspace
+Description: Package containing fixture nodes for ros2lifecycle tests
