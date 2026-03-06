@@ -1,3 +1,41 @@
+## ros2cli (kilted) - 0.38.3-2
+
+The packages in the `ros2cli` repository were released into the `kilted` distro by running `/usr/bin/bloom-release --rosdistro kilted --track kilted ros2cli` on `Fri, 06 Mar 2026 16:49:41 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2cli_test_interfaces`
+- `ros2component`
+- `ros2doctor`
+- `ros2interface`
+- `ros2lifecycle`
+- `ros2lifecycle_test_fixtures`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.38.2-1`
+- old version: `0.38.3-1`
+- new version: `0.38.3-2`
+
+Versions of tools used:
+
+- bloom version: `0.13.0`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.0.1`
+- vcstools version: `0.1.42`
+
+
 ## ros2cli (kilted) - 0.38.3-1
 
 The packages in the `ros2cli` repository were released into the `kilted` distro by running `/usr/bin/bloom-release --rosdistro kilted --track kilted ros2cli` on `Fri, 06 Mar 2026 16:40:09 -0000`
