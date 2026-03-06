@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.38.3',
+    version='0.32.9',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],

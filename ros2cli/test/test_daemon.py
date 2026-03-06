@@ -19,8 +19,6 @@ import pytest
 import rclpy
 import rclpy.action
 
-from rclpy.utilities import get_rmw_implementation_identifier
-
 from ros2cli.node.daemon import DaemonNode
 from ros2cli.node.daemon import is_daemon_running
 from ros2cli.node.daemon import shutdown_daemon
@@ -39,13 +37,12 @@ TEST_TOPIC_TYPE = 'test_msgs/msg/Empty'
 TEST_TOPIC_PUBLISHER_QOS = rclpy.qos.QoSProfile(
     reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
     durability=rclpy.qos.DurabilityPolicy.VOLATILE,
-    history=rclpy.qos.HistoryPolicy.KEEP_ALL
+    depth=1
 )
 TEST_TOPIC_SUBSCRIPTION_QOS = rclpy.qos.QoSProfile(
     reliability=rclpy.qos.ReliabilityPolicy.BEST_EFFORT,
     durability=rclpy.qos.DurabilityPolicy.VOLATILE,
-    history=rclpy.qos.HistoryPolicy.KEEP_LAST,
-    depth=8
+    depth=1
 )
 TEST_SERVICE_NAME = '/test/service'
 TEST_SERVICE_TYPE = 'test_msgs/srv/Empty'
@@ -55,54 +52,57 @@ TEST_ACTION_TYPE = 'test_msgs/action/Fibonacci'
 
 @pytest.fixture(autouse=True, scope='module')
 def local_node():
-    with rclpy.init():
-        node = rclpy.create_node(
-            node_name=TEST_NODE_NAME, namespace=TEST_NODE_NAMESPACE
-        )
-        publisher = node.create_publisher(
-            msg_type=test_msgs.msg.Empty,
-            topic=TEST_TOPIC_NAME,
-            qos_profile=TEST_TOPIC_PUBLISHER_QOS
-        )
-        publisher  # to avoid "assigned by never used" warning
-        subscription = node.create_subscription(
-            msg_type=test_msgs.msg.Empty,
-            topic=TEST_TOPIC_NAME,
-            callback=(lambda msg: None),
-            qos_profile=TEST_TOPIC_SUBSCRIPTION_QOS
-        )
-        subscription  # to avoid "assigned by never used" warning
-        service = node.create_service(
-            srv_type=test_msgs.srv.Empty,
-            srv_name=TEST_SERVICE_NAME,
-            callback=(lambda req, res: res)
-        )
-        service  # to avoid "assigned by never used" warning
-        client = node.create_client(
-            srv_type=test_msgs.srv.Empty,
-            srv_name=TEST_SERVICE_NAME
-        )
-        client  # to avoid "assigned by never used" warning
+    rclpy.init()
+    node = rclpy.create_node(
+        node_name=TEST_NODE_NAME, namespace=TEST_NODE_NAMESPACE
+    )
+    publisher = node.create_publisher(
+        msg_type=test_msgs.msg.Empty,
+        topic=TEST_TOPIC_NAME,
+        qos_profile=TEST_TOPIC_PUBLISHER_QOS
+    )
+    subscription = node.create_subscription(
+        msg_type=test_msgs.msg.Empty,
+        topic=TEST_TOPIC_NAME,
+        callback=(lambda msg: None),
+        qos_profile=TEST_TOPIC_SUBSCRIPTION_QOS
+    )
+    service = node.create_service(
+        srv_type=test_msgs.srv.Empty,
+        srv_name=TEST_SERVICE_NAME,
+        callback=(lambda req, res: res)
+    )
+    client = node.create_client(
+        srv_type=test_msgs.srv.Empty,
+        srv_name=TEST_SERVICE_NAME
+    )
 
-        def noop_execute_callback(goal_handle):
-            goal_handle.succeed()
-            return test_msgs.action.Fibonacci.Result()
+    def noop_execute_callback(goal_handle):
+        goal_handle.succeed()
+        return test_msgs.action.Fibonacci.Result()
 
-        action_server = rclpy.action.ActionServer(
-            node=node,
-            action_type=test_msgs.action.Fibonacci,
-            action_name=TEST_ACTION_NAME,
-            execute_callback=noop_execute_callback
-        )
-        action_server  # to avoid "assigned by never used" warning
-        action_client = rclpy.action.ActionClient(
-            node=node,
-            action_type=test_msgs.action.Fibonacci,
-            action_name=TEST_ACTION_NAME
-        )
-        action_client  # to avoid "assigned by never used" warning
-
+    action_server = rclpy.action.ActionServer(
+        node=node,
+        action_type=test_msgs.action.Fibonacci,
+        action_name=TEST_ACTION_NAME,
+        execute_callback=noop_execute_callback
+    )
+    action_client = rclpy.action.ActionClient(
+        node=node,
+        action_type=test_msgs.action.Fibonacci,
+        action_name=TEST_ACTION_NAME
+    )
+    try:
         yield node
+    finally:
+        action_client.destroy()
+        action_server.destroy()
+        node.destroy_client(client)
+        node.destroy_service(service)
+        node.destroy_subscription(subscription)
+        node.destroy_publisher(publisher)
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 @pytest.fixture(scope='module')
@@ -216,11 +216,6 @@ def test_get_publishers_info_by_topic(daemon_node):
         TEST_TOPIC_PUBLISHER_QOS.durability
     assert test_publisher_info.qos_profile.reliability == \
         TEST_TOPIC_PUBLISHER_QOS.reliability
-    if get_rmw_implementation_identifier() != 'rmw_connextdds':
-        # rmw_connextdds does not collect the QoS history from discovery.
-        # See more details for https://github.com/ros2/ros2cli/issues/1054
-        assert test_publisher_info.qos_profile.history == \
-            TEST_TOPIC_PUBLISHER_QOS.history
 
 
 def test_get_subscriptions_info_by_topic(daemon_node):
@@ -234,13 +229,6 @@ def test_get_subscriptions_info_by_topic(daemon_node):
         TEST_TOPIC_SUBSCRIPTION_QOS.durability
     assert test_subscription_info.qos_profile.reliability == \
         TEST_TOPIC_SUBSCRIPTION_QOS.reliability
-    if get_rmw_implementation_identifier() != 'rmw_connextdds':
-        # rmw_connextdds does not collect the QoS history and depth from discovery
-        # See more details for https://github.com/ros2/ros2cli/issues/1054
-        assert test_subscription_info.qos_profile.history == \
-            TEST_TOPIC_SUBSCRIPTION_QOS.history
-        assert test_subscription_info.qos_profile.depth == \
-            TEST_TOPIC_SUBSCRIPTION_QOS.depth
 
 
 def test_count_publishers(daemon_node):

@@ -69,18 +69,24 @@ class IntrospectableClient(Node):
 
 
 def main(args=None):
+    rclpy.init(args=args)
+
+    service_node = IntrospectableService()
+    client_node = IntrospectableClient()
+
+    executor = SingleThreadedExecutor()
+    executor.add_node(service_node)
+    executor.add_node(client_node)
+
     try:
-        with rclpy.init(args=args):
-            service_node = IntrospectableService()
-            client_node = IntrospectableClient()
-
-            executor = SingleThreadedExecutor()
-            executor.add_node(service_node)
-            executor.add_node(client_node)
-
-            executor.spin()
+        executor.spin()
     except (KeyboardInterrupt, ExternalShutdownException):
-        pass
+        executor.remove_node(client_node)
+        executor.remove_node(service_node)
+        executor.shutdown()
+        service_node.destroy_node()
+        client_node.destroy_node()
+        rclpy.try_shutdown()
 
 
 if __name__ == '__main__':
