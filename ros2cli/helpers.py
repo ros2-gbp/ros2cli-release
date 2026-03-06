@@ -16,10 +16,13 @@ from argparse import ArgumentTypeError
 import functools
 import inspect
 import os
+import shutil
+import subprocess
 import sys
 import time
 
 from typing import Dict
+from typing import Optional
 
 
 def get_ros_domain_id():
@@ -122,6 +125,41 @@ def collect_stdin():
     return lines
 
 
+# Module-level flag to ensure the discovery warning is only shown once per process
+_discovery_warning_shown = False
+
+
+def check_discovery_configuration():
+    """
+    Check for invalid ROS discovery configuration and print warning if needed.
+
+    Warns when ROS_AUTOMATIC_DISCOVERY_RANGE=OFF is set without ROS_STATIC_PEERS,
+    which results in no discovery mechanism being available.
+
+    The warning is only shown once per process to avoid duplicate warnings
+    when multiple nodes are created.
+    """
+    global _discovery_warning_shown
+
+    # Skip if warning has already been shown
+    if _discovery_warning_shown:
+        return
+
+    discovery_range = os.environ.get('ROS_AUTOMATIC_DISCOVERY_RANGE', '')
+    static_peers = os.environ.get('ROS_STATIC_PEERS', '')
+
+    if discovery_range == 'OFF' and not static_peers.strip():
+        print(
+            'Warning: ROS_AUTOMATIC_DISCOVERY_RANGE=OFF with no ROS_STATIC_PEERS configured.\n'
+            'No discovery mechanism is available. Results will be empty.\n'
+            'Either:\n'
+            '  - Set ROS_STATIC_PEERS to specify peers explicitly, or\n'
+            '  - Change ROS_AUTOMATIC_DISCOVERY_RANGE to LOCALHOST or SUBNET',
+            file=sys.stderr
+        )
+        _discovery_warning_shown = True
+
+
 def get_rmw_additional_env(rmw_implementation: str) -> Dict[str, str]:
     """Get a dictionary of additional environment variables based on rmw."""
     if rmw_implementation == 'rmw_zenoh_cpp':
@@ -133,3 +171,70 @@ def get_rmw_additional_env(rmw_implementation: str) -> Dict[str, str]:
         return {
             'RMW_IMPLEMENTATION': rmw_implementation,
         }
+
+
+def interactive_select(
+    items: list[str],
+    prompt: str = 'Select an item:'
+) -> Optional[str]:
+    """
+    Launch interactive fuzzy search using fzf to select from a list of items.
+
+    :param items: List of items to select from
+    :param prompt: Prompt message to display in fzf
+    :return: Selected item or None if user cancelled or fzf not available
+    """
+    if not items:
+        print('No items available to select from.', file=sys.stderr)
+        return None
+
+    # Check if we're in an interactive terminal
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        print('Error: Interactive selection requires a TTY terminal.', file=sys.stderr)
+        return None
+
+    # Check if fzf is available
+    if shutil.which('fzf') is None:
+        print(
+            'Error: fzf is not installed...',
+            file=sys.stderr
+        )
+        return None
+
+    try:
+        # Launch fzf with items as input
+        process = subprocess.Popen(
+            ['fzf', '--prompt', prompt + ' ', '--height', '40%', '--reverse'],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True
+        )
+
+        try:
+            # Send items to fzf
+            stdout, _ = process.communicate(input='\n'.join(items))
+        except KeyboardInterrupt:
+            # Handle Ctrl+C gracefully to avoid leaving terminal in bad state
+            process.terminate()
+            process.wait()
+            # Reset terminal to normal mode after fzf interruption
+            subprocess.run(['stty', 'sane'], check=False)
+            return None
+        finally:
+            # Ensure terminal is restored even if an exception occurs
+            if process.poll() is None:
+                process.terminate()
+                process.wait()
+            subprocess.run(['stty', 'sane'], check=False)
+
+        # Check if user cancelled (Ctrl-C or ESC)
+        if process.returncode != 0:
+            return None
+
+        # Return selected item (strip newline)
+        selected = stdout.strip()
+        return selected if selected else None
+
+    except (OSError, subprocess.SubprocessError) as e:
+        print(f'Error during interactive selection: {e}', file=sys.stderr)
+        return None
