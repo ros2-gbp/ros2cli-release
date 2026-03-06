@@ -16,9 +16,9 @@ import os
 from typing import Optional
 
 import rclpy
-import rclpy.action
 
 from rclpy.parameter import Parameter
+from ros2cli.helpers import check_discovery_configuration
 from ros2cli.node import NODE_NAME_PREFIX
 DEFAULT_TIMEOUT = 0.5
 
@@ -26,6 +26,9 @@ DEFAULT_TIMEOUT = 0.5
 class DirectNode:
 
     def __init__(self, args, *, node_name: Optional[str] = None):
+        # Check for invalid discovery configuration
+        check_discovery_configuration()
+
         timeout_reached = False
 
         def timer_callback():
@@ -65,19 +68,16 @@ class DirectNode:
     def __enter__(self):
         return self
 
-    # TODO(hidmic): generalize/standardize rclpy graph API
-    #               to not have to make a special case for
-    #               rclpy.action
     def get_action_names_and_types(self) -> list[tuple[str, list[str]]]:
-        return rclpy.action.get_action_names_and_types(self.node)
+        return self.node.get_action_names_and_types()
 
     def get_action_client_names_and_types_by_node(self, remote_node_name, remote_node_namespace):
-        return rclpy.action.get_action_client_names_and_types_by_node(
-            self.node, remote_node_name, remote_node_namespace)
+        return self.node.get_action_client_names_and_types_by_node(
+            remote_node_name, remote_node_namespace)
 
     def get_action_server_names_and_types_by_node(self, remote_node_name, remote_node_namespace):
-        return rclpy.action.get_action_server_names_and_types_by_node(
-            self.node, remote_node_name, remote_node_namespace)
+        return self.node.get_action_server_names_and_types_by_node(
+            remote_node_name, remote_node_namespace)
 
     def __getattr__(self, name):
         if not rclpy.ok():
