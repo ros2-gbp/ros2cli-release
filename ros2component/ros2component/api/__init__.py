@@ -23,12 +23,12 @@ import composition_interfaces.srv
 import rcl_interfaces.msg
 
 import rclpy
+from rclpy.parameter import get_parameter_value
 from rclpy.task import Future
 
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_node_names
 from ros2node.api import get_service_server_info
-from ros2param.api import get_parameter_value
 from ros2pkg.api import get_executable_paths
 from ros2pkg.api import PackageNotFound
 
@@ -75,8 +75,8 @@ def get_components_in_container(*, node, remote_container_node_name):
     :param node: an `rclpy.Node` instance.
     :param remote_container_node_names: of the container node to inspect.
     :return: a tuple with either a truthy boolean and a list of `ComponentInfo`
-    instances containing the unique id and name of each component or a falsy
-    boolean and a reason string in case of error.
+        instances containing the unique id and name of each component or a falsy
+        boolean and a reason string in case of error.
     """
     return get_components_in_containers(
         node=node, remote_containers_node_names=[remote_container_node_name]
@@ -92,8 +92,8 @@ def get_components_in_containers(*, node, remote_containers_node_names):
     :param node: an `rclpy.Node` instance.
     :param remote_container_node_names: of the container nodes to inspect.
     :return: a dict of tuples, with either a truthy boolean and a list of `ComponentInfo`
-    instances containing the unique id and name of each component or a falsy boolean and
-    a reason string in case of error, per container node.
+        instances containing the unique id and name of each component or a falsy boolean and
+        a reason string in case of error, per container node.
     """
     def list_components(node, remote_container_node_name):
         list_nodes_client = node.create_client(

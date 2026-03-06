@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.20)
 project(@(project_name))
 
 set(@(project_name)_MAJOR_VERSION 0)
@@ -25,6 +25,7 @@ find_package(@dep REQUIRED)
 @[if cpp_library_name]@
 
 add_library(@(cpp_library_name) SHARED src/@(cpp_library_name).cpp)
+add_library(@(project_name)::@(cpp_library_name) ALIAS @(cpp_library_name))
 target_compile_features(@(cpp_library_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(@(cpp_library_name) PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -54,9 +55,7 @@ install(
 install(
   TARGETS @(cpp_library_name)
   EXPORT export_@(project_name)
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+)
 @[end if]@
 @[if cpp_node_name]@
 

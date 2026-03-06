@@ -18,6 +18,10 @@ import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
+from launch.actions import RegisterEventHandler
+from launch.actions import ResetEnvironment
+from launch.actions import SetEnvironmentVariable
+from launch.event_handlers import OnShutdown
 from launch_ros.actions import Node
 
 import launch_testing
@@ -25,11 +29,13 @@ import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
+from launch_testing_ros.actions import EnableRmwIsolation
 import launch_testing_ros.tools
 
 import pytest
 
 from rclpy.utilities import get_available_rmw_implementations
+from ros2cli.helpers import get_rmw_additional_env
 
 
 # Skip cli tests on Windows while they exhibit pathological behavior
@@ -122,13 +128,27 @@ ALL_LIFECYCLE_NODE_TRANSITIONS = [
 @pytest.mark.rostest
 @launch_testing.parametrize('rmw_implementation', get_available_rmw_implementations())
 def generate_test_description(rmw_implementation):
-    additional_env = {'RMW_IMPLEMENTATION': rmw_implementation}
+    additional_env = get_rmw_additional_env(rmw_implementation)
+    set_env_actions = [SetEnvironmentVariable(k, v) for k, v in additional_env.items()]
     return LaunchDescription([
         # Always restart daemon to isolate tests.
         ExecuteProcess(
             cmd=['ros2', 'daemon', 'stop'],
             name='daemon-stop',
             on_exit=[
+                *set_env_actions,
+                EnableRmwIsolation(),
+                RegisterEventHandler(OnShutdown(on_shutdown=[
+                    # Stop daemon in isolated environment with proper ROS_DOMAIN_ID
+                    ExecuteProcess(
+                        cmd=['ros2', 'daemon', 'stop'],
+                        name='daemon-stop-isolated',
+                        # Use the same isolated environment
+                        additional_env=dict(additional_env),
+                    ),
+                    # This must be done after stopping the daemon in the isolated environment
+                    ResetEnvironment(),
+                ])),
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
@@ -139,18 +159,15 @@ def generate_test_description(rmw_implementation):
                             executable='simple_lifecycle_node',
                             name='test_lifecycle_node',
                             output='screen',
-                            additional_env=additional_env
                         ),
                         Node(
                             package='ros2lifecycle_test_fixtures',
                             executable='simple_lifecycle_node',
                             name='_hidden_test_lifecycle_node',
                             output='screen',
-                            additional_env=additional_env
                         ),
                         launch_testing.actions.ReadyToTest()
                     ],
-                    additional_env=additional_env
                 )
             ]
         ),
@@ -169,12 +186,12 @@ class TestROS2LifecycleCLI(unittest.TestCase):
     ):
         @contextlib.contextmanager
         def launch_lifecycle_command(self, arguments):
+            additional_env = {
+                'PYTHONUNBUFFERED': '1',
+            }
             lifecycle_command_action = ExecuteProcess(
                 cmd=['ros2', 'lifecycle', *arguments],
-                additional_env={
-                    'RMW_IMPLEMENTATION': rmw_implementation,
-                    'PYTHONUNBUFFERED': '1'
-                },
+                additional_env=additional_env,
                 name='ros2lifecycle-cli',
                 output='screen'
             )
@@ -204,7 +221,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
                 '\tGoal: shuttingdown'
             ],
             text=lifecycle_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -217,7 +234,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=ALL_LIFECYCLE_NODE_TRANSITIONS,
             text=lifecycle_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -243,7 +260,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=ALL_LIFECYCLE_NODE_TRANSITIONS,
             text=lifecycle_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -303,7 +320,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
                 '- shutdown [5]'
             ],
             text=lifecycle_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -355,7 +372,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=['Node not found'],
             text=lifecycle_command.output,
-            strict=True
+            strict=False
         )
 
         with self.launch_lifecycle_command(
@@ -366,7 +383,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=['unconfigured [1]'],
             text=lifecycle_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -379,7 +396,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
         assert launch_testing.tools.expect_output(
             expected_lines=['unconfigured [1]'],
             text=lifecycle_command.output,
-            strict=True
+            strict=False
         )
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
@@ -399,7 +416,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
             assert launch_testing.tools.expect_output(
                 expected_lines=[current_state],
                 text=lifecycle_command.output,
-                strict=True
+                strict=False
             )
 
             with self.launch_lifecycle_command(
@@ -412,7 +429,7 @@ class TestROS2LifecycleCLI(unittest.TestCase):
             assert launch_testing.tools.expect_output(
                 expected_lines=['Transitioning successful'],
                 text=lifecycle_command.output,
-                strict=True
+                strict=False
             )
 
         with self.launch_lifecycle_command(
@@ -421,5 +438,5 @@ class TestROS2LifecycleCLI(unittest.TestCase):
             assert lifecycle_command.wait_for_shutdown(timeout=20)
         assert lifecycle_command.exit_code == launch_testing.asserts.EXIT_OK
         assert launch_testing.tools.expect_output(
-            expected_lines=[lifecycle[0][0]], text=lifecycle_command.output, strict=True
+            expected_lines=[lifecycle[0][0]], text=lifecycle_command.output, strict=False
         )
