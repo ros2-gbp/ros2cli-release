@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from argparse import ArgumentTypeError
 import functools
 import inspect
 import os
-import sys
 import time
 
 
@@ -41,9 +39,9 @@ def wait_for(predicate, timeout, period=0.1):
     deadline = time.time() + timeout
     while not predicate():
         if time.time() > deadline:
-            return predicate()
+            break
         time.sleep(period)
-    return True
+    return predicate()
 
 
 def bind(func, *args, **kwargs):
@@ -98,58 +96,3 @@ def before_invocation(func, hook):
             return func(*args, **kwargs)
     wrapper.__signature__ = inspect.signature(func)
     return wrapper
-
-
-def unsigned_int(string):
-    try:
-        value = int(string)
-    except ValueError:
-        value = -1
-    if value < 0:
-        raise ArgumentTypeError('value must be non-negative integer')
-    return value
-
-
-def collect_stdin():
-    lines = b''
-    while True:
-        line = sys.stdin.buffer.readline()
-        if not line:
-            break
-        lines += line
-    return lines
-
-
-# Module-level flag to ensure the discovery warning is only shown once per process
-_discovery_warning_shown = False
-
-
-def check_discovery_configuration():
-    """
-    Check for invalid ROS discovery configuration and print warning if needed.
-
-    Warns when ROS_AUTOMATIC_DISCOVERY_RANGE=OFF is set without ROS_STATIC_PEERS,
-    which results in no discovery mechanism being available.
-
-    The warning is only shown once per process to avoid duplicate warnings
-    when multiple nodes are created.
-    """
-    global _discovery_warning_shown
-
-    # Skip if warning has already been shown
-    if _discovery_warning_shown:
-        return
-
-    discovery_range = os.environ.get('ROS_AUTOMATIC_DISCOVERY_RANGE', '')
-    static_peers = os.environ.get('ROS_STATIC_PEERS', '')
-
-    if discovery_range == 'OFF' and not static_peers.strip():
-        print(
-            'Warning: ROS_AUTOMATIC_DISCOVERY_RANGE=OFF with no ROS_STATIC_PEERS configured.\n'
-            'No discovery mechanism is available. Results will be empty.\n'
-            'Either:\n'
-            '  - Set ROS_STATIC_PEERS to specify peers explicitly, or\n'
-            '  - Change ROS_AUTOMATIC_DISCOVERY_RANGE to LOCALHOST or SUBNET',
-            file=sys.stderr
-        )
-        _discovery_warning_shown = True
