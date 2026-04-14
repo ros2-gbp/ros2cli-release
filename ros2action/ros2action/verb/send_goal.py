@@ -23,6 +23,7 @@ from ros2action.api import action_name_completer
 from ros2action.api import ActionGoalPrototypeCompleter
 from ros2action.api import ActionTypeCompleter
 from ros2action.verb import VerbExtension
+from ros2cli.helpers import collect_stdin
 from ros2cli.node import NODE_NAME_PREFIX
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py import set_message_fields
@@ -53,9 +54,13 @@ class SendGoalVerb(VerbExtension):
             'action_type',
             help="Type of the ROS action (e.g. 'example_interfaces/action/Fibonacci')")
         arg.completer = ActionTypeCompleter(action_name_key='action_name')
-        arg = parser.add_argument(
-            'goal',
+        group = parser.add_mutually_exclusive_group()
+        arg = group.add_argument(
+            'goal', nargs='?', default='{}',
             help="Goal request values in YAML format (e.g. '{order: 10}')")
+        group.add_argument(
+            '--stdin', action='store_true',
+            help='Read goal from standard input')
         arg.completer = ActionGoalPrototypeCompleter(action_type_key='action_type')
         parser.add_argument(
             '-f', '--feedback', action='store_true',
@@ -63,21 +68,23 @@ class SendGoalVerb(VerbExtension):
         parser.add_argument(
             '-t', '--timeout', metavar='N', type=non_negative_int, default=None,
             help=(
-                'Wait for N seconds until server becomes available and goal is completed '
-                '(default waits indefinitely)'
+                'Wait for N seconds until action server becomes available, '
+                'goal is sent, and result is received. '
+                'Also applies to goal cancellation if interrupted. '
+                '(default: waits indefinitely)'
             ))
 
     def main(self, *, args):
         feedback_callback = None
         if args.feedback:
             feedback_callback = _feedback_callback
-        return send_goal(
-            args.action_name,
-            args.action_type,
-            args.goal,
-            feedback_callback,
-            args.timeout
-        )
+
+        if args.stdin:
+            goal = collect_stdin()
+        else:
+            goal = args.goal
+
+        return send_goal(args.action_name, args.action_type, goal, feedback_callback, args.timeout)
 
 
 def _goal_status_to_string(status):
@@ -122,8 +129,10 @@ def send_goal(action_name, action_type, goal_values, feedback_callback, timeout=
 
         goal = action_module.Goal()
 
+        timestamp_fields = []
         try:
-            set_message_fields(goal, goal_dict)
+            timestamp_fields = set_message_fields(
+                goal, goal_dict, expand_header_auto=True, expand_time_now=True)
         except Exception as ex:
             return 'Failed to populate message fields: {!r}'.format(ex)
 
@@ -132,22 +141,33 @@ def send_goal(action_name, action_type, goal_values, feedback_callback, timeout=
             print(f'Action server is not available after waiting {timeout} seconds.')
             return
 
+        stamp_now = node.get_clock().now().to_msg()
+        for field_setter in timestamp_fields:
+            field_setter(stamp_now)
+
         print('Sending goal:\n     {}'.format(message_to_yaml(goal)))
         goal_future = action_client.send_goal_async(goal, feedback_callback)
-        rclpy.spin_until_future_complete(node, goal_future)
+        rclpy.spin_until_future_complete(node, goal_future, timeout_sec=timeout)
+
+        if not goal_future.done():
+            print(f'Timed out waiting for goal acceptance after {timeout} seconds.')
+            return
 
         goal_handle = goal_future.result()
 
         # install signal handler to cancel the goal on SIGINT
         def _sigint_cancel_handler(sig, frame):
-            nonlocal goal_handle
             # Cancel the goal if it's still active
             if (goal_handle is not None and
                 (GoalStatus.STATUS_ACCEPTED == goal_handle.status or
                  GoalStatus.STATUS_EXECUTING == goal_handle.status)):
                 print('Canceling goal...')
                 cancel_future = goal_handle.cancel_goal_async()
-                rclpy.spin_until_future_complete(node, cancel_future)
+                rclpy.spin_until_future_complete(node, cancel_future, timeout_sec=timeout)
+
+                if not cancel_future.done():
+                    raise RuntimeError(
+                        f'Timed out waiting for goal cancellation after {timeout} seconds.')
 
                 cancel_response = cancel_future.result()
 
@@ -205,6 +225,7 @@ def send_goal(action_name, action_type, goal_values, feedback_callback, timeout=
 
         print('Result:\n    {}'.format(message_to_yaml(result.result)))
         print('Goal finished with status: {}'.format(_goal_status_to_string(result.status)))
+
     finally:
         if action_client is not None:
             action_client.destroy()

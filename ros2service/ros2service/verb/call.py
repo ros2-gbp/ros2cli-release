@@ -12,16 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib
 import time
+from typing import Optional
 
 import rclpy
+from rclpy.qos import QoSPresetProfiles
+from rclpy.qos import QoSProfile
+
+from ros2cli.helpers import collect_stdin
+from ros2cli.helpers import interactive_select
 from ros2cli.node import NODE_NAME_PREFIX
+from ros2cli.node.strategy import NodeStrategy
+from ros2cli.qos import add_qos_arguments
+from ros2cli.qos import profile_configure_short_keys
+
+from ros2service.api import get_service_names
 from ros2service.api import ServiceNameCompleter
 from ros2service.api import ServicePrototypeCompleter
 from ros2service.api import ServiceTypeCompleter
 from ros2service.verb import VerbExtension
+
 from rosidl_runtime_py import set_message_fields
+from rosidl_runtime_py.utilities import get_service
+
 import yaml
 
 
@@ -30,8 +43,9 @@ class CallVerb(VerbExtension):
 
     def add_arguments(self, parser, cli_name):
         arg = parser.add_argument(
-            'service_name',
-            help="Name of the ROS service to call to (e.g. '/add_two_ints')")
+            'service_name', nargs='?',
+            help="Name of the ROS service to call to (e.g. '/add_two_ints'). "
+                 'If not provided, an interactive selection will be shown.')
         arg.completer = ServiceNameCompleter(
             include_hidden_services_key='include_hidden_services')
         arg = parser.add_argument(
@@ -39,77 +53,117 @@ class CallVerb(VerbExtension):
             help="Type of the ROS service (e.g. 'std_srvs/srv/Empty')")
         arg.completer = ServiceTypeCompleter(
             service_name_key='service_name')
-        arg = parser.add_argument(
+        group = parser.add_mutually_exclusive_group()
+        arg = group.add_argument(
             'values', nargs='?', default='{}',
             help='Values to fill the service request with in YAML format ' +
                  "(e.g. '{a: 1, b: 2}'), " +
                  'otherwise the service request will be published with default values')
         arg.completer = ServicePrototypeCompleter(
             service_type_key='service_type')
+        group.add_argument(
+            '--stdin', action='store_true',
+            help='Read values from standard input')
         parser.add_argument(
             '-r', '--rate', metavar='N', type=float,
             help='Repeat the call at a specific rate in Hz')
+        parser.add_argument(
+            '--timeout', metavar='N', type=float,
+            help='Maximum time to wait for service response in seconds. '
+                 'If not specified, waits indefinitely.')
+        add_qos_arguments(parser, 'service client', 'services_default')
 
     def main(self, *, args):
+        # If no service name provided, launch interactive selection
+        if args.service_name is None:
+            with NodeStrategy(args) as node:
+                service_names = get_service_names(
+                    node=node,
+                    include_hidden_services=args.include_hidden_services)
+
+                if not service_names:
+                    return 'No services available to select from.'
+
+                selected_service = interactive_select(
+                    service_names,
+                    prompt='Select service to call:')
+
+                if selected_service is None:
+                    return None
+
+                args.service_name = selected_service
+
         if args.rate is not None and args.rate <= 0:
             raise RuntimeError('rate must be greater than zero')
         period = 1. / args.rate if args.rate else None
 
+        default_profile = QoSPresetProfiles.get_from_short_key(args.qos_profile)
+        profile_configure_short_keys(
+            default_profile, args.qos_reliability, args.qos_durability,
+            args.qos_depth, args.qos_history)
+
+        if args.stdin:
+            values = collect_stdin()
+        else:
+            values = args.values
+
         return requester(
-            args.service_type, args.service_name, args.values, period)
+            args.service_type, args.service_name, values, period, default_profile,
+            timeout=args.timeout)
 
 
-def requester(service_type, service_name, values, period):
-    # TODO(wjwwood) this logic should come from a rosidl related package
+def requester(service_type: str, service_name: str, values, period: Optional[float],
+              qos_profile: QoSProfile, timeout: Optional[float] = None) -> None:
     try:
         parts = service_type.split('/')
-        if len(parts) == 2:
-            parts = [parts[0], 'srv', parts[1]]
         package_name = parts[0]
-        module = importlib.import_module('.'.join(parts[:-1]))
         srv_name = parts[-1]
-        srv_module = getattr(module, srv_name)
-    except (AttributeError, ModuleNotFoundError, ValueError):
+        srv_module = get_service(service_type)
+    except (AttributeError, ModuleNotFoundError):
         raise RuntimeError('The passed service type is invalid')
-    try:
-        srv_module.Request
-        srv_module.Response
-    except AttributeError:
-        raise RuntimeError('The passed type is not a service')
 
     values_dictionary = yaml.safe_load(values)
 
-    rclpy.init()
+    with rclpy.init():
+        node = rclpy.create_node(NODE_NAME_PREFIX + '_requester_%s_%s' % (package_name, srv_name))
 
-    node = rclpy.create_node(NODE_NAME_PREFIX + '_requester_%s_%s' % (package_name, srv_name))
+        cli = node.create_client(
+            srv_module,
+            service_name,
+            qos_profile=qos_profile)
 
-    cli = node.create_client(srv_module, service_name)
+        request = srv_module.Request()
 
-    request = srv_module.Request()
+        timestamp_fields = []
+        try:
+            timestamp_fields = set_message_fields(
+                request, values_dictionary, expand_header_auto=True, expand_time_now=True)
+        except Exception as e:
+            return 'Failed to populate field: {0}'.format(e)
 
-    try:
-        set_message_fields(request, values_dictionary)
-    except Exception as e:
-        return 'Failed to populate field: {0}'.format(e)
+        if not cli.service_is_ready():
+            print('waiting for service to become available...')
+            cli.wait_for_service()
 
-    if not cli.service_is_ready():
-        print('waiting for service to become available...')
-        cli.wait_for_service()
-
-    while True:
-        print('requester: making request: %r\n' % request)
-        last_call = time.time()
-        future = cli.call_async(request)
-        rclpy.spin_until_future_complete(node, future)
-        if future.result() is not None:
-            print('response:\n%r\n' % future.result())
-        else:
-            raise RuntimeError('Exception while calling service: %r' % future.exception())
-        if period is None or not rclpy.ok():
-            break
-        time_until_next_period = (last_call + period) - time.time()
-        if time_until_next_period > 0:
-            time.sleep(time_until_next_period)
-
-    node.destroy_node()
-    rclpy.shutdown()
+        while True:
+            stamp_now = node.get_clock().now().to_msg()
+            for field_setter in timestamp_fields:
+                field_setter(stamp_now)
+            print('requester: making request: %r\n' % request)
+            last_call = time.time()
+            future = cli.call_async(request)
+            rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
+            if not future.done():
+                timeout_msg = f'{timeout}s' if timeout is not None else 'default'
+                raise RuntimeError(
+                    f'Timed out waiting for response from service {service_name} '
+                    f'(timeout: {timeout_msg})')
+            if future.result() is not None:
+                print('response:\n%r\n' % future.result())
+            else:
+                raise RuntimeError('Exception while calling service: %r' % future.exception())
+            if period is None or not rclpy.ok():
+                break
+            time_until_next_period = (last_call + period) - time.time()
+            if time_until_next_period > 0:
+                time.sleep(time_until_next_period)

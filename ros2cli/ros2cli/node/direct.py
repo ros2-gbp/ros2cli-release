@@ -13,18 +13,22 @@
 # limitations under the License.
 
 import os
+from typing import Optional
 
 import rclpy
-import rclpy.action
 
 from rclpy.parameter import Parameter
+from ros2cli.helpers import check_discovery_configuration
 from ros2cli.node import NODE_NAME_PREFIX
 DEFAULT_TIMEOUT = 0.5
 
 
 class DirectNode:
 
-    def __init__(self, args, *, node_name=None):
+    def __init__(self, args, *, node_name: Optional[str] = None):
+        # Check for invalid discovery configuration
+        check_discovery_configuration()
+
         timeout_reached = False
 
         def timer_callback():
@@ -40,6 +44,7 @@ class DirectNode:
         start_parameter_services = getattr(
             args, 'start_parameter_services', False)
         use_sim_time = getattr(args, 'use_sim_time', False)
+        start_type_description_service = getattr(args, 'start_type_description_service', True)
 
         if node_name is None:
             node_name = NODE_NAME_PREFIX + node_name_suffix
@@ -48,7 +53,8 @@ class DirectNode:
             node_name,
             start_parameter_services=start_parameter_services,
             parameter_overrides=[
-                Parameter('use_sim_time', value=use_sim_time)
+                Parameter('use_sim_time', value=use_sim_time),
+                Parameter('start_type_description_service', value=start_type_description_service),
             ], automatically_declare_parameters_from_overrides=True)
 
         timeout = getattr(args, 'spin_time', DEFAULT_TIMEOUT)
@@ -62,19 +68,16 @@ class DirectNode:
     def __enter__(self):
         return self
 
-    # TODO(hidmic): generalize/standardize rclpy graph API
-    #               to not have to make a special case for
-    #               rclpy.action
-    def get_action_names_and_types(self):
-        return rclpy.action.get_action_names_and_types(self.node)
+    def get_action_names_and_types(self) -> list[tuple[str, list[str]]]:
+        return self.node.get_action_names_and_types()
 
     def get_action_client_names_and_types_by_node(self, remote_node_name, remote_node_namespace):
-        return rclpy.action.get_action_client_names_and_types_by_node(
-            self.node, remote_node_name, remote_node_namespace)
+        return self.node.get_action_client_names_and_types_by_node(
+            remote_node_name, remote_node_namespace)
 
     def get_action_server_names_and_types_by_node(self, remote_node_name, remote_node_namespace):
-        return rclpy.action.get_action_server_names_and_types_by_node(
-            self.node, remote_node_name, remote_node_namespace)
+        return self.node.get_action_server_names_and_types_by_node(
+            remote_node_name, remote_node_namespace)
 
     def __getattr__(self, name):
         if not rclpy.ok():
