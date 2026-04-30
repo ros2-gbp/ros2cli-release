@@ -1,0 +1,12 @@
+Source: ros-lyrical-ros2multicast
+Section: misc
+Priority: optional
+Maintainer: Audrow Nash <audrow@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest <!nocheck>, python3-pytest-timeout <!nocheck>, ros-lyrical-ament-copyright <!nocheck>, ros-lyrical-ament-flake8 <!nocheck>, ros-lyrical-ament-pep257 <!nocheck>, ros-lyrical-ament-xmllint <!nocheck>, ros-lyrical-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: https://index.ros.org/p/ros2multicast/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-ros2multicast
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, ros-lyrical-ros2cli, ros-lyrical-ros-workspace
+Description: The multicast command for ROS 2 command line tools.
