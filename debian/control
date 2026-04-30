@@ -1,0 +1,12 @@
+Source: ros-lyrical-ros2topic
+Section: misc
+Priority: optional
+Maintainer: Audrow Nash <audrow@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest <!nocheck>, python3-pytest-timeout <!nocheck>, ros-lyrical-ament-copyright <!nocheck>, ros-lyrical-ament-flake8 <!nocheck>, ros-lyrical-ament-pep257 <!nocheck>, ros-lyrical-ament-xmllint <!nocheck>, ros-lyrical-geometry-msgs <!nocheck>, ros-lyrical-launch <!nocheck>, ros-lyrical-launch-ros <!nocheck>, ros-lyrical-launch-testing <!nocheck>, ros-lyrical-launch-testing-ros <!nocheck>, ros-lyrical-rosgraph-msgs <!nocheck>, ros-lyrical-std-msgs <!nocheck>, ros-lyrical-test-msgs <!nocheck>, ros-lyrical-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: https://index.ros.org/p/ros2topic/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-ros2topic
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-numpy, python3-yaml, ros-lyrical-rclpy, ros-lyrical-ros2cli, ros-lyrical-rosidl-runtime-py, ros-lyrical-ros-workspace
+Description: The topic command for ROS 2 command line tools.
