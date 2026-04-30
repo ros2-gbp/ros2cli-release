@@ -1,0 +1,12 @@
+Source: ros-lyrical-ros2cli-test-interfaces
+Section: misc
+Priority: optional
+Maintainer: Audrow Nash <audrow@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-lyrical-ament-cmake, ros-lyrical-ament-lint-common <!nocheck>, ros-lyrical-rosidl-default-generators, ros-lyrical-ros-workspace, ros-lyrical-rosidl-typesupport-fastrtps-c, ros-lyrical-rosidl-typesupport-fastrtps-cpp
+Homepage: https://index.ros.org/p/ros2cli_test_interfaces/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-ros2cli-test-interfaces
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-lyrical-rosidl-default-runtime, ros-lyrical-ros-workspace
+Description: A package containing interface definitions for testing ros2cli.
