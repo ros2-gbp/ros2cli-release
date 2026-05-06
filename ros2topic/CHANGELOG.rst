@@ -2,6 +2,9 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.0 (2026-05-06)
+-------------------
+
 0.40.7 (2026-04-30)
 -------------------
 * Improve test isolation and suppress Connext license noise (`#1225 <https://github.com/ros2/ros2cli/issues/1225>`_)
