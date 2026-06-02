@@ -17,18 +17,15 @@ from argparse import ArgumentTypeError
 from time import sleep
 from typing import Optional
 
-import warnings
-
 from argcomplete import CompletionFinder
 
 import rclpy
 
+from rclpy.duration import Duration
 from rclpy.expand_topic_name import expand_topic_name
 from rclpy.topic_or_service_is_hidden import topic_or_service_is_hidden
 from rclpy.validate_full_topic_name import validate_full_topic_name
-
 from ros2cli.node.strategy import NodeStrategy
-
 from rosidl_runtime_py import get_message_interfaces
 from rosidl_runtime_py import message_to_yaml
 from rosidl_runtime_py.utilities import get_message
@@ -190,14 +187,24 @@ def profile_configure_short_keys(
     profile: rclpy.qos.QoSProfile = None, reliability: Optional[str] = None,
     durability: Optional[str] = None, depth: Optional[int] = None, history: Optional[str] = None,
     liveliness: Optional[str] = None, liveliness_lease_duration_s: Optional[int] = None,
-) -> None:
-    warnings.warn(
-        "'qos_profile_from_short_keys()' is deprecated. "
-        "use 'ros2cli.qos.qos_profile_from_short_keys()' instead.",
-        DeprecationWarning)
-    from ros2cli.qos import profile_configure_short_keys as _profile_configure_short_keys
-    return _profile_configure_short_keys(profile, reliability, durability, depth, history,
-                                         liveliness, liveliness_lease_duration_s)
+) -> rclpy.qos.QoSProfile:
+    """Configure a QoSProfile given a profile, and optional overrides."""
+    if history:
+        profile.history = rclpy.qos.QoSHistoryPolicy.get_from_short_key(history)
+    if durability:
+        profile.durability = rclpy.qos.QoSDurabilityPolicy.get_from_short_key(durability)
+    if reliability:
+        profile.reliability = rclpy.qos.QoSReliabilityPolicy.get_from_short_key(reliability)
+    if liveliness:
+        profile.liveliness = rclpy.qos.QoSLivelinessPolicy.get_from_short_key(liveliness)
+    if liveliness_lease_duration_s and liveliness_lease_duration_s >= 0:
+        profile.liveliness_lease_duration = Duration(seconds=liveliness_lease_duration_s)
+    if depth and depth >= 0:
+        profile.depth = depth
+    else:
+        if (profile.durability == rclpy.qos.QoSDurabilityPolicy.TRANSIENT_LOCAL
+                and profile.depth == 0):
+            profile.depth = 1
 
 
 def qos_profile_from_short_keys(
@@ -205,32 +212,58 @@ def qos_profile_from_short_keys(
     depth: Optional[int] = None, history: Optional[str] = None, liveliness: Optional[str] = None,
     liveliness_lease_duration_s: Optional[float] = None,
 ) -> rclpy.qos.QoSProfile:
-    warnings.warn(
-        "'qos_profile_from_short_keys()' is deprecated. "
-        "use 'ros2cli.qos.qos_profile_from_short_keys()' instead.",
-        DeprecationWarning)
-    from ros2cli.qos import qos_profile_from_short_keys as _qos_profile_from_short_keys
-    return _qos_profile_from_short_keys(
-        preset_profile, reliability, durability,
-        depth, history, liveliness, liveliness_lease_duration_s)
+    """Construct a QoSProfile given the name of a preset, and optional overrides."""
+    # Build a QoS profile based on user-supplied arguments
+    profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(preset_profile)
+    profile_configure_short_keys(
+        profile, reliability, durability, depth, history, liveliness, liveliness_lease_duration_s)
+    return profile
 
 
-def add_qos_arguments(
-    parser: ArgumentParser, entity_type: str,
-    default_profile_str: str = 'default', extra_message: str = ''
-) -> None:
-    warnings.warn(
-        "'add_qos_arguments()' is deprecated. "
-        "use 'ros2cli.qos.add_qos_arguments()' instead.",
-        DeprecationWarning)
-    from ros2cli.qos import add_qos_arguments as _add_qos_arguments
-    return _add_qos_arguments(parser, entity_type, default_profile_str, extra_message)
-
-
-def choose_qos(node, topic_name: str, qos_args):
-    warnings.warn(
-        "'choose_qos()' is deprecated. "
-        "use 'ros2cli.qos.choose_qos()' instead.",
-        DeprecationWarning)
-    from ros2cli.qos import choose_qos as _choose_qos
-    return _choose_qos(node, topic_name, qos_args)
+def add_qos_arguments(parser: ArgumentParser, subscribe_or_publish: str, default_profile_str):
+    parser.add_argument(
+        '--qos-profile',
+        choices=rclpy.qos.QoSPresetProfiles.short_keys(),
+        help=(
+            f'Quality of service preset profile to {subscribe_or_publish} with'
+            f' (default: {default_profile_str})'),
+        default=default_profile_str)
+    default_profile = rclpy.qos.QoSPresetProfiles.get_from_short_key(default_profile_str)
+    parser.add_argument(
+        '--qos-depth', metavar='N', type=int,
+        help=(
+            f'Queue size setting to {subscribe_or_publish} with '
+            '(overrides depth value of --qos-profile option)'))
+    parser.add_argument(
+        '--qos-history',
+        choices=rclpy.qos.QoSHistoryPolicy.short_keys(),
+        help=(
+            f'History of samples setting to {subscribe_or_publish} with '
+            '(overrides history value of --qos-profile option, default: '
+            f'{default_profile.history.short_key})'))
+    parser.add_argument(
+        '--qos-reliability',
+        choices=rclpy.qos.QoSReliabilityPolicy.short_keys(),
+        help=(
+            f'Quality of service reliability setting to {subscribe_or_publish} with '
+            '(overrides reliability value of --qos-profile option, default: '
+            'Compatible profile with running endpoints )'))
+    parser.add_argument(
+        '--qos-durability',
+        choices=rclpy.qos.QoSDurabilityPolicy.short_keys(),
+        help=(
+            f'Quality of service durability setting to {subscribe_or_publish} with '
+            '(overrides durability value of --qos-profile option, default: '
+            'Compatible profile with running endpoints )'))
+    parser.add_argument(
+        '--qos-liveliness',
+        choices=rclpy.qos.QoSLivelinessPolicy.short_keys(),
+        help=(
+            f'Quality of service liveliness setting to {subscribe_or_publish} with '
+            '(overrides liveliness value of --qos-profile option'))
+    parser.add_argument(
+        '--qos-liveliness-lease-duration-seconds',
+        type=float,
+        help=(
+            f'Quality of service liveliness lease duration setting to {subscribe_or_publish} '
+            'with (overrides liveliness lease duration value of --qos-profile option'))

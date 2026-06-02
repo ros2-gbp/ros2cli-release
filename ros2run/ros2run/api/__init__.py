@@ -62,16 +62,6 @@ def run_executable(*, path, argv, prefix=None):
         cmd = prefix + cmd
 
     process = subprocess.Popen(cmd)
-
-    # add signal handler for the parent process, so that we can finalize the child process
-    def signal_handler(sig, frame):
-        print(ROS2RUN_MSG_PREFIX, 'Received signal: ', signal.strsignal(sig))
-        if process.poll() is None:
-            # If child process is running, forward the signal to it
-            process.send_signal(sig)
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
     while process.returncode is None:
         try:
             process.communicate()
@@ -97,9 +87,6 @@ class ExecutableNameCompleter:
 
     def __call__(self, prefix, parsed_args, **kwargs):
         package_name = getattr(parsed_args, self.package_name_key)
-        if not package_name:
-            print('Package name not specified for executable name completion')
-            return []
         try:
             paths = get_executable_paths(package_name=package_name)
         except PackageNotFound:

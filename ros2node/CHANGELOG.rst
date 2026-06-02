@@ -2,79 +2,36 @@
 Changelog for package ros2node
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.41.0 (2026-05-06)
+0.32.10 (2026-06-02)
+--------------------
+
+0.32.9 (2026-03-07)
 -------------------
 
-0.40.7 (2026-04-30)
+0.32.8 (2026-01-21)
 -------------------
 
-0.40.5 (2026-03-07)
--------------------
-* Add fzf-based interactive selection to ros2cli commands (`#1151 <https://github.com/ros2/ros2cli//issues/1151>`_)
-* Contributors: Tony Najjar
-
-0.40.4 (2026-01-07)
+0.32.7 (2026-01-07)
 -------------------
 
-0.40.3 (2025-12-09)
+0.32.6 (2025-09-11)
+-------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
+* Contributors: mergify[bot]
+
+0.32.5 (2025-08-05)
 -------------------
 
-0.40.2 (2025-11-18)
+0.32.4 (2025-04-24)
 -------------------
 
-0.40.1 (2025-09-11)
--------------------
-* Fujitatomoya/clearup isolated ros2daemon (`#1098 <https://github.com/ros2/ros2cli/issues/1098>`_)
-* Restore environment variables after launch tests (`#1086 <https://github.com/ros2/ros2cli/issues/1086>`_)
-* Contributors: Scott K Logan, Tomoya Fujita
-
-0.40.0 (2025-07-29)
--------------------
-* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Contributors: Scott K Logan, mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* Contributors: Michael Carlstrom
-
-0.39.0 (2025-04-25)
+0.32.3 (2025-04-02)
 -------------------
 
-0.38.0 (2025-04-25)
--------------------
-* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
-* Contributors: Michael Carroll
-
-0.37.0 (2025-02-02)
+0.32.2 (2024-12-18)
 -------------------
 
-0.36.1 (2024-12-20)
--------------------
-
-0.36.0 (2024-11-20)
--------------------
-
-0.35.0 (2024-10-03)
--------------------
-* ros2node requires fully qualified node name. (`#923 <https://github.com/ros2/ros2cli/issues/923>`_)
-* Contributors: Tomoya Fujita
-
-0.34.1 (2024-07-29)
--------------------
-* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
-* Contributors: Chris Lalancette
-
-0.34.0 (2024-06-17)
--------------------
-
-0.33.0 (2024-04-26)
+0.32.1 (2024-05-13)
 -------------------
 
 0.32.0 (2024-04-16)

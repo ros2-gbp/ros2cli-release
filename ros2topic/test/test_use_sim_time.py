@@ -20,16 +20,12 @@ import unittest
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
-from launch.actions import RegisterEventHandler
-from launch.actions import ResetEnvironment
-from launch.event_handlers import OnShutdown
 
 import launch_testing
 import launch_testing.actions
 import launch_testing.asserts
 import launch_testing.markers
 import launch_testing.tools
-from launch_testing_ros.actions import EnableRmwIsolation
 import launch_testing_ros.tools
 
 import pytest
@@ -63,16 +59,6 @@ def generate_test_description():
             cmd=['ros2', 'daemon', 'stop'],
             name='daemon-stop',
             on_exit=[
-                EnableRmwIsolation(),
-                RegisterEventHandler(OnShutdown(on_shutdown=[
-                    # Stop daemon in isolated environment with proper ROS_DOMAIN_ID
-                    ExecuteProcess(
-                        cmd=['ros2', 'daemon', 'stop'],
-                        name='daemon-stop-isolated',
-                    ),
-                    # This must be done after stopping the daemon in the isolated environment
-                    ResetEnvironment(),
-                ])),
                 ExecuteProcess(
                     cmd=['ros2', 'daemon', 'start'],
                     name='daemon-start',
@@ -277,7 +263,7 @@ class TestROS2TopicUseSimTime(unittest.TestCase):
                 assert command.wait_for_output(functools.partial(
                     launch_testing.tools.expect_output, expected_lines=[
                         # without speed up, the average band width should be 16 B
-                        re.compile(r'(8|9) B/s from \d+ messages'),
+                        re.compile(r'8 B/s from \d+ messages'),
                         re.compile(
                             r'\s*Message size mean: (14|16) B min: (14|16) B max: (14|16) B')
                     ], strict=False

@@ -2,100 +2,63 @@
 Changelog for package ros2param
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.41.0 (2026-05-06)
+0.32.10 (2026-06-02)
+--------------------
+
+0.32.9 (2026-03-07)
 -------------------
 
-0.40.7 (2026-04-30)
+0.32.8 (2026-01-21)
+-------------------
+* Fix ParameterNameCompleter. (`#1172 <https://github.com/ros2/ros2cli/issues/1172>`_) (`#1176 <https://github.com/ros2/ros2cli/issues/1176>`_)
+  (cherry picked from commit 752e0606195cfac31673e3571943d4fa233c4098)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Output node parameters upon each receipt (`#1162 <https://github.com/ros2/ros2cli/issues/1162>`_) (`#1166 <https://github.com/ros2/ros2cli/issues/1166>`_)
+  (cherry picked from commit 50547de9f993242b5af77924c4b5ad9aaf0a41ef)
+  Co-authored-by: Barry Xu <barry.xu@sony.com>
+* Contributors: mergify[bot]
+
+0.32.7 (2026-01-07)
+-------------------
+* skip test_verb_load_wildcard for rmw_connextdds. (`#1150 <https://github.com/ros2/ros2cli/issues/1150>`_) (`#1154 <https://github.com/ros2/ros2cli/issues/1154>`_)
+* Contributors: mergify[bot]
+
+0.32.6 (2025-09-11)
+-------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
+* Contributors: mergify[bot]
+
+0.32.5 (2025-08-05)
+-------------------
+* catch ConnectionRefusedError, so that it can fall back to DirectNode. (`#1014 <https://github.com/ros2/ros2cli/issues/1014>`_) (`#1021 <https://github.com/ros2/ros2cli/issues/1021>`_)
+  (cherry picked from commit 0a5b5603d9651c8b98e574142325069a04f31101)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* fails the test properly to avoid TypeError exception. (backport `#1016 <https://github.com/ros2/ros2cli/issues/1016>`_) (`#1018 <https://github.com/ros2/ros2cli/issues/1018>`_)
+  * fails the test properly to avoid TypeError exception. (`#1016 <https://github.com/ros2/ros2cli/issues/1016>`_)
+  (cherry picked from commit 7ced7454ad1813171cc4e583f7b7bd4c4c43c66f)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
+0.32.4 (2025-04-24)
 -------------------
 
-0.40.6 (2026-04-14)
+0.32.3 (2025-04-02)
 -------------------
 
-* Add timeout arguments to ``ros2 service call``, ``ros2 action send_goal``, ``ros2 component``, ``ros2 lifecycle``, and ``ros2 param`` (`#1185 <https://github.com/ros2/ros2cli/issues/1185>`_)
-
-* Contributors: Tomoya Fujita
-
-0.40.5 (2026-03-07)
+0.32.2 (2024-12-18)
 -------------------
-* ros2 param set /node_name <param1 value1 param2 value2...> support. (`#1204 <https://github.com/ros2/ros2cli//issues/1204>`_)
-* ros2 param get /node_name <param1 param2 param3...> support. (`#1203 <https://github.com/ros2/ros2cli//issues/1203>`_)
-* Add per-node timeout option to ros2 param list (`#1170 <https://github.com/ros2/ros2cli//issues/1170>`_)
-* Fix Bash completion (`#1182 <https://github.com/ros2/ros2cli//issues/1182>`_)
-* Add fzf-based interactive selection to ros2cli commands (`#1151 <https://github.com/ros2/ros2cli//issues/1151>`_)
-* Support "ros2 param get <parameter>" across all nodes. (`#1174 <https://github.com/ros2/ros2cli//issues/1174>`_)
-* Fix ParameterNameCompleter. (`#1172 <https://github.com/ros2/ros2cli//issues/1172>`_)
-* Output node parameters upon each receipt (`#1162 <https://github.com/ros2/ros2cli//issues/1162>`_)
-* Contributors: Barry Xu, Taiga Arai, Tomoya Fujita, Tony Najjar
+* cosmetic fixes for ros2param dump command. (`#933 <https://github.com/ros2/ros2cli/issues/933>`_) (`#940 <https://github.com/ros2/ros2cli/issues/940>`_)
+  * cosmetic fixes for ros2param dump command.
+  * pass through no parameters available case.
+  * bug fix from review comment.
+  * remove unnecessary initial assignment.
+  ---------
+  (cherry picked from commit 8e46bf2608d04e81a3d088ccc5087dbde9f3e32f)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
 
-0.40.4 (2026-01-07)
--------------------
-* skip test_verb_load_wildcard for rmw_connextdds. (`#1150 <https://github.com/ros2/ros2cli/issues/1150>`_)
-* Contributors: Tomoya Fujita
-
-0.40.3 (2025-12-09)
--------------------
-
-0.40.2 (2025-11-18)
--------------------
-
-0.40.1 (2025-09-11)
--------------------
-* Fujitatomoya/clearup isolated ros2daemon (`#1098 <https://github.com/ros2/ros2cli/issues/1098>`_)
-* Restore environment variables after launch tests (`#1086 <https://github.com/ros2/ros2cli/issues/1086>`_)
-* Contributors: Scott K Logan, Tomoya Fujita
-
-0.40.0 (2025-07-29)
--------------------
-* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Contributors: Scott K Logan, mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Relax the check from exact to partial match. (`#1055 <https://github.com/ros2/ros2cli/issues/1055>`_)
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* fix misspelling. (`#1035 <https://github.com/ros2/ros2cli/issues/1035>`_)
-* catch ConnectionRefusedError, so that it can fall back to DirectNode. (`#1014 <https://github.com/ros2/ros2cli/issues/1014>`_)
-* fails the test properly to avoid TypeError exception. (`#1016 <https://github.com/ros2/ros2cli/issues/1016>`_)
-* Contributors: Michael Carlstrom, Tomoya Fujita
-
-0.39.0 (2025-04-25)
--------------------
-
-0.38.0 (2025-04-25)
--------------------
-* Fix loading parameter behavior from yaml file (`#864 <https://github.com/ros2/ros2cli/issues/864>`_)
-* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
-* Contributors: Michael Carroll, Tomoya Fujita
-
-0.37.0 (2025-02-02)
--------------------
-
-0.36.1 (2024-12-20)
--------------------
-
-0.36.0 (2024-11-20)
--------------------
-* cosmetic fixes for ros2param dump command. (`#933 <https://github.com/ros2/ros2cli/issues/933>`_)
-* Contributors: Tomoya Fujita
-
-0.35.0 (2024-10-03)
--------------------
-
-0.34.1 (2024-07-29)
--------------------
-* Switch to using rclpy.init context manager. (`#918 <https://github.com/ros2/ros2cli/issues/918>`_)
-* Contributors: Chris Lalancette
-
-0.34.0 (2024-06-17)
--------------------
-
-0.33.0 (2024-04-26)
+0.32.1 (2024-05-13)
 -------------------
 
 0.32.0 (2024-04-16)

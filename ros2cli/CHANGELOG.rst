@@ -2,108 +2,48 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.41.0 (2026-05-06)
+0.32.10 (2026-06-02)
+--------------------
+* Enable always complete (`#1190 <https://github.com/ros2/ros2cli/issues/1190>`_) (`#1208 <https://github.com/ros2/ros2cli/issues/1208>`_)
+  (cherry picked from commit 181a85c2788e2e844e65c582a7b8a4ca68c9d7e0)
+  Co-authored-by: David V. Lu!! <davidvlu@gmail.com>
+* Contributors: mergify[bot]
+
+0.32.9 (2026-03-07)
+-------------------
+* check for invalid ROS discovery configuration and print warning if ne… (backport `#1178 <https://github.com/ros2/ros2cli//issues/1178>`_) (`#1180 <https://github.com/ros2/ros2cli//issues/1180>`_)
+* Contributors: mergify[bot]
+
+0.32.8 (2026-01-21)
 -------------------
 
-0.40.7 (2026-04-30)
+0.32.7 (2026-01-07)
+-------------------
+* Fix handling of empty ROS_DOMAIN_ID in ros2cli (`#1112 <https://github.com/ros2/ros2cli/issues/1112>`_) (`#1114 <https://github.com/ros2/ros2cli/issues/1114>`_)
+* Contributors: mergify[bot]
+
+0.32.6 (2025-09-11)
+-------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1102 <https://github.com/ros2/ros2cli/issues/1102>`_)
+* Contributors: mergify[bot]
+
+0.32.5 (2025-08-05)
 -------------------
 
-0.40.6 (2026-04-14)
+0.32.4 (2025-04-24)
 -------------------
 
-* Add RMW isolation fixture to enable discovery for ``rmw_zenoh_cpp`` tests (`#1216 <https://github.com/ros2/ros2cli/issues/1216>`_)
-* Add support for fish (`#1211 <https://github.com/ros2/ros2cli/issues/1211>`_)
-* Fix ``flake8`` (`#1215 <https://github.com/ros2/ros2cli/issues/1215>`_)
-
-* Contributors: Michael Carlstrom, SPeak, Yuyuan Yuan
-
-0.40.5 (2026-03-07)
--------------------
-* Fix future flake8 regressions (`#1196 <https://github.com/ros2/ros2cli//issues/1196>`_)
-* fix deprecated warning for action graph APIs. (`#1188 <https://github.com/ros2/ros2cli//issues/1188>`_)
-* Enable always complete (`#1190 <https://github.com/ros2/ros2cli//issues/1190>`_)
-* Add fzf-based interactive selection to ros2cli commands (`#1151 <https://github.com/ros2/ros2cli//issues/1151>`_)
-* check for invalid ROS discovery configuration and print warning if ne… (`#1178 <https://github.com/ros2/ros2cli//issues/1178>`_)
-* Contributors: David V. Lu!!, Michael Carlstrom, Tomoya Fujita, Tony Najjar
-
-0.40.4 (2026-01-07)
+0.32.3 (2025-04-02)
 -------------------
 
-0.40.3 (2025-12-09)
+0.32.2 (2024-12-18)
 -------------------
-* skip history and depth check for rmw_connextdds. (`#1064 <https://github.com/ros2/ros2cli/issues/1064>`_)
-* Remove importlib packages (`#1117 <https://github.com/ros2/ros2cli/issues/1117>`_)
-* Contributors: Michael Carlstrom, Tomoya Fujita
+* replace removeprefix with string slicing. (`#953 <https://github.com/ros2/ros2cli/issues/953>`_) (`#955 <https://github.com/ros2/ros2cli/issues/955>`_)
+  (cherry picked from commit 35d6abd50a55181099aab82134fc507d8fd162bd)
+  Co-authored-by: Tomoya Fujita <Tomoya.Fujita@sony.com>
+* Contributors: mergify[bot]
 
-0.40.2 (2025-11-18)
--------------------
-* add verbose in service-info verb (`#916 <https://github.com/ros2/ros2cli//issues/916>`_)
-* Fix handling of empty ROS_DOMAIN_ID in ros2cli (`#1112 <https://github.com/ros2/ros2cli//issues/1112>`_)
-* Contributors: Minju, Lee, Scott K Logan
-
-0.40.1 (2025-09-11)
--------------------
-* fix: Also catch a TimeoutError (`#1092 <https://github.com/ros2/ros2cli/issues/1092>`_)
-* Contributors: Kaju-Bubanja
-
-0.40.0 (2025-07-29)
--------------------
-* [ros2doctor] Add Action Report (`#1076 <https://github.com/ros2/ros2cli/issues/1076>`_)
-* Use rmw_test_fixture to isolate ros2cli tests (`#1062 <https://github.com/ros2/ros2cli/issues/1062>`_)
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Add Service report similar to topic report (`#1059 <https://github.com/ros2/ros2cli/issues/1059>`_)
-* Contributors: Michael Carlstrom, Scott K Logan, mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* move QoS methods from ros2topic.api to ros2cli.qos. (`#1053 <https://github.com/ros2/ros2cli/issues/1053>`_)
-* Assert HistoryQoS in test_ros2cli_daemon (`#1040 <https://github.com/ros2/ros2cli/issues/1040>`_)
-* remove add_subparsers from ros2cli. (`#1032 <https://github.com/ros2/ros2cli/issues/1032>`_)
-* Contributors: Mario Domínguez López, Michael Carlstrom, Tomoya Fujita
-
-0.39.0 (2025-04-25)
--------------------
-
-0.38.0 (2025-04-25)
--------------------
-* Allow zenoh tests to run with multicast (`#992 <https://github.com/ros2/ros2cli/issues/992>`_)
-* Contributors: Michael Carroll
-
-0.37.0 (2025-02-02)
--------------------
-* Rename the test\_{daemon,direct}.py tests. (`#959 <https://github.com/ros2/ros2cli/issues/959>`_)
-* Contributors: Chris Lalancette
-
-0.36.1 (2024-12-20)
--------------------
-* replace removeprefix with string slicing. (`#953 <https://github.com/ros2/ros2cli/issues/953>`_)
-* Contributors: Tomoya Fujita
-
-0.36.0 (2024-11-20)
--------------------
-* Fix instability in the ros2 daemon. (`#947 <https://github.com/ros2/ros2cli/issues/947>`_)
-* Drop dependency on python3-pkg-resources (`#946 <https://github.com/ros2/ros2cli/issues/946>`_)
-* NodeStrategy supports node name argument. (`#941 <https://github.com/ros2/ros2cli/issues/941>`_)
-* Contributors: Chris Lalancette, Scott K Logan, Tomoya Fujita
-
-0.35.0 (2024-10-03)
--------------------
-
-0.34.1 (2024-07-29)
--------------------
-* Switch to using the rclpy.init context manager. (`#920 <https://github.com/ros2/ros2cli/issues/920>`_)
-* Contributors: Chris Lalancette
-
-0.34.0 (2024-06-17)
--------------------
-
-0.33.0 (2024-04-26)
+0.32.1 (2024-05-13)
 -------------------
 
 0.32.0 (2024-04-16)
