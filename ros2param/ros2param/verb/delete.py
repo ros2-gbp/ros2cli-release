@@ -46,6 +46,10 @@ class DeleteVerb(VerbExtension):
         parser.add_argument(
             '--timeout', metavar='N', type=int, default=1,
             help='Wait for N seconds until node becomes available (default %(default)s sec)')
+        parser.add_argument(
+            '--service-timeout', metavar='N', type=float,
+            help='Maximum time to wait for service response in seconds '
+                 '(default: waits indefinitely)')
 
     def main(self, *, args):  # noqa: D102
         node_name = get_absolute_node_name(args.node_name)
@@ -55,13 +59,14 @@ class DeleteVerb(VerbExtension):
 
         with DirectNode(args) as node:
             parameter = Parameter()
-            Parameter.name = args.parameter_name
+            parameter.name = args.parameter_name
             value = ParameterValue()
             value.type = ParameterType.PARAMETER_NOT_SET
             parameter.value = value
 
             response = call_set_parameters(
-                node=node, node_name=args.node_name, parameters=[parameter])
+                node=node, node_name=args.node_name, parameters=[parameter],
+                timeout=args.service_timeout)
 
             # output response
             assert len(response.results) == 1

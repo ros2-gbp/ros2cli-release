@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(@(project_name))
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -23,15 +23,15 @@ find_package(@dep REQUIRED)
 
 add_library(@(cpp_library_name) src/@(cpp_library_name).cpp)
 add_library(@(project_name)::@(cpp_library_name) ALIAS @(cpp_library_name))
-target_compile_features(@(cpp_library_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(@(cpp_library_name) PUBLIC c_std_17 cxx_std_20)  # Require C17 and C++20
 target_include_directories(@(cpp_library_name) PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 @[  if dependencies]@
-ament_target_dependencies(
-  @(cpp_library_name)
+target_link_libraries(
+  @(cpp_library_name) PUBLIC
 @[    for dep in dependencies]@
-  "@(dep)"
+  ${@(dep)_TARGETS}
 @[    end for]@
 )
 @[  end if]@
@@ -61,12 +61,12 @@ target_include_directories(@(cpp_node_name) PUBLIC
 @[  if cpp_library_name]@
 target_link_libraries(@(cpp_node_name) @(cpp_library_name))
 @[  else]@
-target_compile_features(@(cpp_node_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(@(cpp_node_name) PUBLIC c_std_17 cxx_std_20)  # Require C17 and C++20
 @[    if dependencies]@
-ament_target_dependencies(
+target_link_libraries(
   @(cpp_node_name)
 @[      for dep in dependencies]@
-  "@(dep)"
+  ${@(dep)_TARGETS}
 @[      end for]@
 )
 @[    end if]@

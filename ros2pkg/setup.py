@@ -5,7 +5,7 @@ package_name = 'ros2pkg'
 
 setup(
     name=package_name,
-    version='0.32.10',
+    version='0.41.1',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -53,6 +53,7 @@ The package provides the pkg command for the ROS 2 command line tools.""",
     package_data={
         'ros2pkg': [
             'resource/**/*',
+            'py.typed'
         ],
     },
 )
