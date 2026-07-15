@@ -14,9 +14,12 @@
 # limitations under the License.
 
 from collections import defaultdict
-from importlib import metadata
 import logging
-import sys
+
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
 
 """
 The group name for entry points identifying extension points.
@@ -41,7 +44,7 @@ def get_all_entry_points():
 
     entry_points = defaultdict(dict)
 
-    for dist in metadata.distributions():
+    for dist in importlib_metadata.distributions():
         for ep in dist.entry_points:
             # skip groups which are not registered as extension points
             if ep.group not in extension_points:
@@ -60,8 +63,8 @@ def get_entry_points(group_name):
       to ``EntryPoint`` instances
     :rtype: dict
     """
-    entry_points_impl = metadata.entry_points()
-    if sys.version_info >= (3, 12):
+    entry_points_impl = importlib_metadata.entry_points()
+    if hasattr(entry_points_impl, 'select'):
         groups = entry_points_impl.select(group=group_name)
     else:
         groups = entry_points_impl.get(group_name, [])
