@@ -21,6 +21,7 @@ import rclpy
 
 from ros2cli.helpers import before_invocation
 from ros2cli.helpers import get_ros_domain_id
+from ros2cli.helpers import pretty_print_call
 
 from ros2cli.node.network_aware import NetworkAwareNode
 
@@ -61,27 +62,20 @@ def make_xmlrpc_server() -> LocalXMLRPCServer:
     )
 
 
-def serve(server: LocalXMLRPCServer, *, timeout: float = 2 * 60 * 60):
+def serve(server: LocalXMLRPCServer, *, timeout: int = 2 * 60 * 60):
     """
     Serve the ros2cli daemon API using the given `server`.
 
     :param server: an XMLRPC server instance
-    :param timeout: how long, in seconds, to wait before shutting
-      down the server due to inactivity. A negative value disables
-      the timeout (it becomes ``float('inf')``), so the server runs
-      until explicitly stopped.
+    :param timeout: how long to wait before shutting
+      down the server due to inactivity.
     """
-    # A negative timeout means "never time out"; mirror the convention
-    # used by ros2cli.helpers.wait_for.
-    if timeout < 0:
-        timeout = float('inf')
     ros_domain_id = get_ros_domain_id()
     node_args = argparse.Namespace(
         node_name_suffix=f'_daemon_{ros_domain_id}_{uuid.uuid4().hex}',
         start_parameter_services=False,
         start_type_description_service=False)
     with NetworkAwareNode(node_args) as node:
-        daemon_logger = node.get_logger()
         functions = [
             node.get_name,
             node.get_namespace,
@@ -123,8 +117,7 @@ def serve(server: LocalXMLRPCServer, *, timeout: float = 2 * 60 * 60):
         def reset_timer_and_pretty_print(func, *args, **kwargs):
             nonlocal last_function_call_time
             last_function_call_time = time.time()
-            arguments = ', '.join([f'{v!r}' for v in (args, kwargs)])
-            daemon_logger.info(f'{func.__name__}({arguments})')
+            pretty_print_call(func, args, kwargs)
 
         server.register_introspection_functions()
         for func in functions:
@@ -138,7 +131,7 @@ def serve(server: LocalXMLRPCServer, *, timeout: float = 2 * 60 * 60):
             nonlocal shutdown
 
             if time.time() - last_function_call_time > timeout:
-                daemon_logger.info('Shutdown due to timeout')
+                print('Shutdown due to timeout')
                 shutdown = True
         server.handle_timeout = timeout_handler
         server.timeout = 0.2
@@ -146,12 +139,11 @@ def serve(server: LocalXMLRPCServer, *, timeout: float = 2 * 60 * 60):
         # function to shutdown daemon remotely
         def shutdown_handler():
             nonlocal shutdown
-            daemon_logger.info('Remote shutdown requested')
+            print('Remote shutdown requested')
             shutdown = True
         server.register_function(shutdown_handler, 'system.shutdown')
 
-        daemon_logger.info(
-            f'Serving XML-RPC on {get_xmlrpc_server_url(server.server_address)}')
+        print('Serving XML-RPC on ' + get_xmlrpc_server_url(server.server_address))
         try:
             while rclpy.ok() and not shutdown:
                 server.handle_request()
@@ -159,7 +151,7 @@ def serve(server: LocalXMLRPCServer, *, timeout: float = 2 * 60 * 60):
             pass
 
 
-def serve_and_close(server: LocalXMLRPCServer, *, timeout: float = 2 * 60 * 60):
+def serve_and_close(server: LocalXMLRPCServer, *, timeout: int = 2 * 60 * 60):
     try:
         serve(server, timeout=timeout)
     finally:
@@ -179,9 +171,7 @@ def main(*, argv=None):
              'ROS_DOMAIN_ID)')
     parser.add_argument(
         '--timeout', metavar='N', type=int, default=2 * 60 * 60,
-        help='Shutdown the daemon after N seconds of inactivity. '
-             'A negative value disables the timeout, so the daemon '
-             'runs until explicitly stopped.')
+        help='Shutdown the daemon after N seconds of inactivity')
     args = parser.parse_args(args=argv)
 
     # the arguments are only passed for visibility in e.g. the process list
