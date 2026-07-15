@@ -75,6 +75,21 @@ def is_daemon_running(args):
         return node.connected
 
 
+def _is_daemon_address_free():
+    # Mirror LocalXMLRPCServer.allow_reuse_address: SO_REUSEADDR on
+    # non-Windows so TIME_WAIT doesn't make us falsely report busy.
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if os.name != 'nt':
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind(daemon.get_address())
+        return True
+    except socket.error as e:
+        if e.errno == errno.EADDRINUSE:
+            return False
+        raise
+
+
 def shutdown_daemon(args, timeout=None):
     """
     Shut down daemon node if it's running.
@@ -83,7 +98,7 @@ def shutdown_daemon(args, timeout=None):
     :param timeout: optional duration, in seconds, to wait
       until the daemon node is fully shut down. Non-positive
       durations will result in an indefinite wait.
-    :return: `True` if the the daemon was shut down,
+    :return: `True` if the daemon was shut down,
       `False` if it was already shut down.
     :raises: if it fails to shutdown the daemon.
     """
@@ -92,7 +107,11 @@ def shutdown_daemon(args, timeout=None):
             return False
         node.system.shutdown()
         if timeout is not None:
-            predicate = (lambda: not node.connected)
+            # Both conditions matter: a caller spawning a new daemon
+            # right after this returns needs the address to be free.
+            predicate = (
+                lambda: not node.connected and _is_daemon_address_free()
+            )
             if not wait_for(predicate, timeout):
                 raise RuntimeError(
                     'Timed out waiting for '
@@ -101,7 +120,7 @@ def shutdown_daemon(args, timeout=None):
         return True
 
 
-def spawn_daemon(args, timeout=None, debug=False):
+def spawn_daemon(args, timeout=None, debug=False, inactivity_timeout=2 * 60 * 60):
     """
     Spawn daemon node if it's not running.
 
@@ -117,7 +136,11 @@ def spawn_daemon(args, timeout=None, debug=False):
       durations will result in an indefinite wait.
     :param debug: if `True`, the daemon process will output
       to the current `stdout` and `stderr` streams.
-    :return: `True` if the the daemon was spawned,
+    :param inactivity_timeout: duration, in seconds, of inactivity
+      after which the spawned daemon shuts down. A negative value
+      disables the timeout, so the daemon runs until explicitly
+      stopped.
+    :return: `True` if the daemon was spawned,
       `False` if it was already running.
     :raises: if it fails to spawn the daemon.
     """
@@ -168,7 +191,8 @@ def spawn_daemon(args, timeout=None, debug=False):
             'rmw_implementation': rclpy.get_rmw_implementation_identifier()}
 
         daemonize(
-            functools.partial(daemon.serve_and_close, server),
+            functools.partial(
+                daemon.serve_and_close, server, timeout=inactivity_timeout),
             tags=tags, timeout=timeout, debug=debug)
     finally:
         server.server_close()
