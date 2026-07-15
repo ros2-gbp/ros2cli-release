@@ -45,10 +45,6 @@ class DumpVerb(VerbExtension):
         parser.add_argument(
             '--timeout', metavar='N', type=int, default=1,
             help='Wait for N seconds until node becomes available (default %(default)s sec)')
-        parser.add_argument(
-            '--service-timeout', metavar='N', type=float,
-            help='Maximum time to wait for service response in seconds '
-                 '(default: waits indefinitely)')
 
     def insert_dict(self, dictionary, key, value):
         split = key.split(PARAMETER_SEPARATOR_STRING, 1)
@@ -90,8 +86,7 @@ class DumpVerb(VerbExtension):
             response = None
             try:
                 response = call_get_parameters(
-                    node=node, node_name=absolute_node_name, parameter_names=parameter_names,
-                    timeout=args.service_timeout)
+                    node=node, node_name=absolute_node_name, parameter_names=parameter_names)
             except RuntimeError as e:
                 print(
                     'Exception while calling get_parameters service of node '

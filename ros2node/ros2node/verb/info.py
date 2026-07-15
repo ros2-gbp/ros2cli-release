@@ -14,7 +14,6 @@
 
 import sys
 
-from ros2cli.helpers import interactive_select
 from ros2cli.node.strategy import add_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_action_client_info
@@ -39,9 +38,8 @@ class InfoVerb(VerbExtension):
     def add_arguments(self, parser, cli_name):
         add_arguments(parser)
         argument = parser.add_argument(
-            'node_name', nargs='?',
-            help='Fully qualified node name to request information. '
-                 'If not provided, an interactive selection will be shown.')
+            'node_name',
+            help='Fully qualified node name to request information')
         argument.completer = NodeNameCompleter()
         parser.add_argument(
             '--include-hidden', action='store_true',
@@ -49,24 +47,6 @@ class InfoVerb(VerbExtension):
 
     def main(self, *, args):
         with NodeStrategy(args) as node:
-            # If no node name provided, launch interactive selection
-            if args.node_name is None:
-                node_names = get_node_names(node=node, include_hidden_nodes=args.include_hidden)
-                node_name_list = [n.full_name for n in node_names]
-
-                # Check if there are any nodes before attempting selection
-                if not node_name_list:
-                    return 'No nodes available to select from.'
-
-                selected_node = interactive_select(
-                    node_name_list,
-                    prompt='Select node for info:')
-
-                if selected_node is None:
-                    return None
-
-                args.node_name = selected_node
-
             node_names = get_node_names(node=node, include_hidden_nodes=args.include_hidden)
             count = [n.full_name for n in node_names].count(args.node_name)
             if count > 1:

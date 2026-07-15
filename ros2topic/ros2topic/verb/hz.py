@@ -41,15 +41,11 @@ import rclpy
 from rclpy.clock import Clock
 from rclpy.clock import ClockType
 from rclpy.executors import ExternalShutdownException
-
-from ros2cli.helpers import interactive_select
 from ros2cli.node.direct import add_arguments as add_direct_node_arguments
 from ros2cli.node.direct import DirectNode
-from ros2cli.qos import add_qos_arguments
-from ros2cli.qos import choose_qos
-
+from ros2topic.api import add_qos_arguments
+from ros2topic.api import choose_qos
 from ros2topic.api import get_msg_class
-from ros2topic.api import get_topic_names
 from ros2topic.api import get_topic_names_and_types
 from ros2topic.api import positive_int
 from ros2topic.api import TopicNameCompleter
@@ -102,25 +98,8 @@ class HzVerb(VerbExtension):
 
 
 def main(args):
-    # Interactive selection if no topic name and not --all
     if not args.all_topics and not args.topic_name:
-        with DirectNode(args) as node:
-            topic_names = get_topic_names(
-                node=node.node,
-                include_hidden_topics=args.include_hidden_topics)
-
-            if not topic_names:
-                return 'No topics available to select from.'
-
-            selected_topic = interactive_select(
-                topic_names,
-                prompt='Select topic for hz:')
-
-            if selected_topic is None:
-                return None
-
-            args.topic_name = [selected_topic]
-
+        raise RuntimeError('Either specify topic names or use --all/-a option')
     if args.all_topics and args.topic_name:
         raise RuntimeError('Cannot specify both --all/-a and topic names')
 
@@ -143,7 +122,7 @@ def main(args):
             topics = [name for name, _ in topic_names_and_types]
             if not topics:
                 print('No topics available')
-                return 0
+                return
             print(f'Subscribing to all {len(topics)} available topics...')
 
         return _rostopic_hz(

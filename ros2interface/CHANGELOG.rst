@@ -2,46 +2,21 @@
 Changelog for package ros2interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.40.8 (2026-07-15)
+0.38.4 (2026-07-15)
+-------------------
+* Fix ros2 interface show --no-comments leaving bare # lines (`#1257 <https://github.com/ros2/ros2cli//issues/1257>`_) (`#1259 <https://github.com/ros2/ros2cli//issues/1259>`_)
+* Contributors: mergify[bot]
+
+0.38.3 (2026-03-07)
 -------------------
 
-0.40.7 (2026-04-30)
+0.38.2 (2026-01-07)
 -------------------
 
-0.40.5 (2026-03-07)
+0.38.1 (2025-09-11)
 -------------------
-* Add fzf-based interactive selection to ros2cli commands (`#1151 <https://github.com/ros2/ros2cli//issues/1151>`_)
-* Contributors: Tony Najjar
-
-0.40.4 (2026-01-07)
--------------------
-
-0.40.3 (2025-12-09)
--------------------
-
-0.40.2 (2025-11-18)
--------------------
-
-0.40.1 (2025-09-11)
--------------------
-
-0.40.0 (2025-07-29)
--------------------
-* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_)
-* Contributors: mosfet80
-
-0.39.2 (2025-07-01)
--------------------
-* Make sure to install py.typed files (`#1058 <https://github.com/ros2/ros2cli/issues/1058>`_)
-* Contributors: Christophe Bedard
-
-0.39.1 (2025-06-19)
--------------------
-* Export Typing information (`#1041 <https://github.com/ros2/ros2cli/issues/1041>`_)
-* Contributors: Michael Carlstrom
-
-0.39.0 (2025-04-25)
--------------------
+* fix setuptools deprecations (`#1066 <https://github.com/ros2/ros2cli/issues/1066>`_) (`#1101 <https://github.com/ros2/ros2cli/issues/1101>`_)
+* Contributors: mergify[bot]
 
 0.38.0 (2025-04-25)
 -------------------

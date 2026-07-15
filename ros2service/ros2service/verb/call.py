@@ -18,20 +18,15 @@ from typing import Optional
 import rclpy
 from rclpy.qos import QoSPresetProfiles
 from rclpy.qos import QoSProfile
-
 from ros2cli.helpers import collect_stdin
 from ros2cli.node import NODE_NAME_PREFIX
-from ros2cli.qos import add_qos_arguments
-from ros2cli.qos import profile_configure_short_keys
-
 from ros2service.api import ServiceNameCompleter
 from ros2service.api import ServicePrototypeCompleter
 from ros2service.api import ServiceTypeCompleter
 from ros2service.verb import VerbExtension
-
+from ros2topic.api import add_qos_arguments, profile_configure_short_keys
 from rosidl_runtime_py import set_message_fields
 from rosidl_runtime_py.utilities import get_service
-
 import yaml
 
 
@@ -63,10 +58,6 @@ class CallVerb(VerbExtension):
         parser.add_argument(
             '-r', '--rate', metavar='N', type=float,
             help='Repeat the call at a specific rate in Hz')
-        parser.add_argument(
-            '--timeout', metavar='N', type=float,
-            help='Maximum time to wait for service response in seconds. '
-                 'If not specified, waits indefinitely.')
         add_qos_arguments(parser, 'service client', 'services_default')
 
     def main(self, *, args):
@@ -85,12 +76,11 @@ class CallVerb(VerbExtension):
             values = args.values
 
         return requester(
-            args.service_type, args.service_name, values, period, default_profile,
-            timeout=args.timeout)
+            args.service_type, args.service_name, values, period, default_profile)
 
 
 def requester(service_type: str, service_name: str, values, period: Optional[float],
-              qos_profile: QoSProfile, timeout: Optional[float] = None) -> None:
+              qos_profile: QoSProfile) -> None:
     try:
         parts = service_type.split('/')
         package_name = parts[0]
@@ -129,12 +119,7 @@ def requester(service_type: str, service_name: str, values, period: Optional[flo
             print('requester: making request: %r\n' % request)
             last_call = time.time()
             future = cli.call_async(request)
-            rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
-            if not future.done():
-                timeout_msg = f'{timeout}s' if timeout is not None else 'default'
-                raise RuntimeError(
-                    f'Timed out waiting for response from service {service_name} '
-                    f'(timeout: {timeout_msg})')
+            rclpy.spin_until_future_complete(node, future)
             if future.result() is not None:
                 print('response:\n%r\n' % future.result())
             else:
