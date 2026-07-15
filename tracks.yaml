@@ -244,7 +244,7 @@ tracks:
     - git-bloom-generate -y rosdynrpm --prefix release/:{ros_distro} :{ros_distro}
       -i :{release_inc} --require-os fedora rhel
     devel_branch: jazzy
-    last_version: 0.32.10
+    last_version: 0.32.11
     name: ros2cli
     patches: null
     release_inc: '1'
