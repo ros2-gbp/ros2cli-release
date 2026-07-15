@@ -50,25 +50,27 @@ class GetVerb(VerbExtension):
                 return 'Node not found'
             nodes_to_query = [node_name]
         else:
-            nodes_to_query = sorted(node_names)
+            nodes_to_query = node_names
 
         with DirectNode(args) as node:
-            # Process and output each node's state immediately upon receipt
-            for query_node_name in nodes_to_query:
-                state = call_get_states(node=node, node_names=[query_node_name])
-                state = state.get(query_node_name)
+            states = call_get_states(node=node, node_names=nodes_to_query)
 
+            # output exceptions
+            for node_name in sorted(states.keys()):
+                state = states[node_name]
                 if isinstance(state, Exception):
                     print(
                         'Exception while calling service of node '
-                        f"'{query_node_name}': {state}",
+                        f"'{node_name}': {state}",
                         file=sys.stderr)
+                    del states[node_name]
                     if args.node_name:
                         return 1
-                    continue
 
-                # output current state
+            # output current states
+            for node_name in sorted(states.keys()):
+                state = states[node_name]
                 prefix = ''
                 if not args.node_name:
-                    prefix = f'{query_node_name}: '
+                    prefix = f'{node_name}: '
                 print(prefix + f'{state.label} [{state.id}]')
