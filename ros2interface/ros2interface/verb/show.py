@@ -13,9 +13,16 @@
 # limitations under the License.
 
 import argparse
+import os
 import sys
 import typing
 
+from ament_index_python.packages import \
+    get_package_share_directory, \
+    PackageNotFoundError
+from ament_index_python.resources import get_resource
+from ros2cli.helpers import interactive_select
+from ros2interface.api import get_all_interface_names
 from ros2interface.api import type_completer
 from ros2interface.verb import VerbExtension
 from rosidl_adapter.parser import \
@@ -25,7 +32,6 @@ from rosidl_adapter.parser import \
     MessageSpecification, \
     parse_message_string, \
     SERVICE_REQUEST_RESPONSE_SEPARATOR
-from rosidl_runtime_py import get_interface_path
 
 
 class InterfaceTextLine:
@@ -108,9 +114,23 @@ def _get_interface_lines(interface_identifier: str) -> typing.Iterable[Interface
         raise ValueError(
             f"Invalid name '{interface_identifier}'. Expected three parts separated by '/'"
         )
-    pkg_name, _, msg_name = parts
+    pkg_name, msg_type, msg_name = parts
 
-    file_path = get_interface_path(interface_identifier)
+    try:
+        share_dir = get_package_share_directory(pkg_name)
+    except PackageNotFoundError:
+        raise LookupError(f"Unknown package '{pkg_name}'")
+
+    interfaces, _ = get_resource('rosidl_interfaces', pkg_name)
+    interfaces = interfaces.splitlines()
+
+    interface = [f for f in interfaces if f.endswith(msg_name + '.' + msg_type)]
+    if len(interface) == 0:
+        raise LookupError(
+            f"Interface '{msg_type}/{msg_name}' not found in package '{pkg_name}'"
+        )
+
+    file_path = os.path.join(share_dir, interface[0])
     with open(file_path) as file_handler:
         for line in file_handler:
             yield InterfaceTextLine(
@@ -167,8 +187,8 @@ class ReadStdinPipe(argparse.Action):
             if sys.stdin.isatty():
                 parser.error('expected stdin pipe')
             values = sys.stdin.readline().strip()
-        if not values:
-            parser.error('the passed value is empty')
+            if not values:
+                parser.error('the passed value is empty')
         setattr(namespace, self.dest, values)
 
 
@@ -190,13 +210,31 @@ class ShowVerb(VerbExtension):
 
         arg = parser.add_argument(
             'type',
+            nargs='?',
             action=ReadStdinPipe,
             help="Show an interface definition (e.g. 'example_interfaces/msg/String'). "
+                 'If not provided, an interactive selection will be shown. '
                  "Passing '-' reads the argument from stdin (e.g. "
                  "'ros2 topic type /chatter | ros2 interface show -').")
         arg.completer = type_completer
 
     def main(self, *, args):
+        # If no type provided, launch interactive selection
+        if args.type is None:
+            interface_types = get_all_interface_names()
+
+            if not interface_types:
+                return 'No interfaces available to select from.'
+
+            selected_type = interactive_select(
+                interface_types,
+                prompt='Select interface to show:')
+
+            if selected_type is None:
+                return 'No interface selected'
+
+            args.type = selected_type
+
         try:
             _show_interface(
                 args.type,

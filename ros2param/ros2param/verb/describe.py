@@ -16,8 +16,8 @@ from ros2cli.node.direct import DirectNode
 from ros2cli.node.strategy import add_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_absolute_node_name
-from ros2node.api import get_node_names
 from ros2node.api import NodeNameCompleter
+from ros2node.api import wait_for_node
 from ros2param.api import call_describe_parameters
 from ros2param.api import get_parameter_type_string
 from ros2param.api import ParameterNameCompleter
@@ -38,21 +38,25 @@ class DescribeVerb(VerbExtension):
             help='Consider hidden nodes as well')
         arg = parser.add_argument(
             'parameter_names', nargs='+', help='Names of the parameters')
+        parser.add_argument(
+            '--timeout', metavar='N', type=int, default=1,
+            help='Wait for N seconds until node becomes available (default %(default)s sec)')
+        parser.add_argument(
+            '--service-timeout', metavar='N', type=float,
+            help='Maximum time to wait for service response in seconds '
+                 '(default: waits indefinitely)')
         arg.completer = ParameterNameCompleter()
 
     def main(self, *, args):  # noqa: D102
-        with NodeStrategy(args) as node:
-            node_names = get_node_names(
-                node=node, include_hidden_nodes=args.include_hidden_nodes)
-
         node_name = get_absolute_node_name(args.node_name)
-        if node_name not in {n.full_name for n in node_names}:
-            return 'Node not found'
+        with NodeStrategy(args) as node:
+            if not wait_for_node(node, node_name, args.include_hidden_nodes, args.timeout):
+                return 'Node not found'
 
         with DirectNode(args) as node:
             response = call_describe_parameters(
                 node=node, node_name=args.node_name,
-                parameter_names=args.parameter_names or None)
+                parameter_names=args.parameter_names or None, timeout=args.service_timeout)
 
             # output response
             for descriptor in response.descriptors:

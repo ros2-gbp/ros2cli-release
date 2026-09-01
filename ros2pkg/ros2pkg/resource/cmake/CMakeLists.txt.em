@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.20)
 project(@(project_name))
 
 set(@(project_name)_MAJOR_VERSION 0)
@@ -25,10 +25,11 @@ find_package(@dep REQUIRED)
 @[if cpp_library_name]@
 
 add_library(@(cpp_library_name) SHARED src/@(cpp_library_name).cpp)
-target_compile_features(@(cpp_library_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+add_library(@(project_name)::@(cpp_library_name) ALIAS @(cpp_library_name))
+target_compile_features(@(cpp_library_name) PUBLIC c_std_17 cxx_std_20)  # Require C17 and C++20
 target_include_directories(@(cpp_library_name) PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 @[  if dependencies]@
 @[    for dep in dependencies]@
   PUBLIC ${@(dep)_INCLUDE_DIRS}
@@ -49,14 +50,12 @@ target_compile_definitions(@(cpp_library_name) PRIVATE "@(project_name.upper())_
 
 install(
   DIRECTORY include/
-  DESTINATION include
+  DESTINATION include/${PROJECT_NAME}
 )
 install(
   TARGETS @(cpp_library_name)
   EXPORT export_@(project_name)
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+)
 @[end if]@
 @[if cpp_node_name]@
 
@@ -73,7 +72,7 @@ target_include_directories(@(cpp_node_name) PUBLIC
 @[  if cpp_library_name]@
 target_link_libraries(@(cpp_node_name) @(cpp_library_name))
 @[  else]@
-target_compile_features(@(cpp_node_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(@(cpp_node_name) PUBLIC c_std_17 cxx_std_20)  # Require C17 and C++20
 @[    if dependencies]@
 target_link_libraries(@(cpp_node_name)
 @[      for dep in dependencies]@

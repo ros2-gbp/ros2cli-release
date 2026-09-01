@@ -12,23 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import defaultdict
 import functools
 import inspect
 
-import netifaces
+import psutil
 import rclpy
 
 from ros2cli.node.direct import DirectNode
 
 
-def get_interfaces_ip_addresses():
-    addresses_by_interfaces = defaultdict(functools.partial(defaultdict, set))
-    for interface_name in netifaces.interfaces():
-        for kind, info_list in netifaces.ifaddresses(interface_name).items():
-            for info in info_list:
-                addresses_by_interfaces[kind][interface_name].add(info['addr'])
-    print(f'Addresses by interfaces: {addresses_by_interfaces}')
+def get_interfaces_ip_addresses(logger=None):
+    addresses_by_interfaces = psutil.net_if_addrs()
+    if logger is not None:
+        logger.info(f'Addresses by interfaces: {addresses_by_interfaces}')
     return addresses_by_interfaces
 
 
@@ -40,7 +36,7 @@ class NetworkAwareNode:
         # TODO(ivanpauno): A race condition is possible here, since it isn't possible to know
         # exactly which interfaces were available at node creation.
         self.node = DirectNode(args)
-        self.addresses_at_start = get_interfaces_ip_addresses()
+        self.addresses_at_start = get_interfaces_ip_addresses(self.node.get_logger())
 
     def __enter__(self):
         self.node.__enter__()
@@ -64,11 +60,11 @@ class NetworkAwareNode:
         self.node.__exit__(exc_type, exc_value, traceback)
 
     def reset_if_addresses_changed(self):
-        new_addresses = get_interfaces_ip_addresses()
+        new_addresses = get_interfaces_ip_addresses(self.node.get_logger())
         if new_addresses != self.addresses_at_start:
             self.addresses_at_start = new_addresses
             self.node.destroy_node()
             rclpy.shutdown()
             self.node = DirectNode(self.args)
             self.node.__enter__()
-            print('Network interfaces changed, daemon node was reset!')
+            self.node.get_logger().info('Network interfaces changed, daemon node was reset!')
