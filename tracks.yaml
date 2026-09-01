@@ -378,7 +378,7 @@ tracks:
     - git-bloom-generate -y rosdynrpm --prefix release/:{ros_distro} :{ros_distro}
       -i :{release_inc} --require-os fedora rhel
     devel_branch: rolling
-    last_version: 0.41.1
+    last_version: 0.42.0
     name: ros2cli
     patches: null
     release_inc: '1'
