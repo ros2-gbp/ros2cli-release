@@ -50,10 +50,6 @@ class ListVerb(VerbExtension):
         parser.add_argument(
             '--param-type', action='store_true',
             help='Print parameter types with parameter names')
-        parser.add_argument(
-            '--service-timeout', metavar='N', type=float, default=5.0,
-            help='Maximum time to wait for service responses in seconds '
-                 '(default: %(default)s)')
 
     def main(self, *, args):  # noqa: D102
         with NodeStrategy(args) as node:
@@ -78,20 +74,12 @@ class ListVerb(VerbExtension):
                 response = call_list_parameters(
                     node=node,
                     node_name=node_name.full_name,
-                    prefixes=args.param_prefixes,
-                    timeout=args.service_timeout)
+                    prefixes=args.param_prefixes)
                 # print response
                 if response is None:
                     print(
                         'Wait for service timed out waiting for '
                         f'parameter services for node {node_name}')
-                    continue
-                elif not response.done():
-                    # Future did not complete within timeout
-                    print(
-                        'Timed out waiting for list_parameters response '
-                        f'from node {node_name} '
-                        f'(timeout: {args.service_timeout}s)')
                     continue
                 elif response.result() is None:
                     e = response.exception()
@@ -110,7 +98,7 @@ class ListVerb(VerbExtension):
                 if args.param_type is True:
                     resp = call_describe_parameters(
                         node=node, node_name=node_name.full_name,
-                        parameter_names=sorted_names, timeout=args.service_timeout)
+                        parameter_names=sorted_names)
                     for descriptor in resp.descriptors:
                         name_to_type_map[descriptor.name] = get_parameter_type_string(
                             descriptor.type)

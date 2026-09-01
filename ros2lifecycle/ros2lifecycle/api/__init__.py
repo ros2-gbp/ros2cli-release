@@ -43,7 +43,7 @@ def _has_lifecycle(node_name, service_names_and_types):
     return False
 
 
-def call_get_states(*, node, node_names, timeout=None):
+def call_get_states(*, node, node_names):
     clients = {}
     futures = {}
     # create clients
@@ -67,10 +67,7 @@ def call_get_states(*, node, node_names, timeout=None):
 
     # wait for all responses
     for future in futures.values():
-        rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
-        if not future.done():
-            raise RuntimeError(
-                f'Timed out waiting for get_state response (timeout: {timeout}s)')
+        rclpy.spin_until_future_complete(node, future)
 
     # return current state or exception for each node
     states = {}
@@ -83,15 +80,15 @@ def call_get_states(*, node, node_names, timeout=None):
     return states
 
 
-def call_get_available_transitions(*, node, states, timeout=None):
-    return _call_get_transitions(node, states, 'get_available_transitions', timeout)
+def call_get_available_transitions(*, node, states):
+    return _call_get_transitions(node, states, 'get_available_transitions')
 
 
-def call_get_transition_graph(*, node, states, timeout=None):
-    return _call_get_transitions(node, states, 'get_transition_graph', timeout)
+def call_get_transition_graph(*, node, states):
+    return _call_get_transitions(node, states, 'get_transition_graph')
 
 
-def _call_get_transitions(node, states, service_name, timeout=None):
+def _call_get_transitions(node, states, service_name):
     clients = {}
     futures = {}
     # create clients
@@ -115,10 +112,7 @@ def _call_get_transitions(node, states, service_name, timeout=None):
 
     # wait for all responses
     for future in futures.values():
-        rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
-        if not future.done():
-            raise RuntimeError(
-                f'Timed out waiting for {service_name} response (timeout: {timeout}s)')
+        rclpy.spin_until_future_complete(node, future)
 
     # return transitions from current state or exception for each node
     transitions = {}
@@ -138,7 +132,7 @@ def _call_get_transitions(node, states, service_name, timeout=None):
     return transitions
 
 
-def call_change_states(*, node, transitions, timeout=None):
+def call_change_states(*, node, transitions):
     clients = {}
     futures = {}
     # create clients
@@ -163,10 +157,7 @@ def call_change_states(*, node, transitions, timeout=None):
 
     # wait for all responses
     for future in futures.values():
-        rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
-        if not future.done():
-            raise RuntimeError(
-                f'Timed out waiting for change_state response (timeout: {timeout}s)')
+        rclpy.spin_until_future_complete(node, future)
 
     # return success flag or exception for each node
     results = {}
