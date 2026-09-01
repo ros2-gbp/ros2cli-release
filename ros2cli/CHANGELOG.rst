@@ -2,21 +2,15 @@
 Changelog for package ros2cli
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.42.0 (2026-09-01)
+0.40.9 (2026-09-01)
 -------------------
-* Keep leading '~' unquoted in zsh completion. (`#1279 <https://github.com/ros2/ros2cli/issues/1279>`_) (`#1281 <https://github.com/ros2/ros2cli/issues/1281>`_)
-* support ""ros2 action info (-v)" with ActionEndpointInfo. (`#1262 <https://github.com/ros2/ros2cli/issues/1262>`_)
-* Contributors: Tomoya Fujita
+* Keep leading '~' unquoted in zsh completion. (`#1279 <https://github.com/ros2/ros2cli/issues/1279>`_) (`#1281 <https://github.com/ros2/ros2cli/issues/1281>`_) (`#1284 <https://github.com/ros2/ros2cli/issues/1284>`_)
+* Contributors: mergify[bot]
 
-0.41.1 (2026-07-15)
+0.40.8 (2026-07-15)
 -------------------
-* Allow configuring the daemon inactivity timeout (`#1240 <https://github.com/ros2/ros2cli//issues/1240>`_)
-* ros2daemon also uses node logger to store log in the file system. (`#1237 <https://github.com/ros2/ros2cli//issues/1237>`_)
-* Check socket is actually freed and reusable during shutdown daemon. (`#1230 <https://github.com/ros2/ros2cli//issues/1230>`_)
-* Contributors: Abderahmane BENALI, Tomoya Fujita
-
-0.41.0 (2026-05-06)
--------------------
+* Check socket is actually freed and reusable during shutdown daemon. (`#1230 <https://github.com/ros2/ros2cli//issues/1230>`_) (`#1231 <https://github.com/ros2/ros2cli//issues/1231>`_)
+* Contributors: mergify[bot]
 
 0.40.7 (2026-04-30)
 -------------------

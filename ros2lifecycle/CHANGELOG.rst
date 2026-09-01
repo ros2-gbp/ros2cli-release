@@ -2,15 +2,10 @@
 Changelog for package ros2lifecycle
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.42.0 (2026-09-01)
--------------------
-* Test ros2 lifecycle output streams (`#1266 <https://github.com/ros2/ros2cli/issues/1266>`_)
-* Contributors: Miko Parkkinen
-
-0.41.1 (2026-07-15)
+0.40.9 (2026-09-01)
 -------------------
 
-0.41.0 (2026-05-06)
+0.40.8 (2026-07-15)
 -------------------
 
 0.40.7 (2026-04-30)
