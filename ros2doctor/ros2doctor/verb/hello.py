@@ -91,13 +91,7 @@ class HelloVerb(VerbExtension):
             executor = SingleThreadedExecutor()
             executor.add_node(node.node)
 
-            def spin():
-                try:
-                    executor.spin()
-                except rclpy.executors.ExternalShutdownException:
-                    rclpy.shutdown()
-
-            executor_thread = threading.Thread(target=spin)
+            executor_thread = threading.Thread(target=executor.spin)
             executor_thread.start()
 
             try:
