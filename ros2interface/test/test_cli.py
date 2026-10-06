@@ -202,6 +202,54 @@ class TestROS2InterfaceCLI(unittest.TestCase):
         )
         assert all(interface in output_lines for interface in some_interfaces)
 
+    def test_package_on_test_msgs_only_msgs(self):
+        with self.launch_interface_command(
+            arguments=['package', 'test_msgs', '-m']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=5)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        output_lines = interface_command.output.splitlines()
+        assert launch_testing.tools.expect_output(
+            expected_lines=itertools.repeat(
+                re.compile(r'test_msgs/msg/[A-z0-9_]+'), len(output_lines)
+            ),
+            lines=output_lines,
+            strict=True
+        )
+        assert all(interface in output_lines for interface in some_messages_from_test_msgs)
+
+    def test_package_on_test_msgs_only_srvs(self):
+        with self.launch_interface_command(
+            arguments=['package', 'test_msgs', '-s']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=5)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        output_lines = interface_command.output.splitlines()
+        assert launch_testing.tools.expect_output(
+            expected_lines=itertools.repeat(
+                re.compile(r'test_msgs/srv/[A-z0-9_]+'), len(output_lines)
+            ),
+            lines=output_lines,
+            strict=True
+        )
+        assert all(interface in output_lines for interface in some_services_from_test_msgs)
+
+    def test_package_on_test_msgs_only_actions(self):
+        with self.launch_interface_command(
+            arguments=['package', 'test_msgs', '-a']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=5)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        output_lines = interface_command.output.splitlines()
+        assert launch_testing.tools.expect_output(
+            expected_lines=itertools.repeat(
+                re.compile(r'test_msgs/action/[A-z0-9_]+'), len(output_lines)
+            ),
+            lines=output_lines,
+            strict=True
+        )
+        assert all(interface in output_lines for interface in some_actions_from_test_msgs)
+
     def test_packages(self):
         with self.launch_interface_command(arguments=['packages']) as interface_command:
             assert interface_command.wait_for_shutdown(timeout=2)
@@ -483,6 +531,34 @@ class TestROS2InterfaceCLI(unittest.TestCase):
             expected_lines=[re.compile(
                 r"Interface 'msg/NotAMessageTypeName' not found in package 'test_msgs'"
             )],
+            text=interface_command.output,
+            strict=True
+        )
+
+    def test_show_message_name_is_suffix_of_another(self):
+        # 'MultiNested.msg' ends with 'Nested.msg'; make sure the right one is shown
+        with self.launch_interface_command(
+            arguments=['show', 'test_msgs/msg/Nested']
+        ) as interface_command:
+            assert interface_command.wait_for_shutdown(timeout=2)
+        assert interface_command.exit_code == launch_testing.asserts.EXIT_OK
+        assert launch_testing.tools.expect_output(
+            expected_lines=[
+                'BasicTypes basic_types_value',
+                '\tbool bool_value',
+                '\tbyte byte_value',
+                '\tchar char_value',
+                '\tfloat32 float32_value',
+                '\tfloat64 float64_value',
+                '\tint8 int8_value',
+                '\tuint8 uint8_value',
+                '\tint16 int16_value',
+                '\tuint16 uint16_value',
+                '\tint32 int32_value',
+                '\tuint32 uint32_value',
+                '\tint64 int64_value',
+                '\tuint64 uint64_value',
+            ],
             text=interface_command.output,
             strict=True
         )

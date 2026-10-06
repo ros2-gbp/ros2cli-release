@@ -18,6 +18,7 @@ import rclpy
 import rclpy.action
 
 from rclpy.parameter import Parameter
+from ros2cli.helpers import check_discovery_configuration
 from ros2cli.node import NODE_NAME_PREFIX
 DEFAULT_TIMEOUT = 0.5
 
@@ -25,6 +26,9 @@ DEFAULT_TIMEOUT = 0.5
 class DirectNode:
 
     def __init__(self, args, *, node_name=None):
+        # Check for invalid discovery configuration
+        check_discovery_configuration()
+
         timeout_reached = False
 
         def timer_callback():
@@ -40,6 +44,7 @@ class DirectNode:
         start_parameter_services = getattr(
             args, 'start_parameter_services', False)
         use_sim_time = getattr(args, 'use_sim_time', False)
+        start_type_description_service = getattr(args, 'start_type_description_service', True)
 
         if node_name is None:
             node_name = NODE_NAME_PREFIX + node_name_suffix
@@ -48,7 +53,8 @@ class DirectNode:
             node_name,
             start_parameter_services=start_parameter_services,
             parameter_overrides=[
-                Parameter('use_sim_time', value=use_sim_time)
+                Parameter('use_sim_time', value=use_sim_time),
+                Parameter('start_type_description_service', value=start_type_description_service),
             ], automatically_declare_parameters_from_overrides=True)
 
         timeout = getattr(args, 'spin_time', DEFAULT_TIMEOUT)
