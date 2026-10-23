@@ -5,7 +5,7 @@ package_name = 'ros2node'
 
 setup(
     name=package_name,
-    version='0.42.0',
+    version='0.42.1',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -30,7 +30,7 @@ setup(
     description='The node command for ROS 2 command line tools.',
     long_description="""\
 The package provides the node command for the ROS 2 command line tools.""",
-    license='Apache License, Version 2.0',
+    license='Apache-2.0',
     extras_require={
         'test': [
             'pytest',
