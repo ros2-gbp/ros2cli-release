@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+
 import rclpy
-from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 from test_msgs.srv import BasicTypes
@@ -32,12 +33,21 @@ class EchoServer(Node):
 
 
 def main(args=None):
+    rclpy.init(args=args)
+
+    node = EchoServer()
     try:
-        with rclpy.init(args=args):
-            node = EchoServer()
-            rclpy.spin(node)
-    except (KeyboardInterrupt, ExternalShutdownException):
+        rclpy.spin(node)
+    except KeyboardInterrupt:
         print('server stopped cleanly')
+    except BaseException:
+        print('exception in server:', file=sys.stderr)
+        raise
+    finally:
+        # Destroy the node explicitly
+        # (optional - Done automatically when node is garbage collected)
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
