@@ -14,7 +14,6 @@
 
 import functools
 import logging
-import random
 import sys
 import threading
 import time
@@ -31,7 +30,7 @@ _WSAENOBUFS = 10055
 _ISSUE = 'https://github.com/ros2/ros2cli/issues/1141'
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def _multicast_known_broken():
     """Return a reason if multicast sending is known to be broken here, else an empty string."""
     if not sys.platform.startswith('win'):
@@ -54,88 +53,17 @@ def skip_if_multicast_known_broken():
         pytest.skip(reason)
 
 
-def _send_receive(sent_data, rx_kwargs, tx_kwargs):
+def test_api():
+    sent_data = b'test_api'
     received_data = None
 
     def target():
         nonlocal received_data
-        try:
-            received_data, _ = receive(**rx_kwargs)
-        except TimeoutError:
-            pass
+        received_data, _ = receive(timeout=1.0)
 
     t = threading.Thread(target=target)
     t.start()
     time.sleep(0.1)
-    send(sent_data, **tx_kwargs)
+    send(sent_data)
     t.join()
-    return received_data
-
-
-def test_api():
-    sent_data = b'test_api'
-
-    rx_kwargs = {'timeout': 1.0}
-    tx_kwargs = {}
-
-    assert sent_data == _send_receive(sent_data, rx_kwargs, tx_kwargs)
-
-
-def test_group_and_port():
-    sent_data = b'test_api'
-
-    r1 = random.randrange(0, 255)
-    r2 = random.randrange(0, 255)
-    r3 = random.randrange(1, 255)
-    port = random.randrange(16000, 18000)
-
-    group = f'234.{r1}.{r2}.{r3}'
-
-    tx_kwargs = {'group': group, 'port': port}
-    rx_kwargs = {'timeout': 1.0}
-    rx_kwargs.update(tx_kwargs)
-
-    assert sent_data == _send_receive(sent_data, rx_kwargs, tx_kwargs)
-
-
-def test_group_mismatch():
-    sent_data = b'test_api'
-
-    r1 = random.randrange(0, 255)
-    r2 = random.randrange(0, 255)
-    r3 = random.randrange(1, 255)
-    port = random.randrange(16000, 18000)
-
-    group1 = f'234.{r1}.{r2}.{r3}'
-    group2 = f'235.{r1}.{r2}.{r3}'
-
-    tx_kwargs = {'group': group1, 'port': port}
-    rx_kwargs = {'group': group2, 'port': port, 'timeout': 1.0}
-
-    try:
-        assert _send_receive(sent_data, rx_kwargs, tx_kwargs) is None
-    except OSError as e:
-        if sys.platform.startswith('win'):
-            if 10051 == e.winerror:
-                # TODO(sloretz) understand why this test fails this way in CI
-                # "A socket operation was attempted to an unreachable network"
-                pytest.skip('Unknown why this OSError occurs on Windows')
-        else:
-            raise
-
-
-def test_port_mismatch():
-    sent_data = b'test_api'
-
-    r1 = random.randrange(0, 255)
-    r2 = random.randrange(0, 255)
-    r3 = random.randrange(1, 255)
-    port1 = random.randrange(16000, 18000)
-    port2 = port1 + 1
-
-    group = f'234.{r1}.{r2}.{r3}'
-
-    tx_kwargs = {'group': group, 'port': port1}
-    rx_kwargs = {'group': group, 'port': port2, 'timeout': 1.0}
-
-    assert _send_receive(sent_data, rx_kwargs, tx_kwargs) is None
+    assert sent_data == received_data

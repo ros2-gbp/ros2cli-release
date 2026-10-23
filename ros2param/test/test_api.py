@@ -17,7 +17,7 @@ import array
 import pytest
 
 from rcl_interfaces.msg import ParameterType
-from rclpy.parameter import get_parameter_value
+from ros2param.api import get_parameter_value
 
 
 @pytest.mark.parametrize(
@@ -36,6 +36,8 @@ from rclpy.parameter import get_parameter_value
         ('1.1234', ParameterType.PARAMETER_DOUBLE, 'double_value', 1.1234),
 
         ('foo', ParameterType.PARAMETER_STRING, 'string_value', 'foo'),
+        (' ', ParameterType.PARAMETER_STRING, 'string_value', ' '),
+        ('', ParameterType.PARAMETER_STRING, 'string_value', ''),
         (
             '[false, true]',
             ParameterType.PARAMETER_BOOL_ARRAY,
@@ -90,7 +92,9 @@ from rclpy.parameter import get_parameter_value
         ),
     ],
 )
-def test_get_parameter_value(string_value, expected_type, value_attribute, expected_value):
+def test_get_parameter_value(
+    string_value, expected_type, value_attribute, expected_value
+):
     value = get_parameter_value(string_value=string_value)
     assert value.type == expected_type
     assert getattr(value, value_attribute) == expected_value
