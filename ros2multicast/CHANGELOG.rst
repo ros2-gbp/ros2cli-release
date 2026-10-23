@@ -2,19 +2,15 @@
 Changelog for package ros2multicast
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.42.1 (2026-10-23)
--------------------
-* Skip multicast tests where sending is known to be broken on Windows (`#1333 <https://github.com/ros2/ros2cli//issues/1333>`_)
-* Use the SPDX identifier Apache-2.0 in license declarations (`#1297 <https://github.com/ros2/ros2cli//issues/1297>`_)
-* Contributors: Michael Carroll
+0.40.10 (2026-10-23)
+--------------------
+* Skip multicast tests where sending is known to be broken on Windows (`#1333 <https://github.com/ros2/ros2cli//issues/1333>`_) (`#1334 <https://github.com/ros2/ros2cli//issues/1334>`_)
+* Contributors: mergify[bot]
 
-0.42.0 (2026-09-01)
--------------------
-
-0.41.1 (2026-07-15)
+0.40.9 (2026-09-01)
 -------------------
 
-0.41.0 (2026-05-06)
+0.40.8 (2026-07-15)
 -------------------
 
 0.40.7 (2026-04-30)

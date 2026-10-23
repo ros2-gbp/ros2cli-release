@@ -5,7 +5,7 @@ package_name = 'ros2pkg'
 
 setup(
     name=package_name,
-    version='0.42.1',
+    version='0.40.10',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
@@ -29,7 +29,7 @@ setup(
     description='The pkg command for ROS 2 command line tools.',
     long_description="""\
 The package provides the pkg command for the ROS 2 command line tools.""",
-    license='Apache-2.0',
+    license='Apache License, Version 2.0',
     extras_require={
         'test': [
             'pytest',

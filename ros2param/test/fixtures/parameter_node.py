@@ -17,9 +17,9 @@ from rclpy.executors import ExternalShutdownException
 from rclpy.parameter import PARAMETER_SEPARATOR_STRING
 
 
-def main():
+def main(args=None):
     try:
-        with rclpy.init():
+        with rclpy.init(args=args):
             node = rclpy.create_node('parameter_node')
             node.declare_parameter('bool_param', True)
             node.declare_parameter('int_param', 42)

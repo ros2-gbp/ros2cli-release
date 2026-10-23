@@ -319,10 +319,9 @@ class TestROS2LifecycleCLI(unittest.TestCase):
                 '- configure [1]',
                 '- shutdown [5]'
             ],
-            text=lifecycle_command.stderr,
+            text=lifecycle_command.output,
             strict=False
         )
-        assert not lifecycle_command.stdout
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_set_nonexistent_lifecycle_node_state(self):
@@ -333,10 +332,9 @@ class TestROS2LifecycleCLI(unittest.TestCase):
         assert lifecycle_command.exit_code == 1
         assert launch_testing.tools.expect_output(
             expected_lines=['Node not found'],
-            text=lifecycle_command.stderr,
+            text=lifecycle_command.output,
             strict=True
         )
-        assert not lifecycle_command.stdout
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_set_hidden_lifecycle_node_transition(self):
@@ -347,10 +345,9 @@ class TestROS2LifecycleCLI(unittest.TestCase):
         assert lifecycle_command.exit_code == 1
         assert launch_testing.tools.expect_output(
             expected_lines=['Node not found'],
-            text=lifecycle_command.stderr,
+            text=lifecycle_command.output,
             strict=True
         )
-        assert not lifecycle_command.stdout
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_get_nonexistent_lifecycle_node_state(self):
@@ -431,10 +428,9 @@ class TestROS2LifecycleCLI(unittest.TestCase):
             assert lifecycle_command.exit_code == launch_testing.asserts.EXIT_OK
             assert launch_testing.tools.expect_output(
                 expected_lines=['Transitioning successful'],
-                text=lifecycle_command.stdout,
+                text=lifecycle_command.output,
                 strict=False
             )
-            assert not lifecycle_command.stderr
 
         with self.launch_lifecycle_command(
             arguments=['get', '--include-hidden-nodes', '/_hidden_test_lifecycle_node']

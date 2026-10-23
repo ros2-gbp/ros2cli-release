@@ -54,9 +54,9 @@ class ComplexNode(Node):
         return Fibonacci.Result()
 
 
-def main():
+def main(args=None):
     try:
-        with rclpy.init():
+        with rclpy.init(args=args):
             node = ComplexNode()
             rclpy.spin(node)
     except (KeyboardInterrupt, ExternalShutdownException):

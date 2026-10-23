@@ -2,22 +2,13 @@
 Changelog for package ros2lifecycle
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.42.1 (2026-10-23)
--------------------
-* Improve lifecycle set transition help (`#1271 <https://github.com/ros2/ros2cli//issues/1271>`_)
-* Add --count alias to list, find and nodes verbs (`#1312 <https://github.com/ros2/ros2cli//issues/1312>`_)
-* Use the SPDX identifier Apache-2.0 in license declarations (`#1297 <https://github.com/ros2/ros2cli//issues/1297>`_)
-* Contributors: Elan Hasson, Michael Carroll, Sylvester Kaczmarek
+0.40.10 (2026-10-23)
+--------------------
 
-0.42.0 (2026-09-01)
--------------------
-* Test ros2 lifecycle output streams (`#1266 <https://github.com/ros2/ros2cli/issues/1266>`_)
-* Contributors: Miko Parkkinen
-
-0.41.1 (2026-07-15)
+0.40.9 (2026-09-01)
 -------------------
 
-0.41.0 (2026-05-06)
+0.40.8 (2026-07-15)
 -------------------
 
 0.40.7 (2026-04-30)

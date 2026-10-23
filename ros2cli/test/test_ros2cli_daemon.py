@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
 import time
 
 import pytest
@@ -27,7 +26,6 @@ from ros2cli.node.daemon import DaemonNode
 from ros2cli.node.daemon import is_daemon_running
 from ros2cli.node.daemon import shutdown_daemon
 from ros2cli.node.daemon import spawn_daemon
-from ros2cli.verb.daemon.start import StartVerb
 
 try:
     from rmw_test_fixture_implementation import rmw_test_isolation_start
@@ -304,54 +302,6 @@ def test_get_servers_info_by_service(daemon_node):
             TEST_SERVICE_SERVER_QOS.reliability
 
 
-def test_get_action_clients_info_by_action(daemon_node):
-    clients_info = daemon_node.get_action_clients_info_by_action(TEST_ACTION_NAME)
-    assert len(clients_info) == 1
-    test_client_info = clients_info[0]
-    assert test_client_info.node_name == TEST_NODE_NAME
-    assert test_client_info.node_namespace == TEST_NODE_NAMESPACE
-    assert test_client_info.action_type == TEST_ACTION_TYPE
-    assert test_client_info.endpoint_type == EndpointTypeEnum.CLIENT
-    goal_info = test_client_info.goal_service_info
-    assert goal_info.service_type == TEST_ACTION_TYPE + '_SendGoal'
-    assert goal_info.endpoint_type == EndpointTypeEnum.CLIENT
-    assert (goal_info.endpoint_count == 1 or goal_info.endpoint_count == 2)
-    assert len(goal_info.qos_profiles) == goal_info.endpoint_count
-    assert len(goal_info.endpoint_gids) == goal_info.endpoint_count
-    assert test_client_info.cancel_service_info.service_type == 'action_msgs/srv/CancelGoal'
-    assert test_client_info.result_service_info.service_type == TEST_ACTION_TYPE + '_GetResult'
-    feedback_info = test_client_info.feedback_topic_info
-    assert feedback_info.topic_type == TEST_ACTION_TYPE + '_FeedbackMessage'
-    assert feedback_info.endpoint_type == EndpointTypeEnum.SUBSCRIPTION
-    status_info = test_client_info.status_topic_info
-    assert status_info.topic_type == 'action_msgs/msg/GoalStatusArray'
-    assert status_info.endpoint_type == EndpointTypeEnum.SUBSCRIPTION
-
-
-def test_get_action_servers_info_by_action(daemon_node):
-    servers_info = daemon_node.get_action_servers_info_by_action(TEST_ACTION_NAME)
-    assert len(servers_info) == 1
-    test_server_info = servers_info[0]
-    assert test_server_info.node_name == TEST_NODE_NAME
-    assert test_server_info.node_namespace == TEST_NODE_NAMESPACE
-    assert test_server_info.action_type == TEST_ACTION_TYPE
-    assert test_server_info.endpoint_type == EndpointTypeEnum.SERVER
-    goal_info = test_server_info.goal_service_info
-    assert goal_info.service_type == TEST_ACTION_TYPE + '_SendGoal'
-    assert goal_info.endpoint_type == EndpointTypeEnum.SERVER
-    assert (goal_info.endpoint_count == 1 or goal_info.endpoint_count == 2)
-    assert len(goal_info.qos_profiles) == goal_info.endpoint_count
-    assert len(goal_info.endpoint_gids) == goal_info.endpoint_count
-    assert test_server_info.cancel_service_info.service_type == 'action_msgs/srv/CancelGoal'
-    assert test_server_info.result_service_info.service_type == TEST_ACTION_TYPE + '_GetResult'
-    feedback_info = test_server_info.feedback_topic_info
-    assert feedback_info.topic_type == TEST_ACTION_TYPE + '_FeedbackMessage'
-    assert feedback_info.endpoint_type == EndpointTypeEnum.PUBLISHER
-    status_info = test_server_info.status_topic_info
-    assert status_info.topic_type == 'action_msgs/msg/GoalStatusArray'
-    assert status_info.endpoint_type == EndpointTypeEnum.PUBLISHER
-
-
 def test_count_publishers(daemon_node):
     assert 1 == daemon_node.count_publishers(TEST_TOPIC_NAME)
 
@@ -366,54 +316,3 @@ def test_count_clients(daemon_node):
 
 def test_count_services(daemon_node):
     assert 1 == daemon_node.count_services(TEST_SERVICE_NAME)
-
-
-def test_count_action_clients(daemon_node):
-    assert 1 == daemon_node.count_action_clients(TEST_ACTION_NAME)
-
-
-def test_count_action_servers(daemon_node):
-    assert 1 == daemon_node.count_action_servers(TEST_ACTION_NAME)
-
-
-def _wait_until(predicate, timeout):
-    # Polling is_daemon_running() uses system.listMethods, which is not a
-    # timer-resetting RPC, so it never keeps the daemon alive artificially.
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        if predicate():
-            return True
-        time.sleep(0.2)
-    return predicate()
-
-
-def test_start_verb_exposes_timeout_argument():
-    parser = argparse.ArgumentParser()
-    StartVerb().add_arguments(parser, 'daemon')
-    # Default preserves the long-standing 2 hour inactivity timeout.
-    assert parser.parse_args([]).timeout == 2 * 60 * 60
-    # A negative value is accepted and means "never time out".
-    assert parser.parse_args(['--timeout', '-1']).timeout == -1
-
-
-def test_daemon_shuts_down_after_inactivity_timeout():
-    if is_daemon_running(args=[]):
-        assert shutdown_daemon(args=[], timeout=5.0)
-    assert spawn_daemon(args=[], timeout=5.0, inactivity_timeout=5)
-    assert _wait_until(lambda: is_daemon_running(args=[]), timeout=10.0), \
-        'daemon did not come up'
-    assert _wait_until(lambda: not is_daemon_running(args=[]), timeout=60.0), \
-        'daemon did not shut down after its inactivity timeout elapsed'
-
-
-def test_negative_inactivity_timeout_never_shuts_down():
-    if is_daemon_running(args=[]):
-        assert shutdown_daemon(args=[], timeout=5.0)
-    assert spawn_daemon(args=[], timeout=5.0, inactivity_timeout=-1)
-    try:
-        assert _wait_until(lambda: is_daemon_running(args=[]), timeout=10.0)
-        # Stays up well past any short inactivity window.
-        time.sleep(8.0)
-        assert is_daemon_running(args=[])
-    finally:
-        assert shutdown_daemon(args=[], timeout=5.0)

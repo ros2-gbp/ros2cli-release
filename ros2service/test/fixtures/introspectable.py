@@ -68,9 +68,9 @@ class IntrospectableClient(Node):
         self.future = None
 
 
-def main():
+def main(args=None):
     try:
-        with rclpy.init():
+        with rclpy.init(args=args):
             service_node = IntrospectableService()
             client_node = IntrospectableClient()
 

@@ -2,25 +2,19 @@
 Changelog for package ros2topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.42.1 (2026-10-23)
--------------------
-* Make ros2 topic delay precision configurable (`#1273 <https://github.com/ros2/ros2cli//issues/1273>`_)
-* Fixes `#1306 <https://github.com/ros2/ros2cli//issues/1306>`_ (`#1317 <https://github.com/ros2/ros2cli//issues/1317>`_)
-* Add --count alias to list, find and nodes verbs (`#1312 <https://github.com/ros2/ros2cli//issues/1312>`_)
-* Remove unused main args from test fixtures (`#1299 <https://github.com/ros2/ros2cli//issues/1299>`_)
-* Use the SPDX identifier Apache-2.0 in license declarations (`#1297 <https://github.com/ros2/ros2cli//issues/1297>`_)
-* Contributors: Danil Belov, Elan Hasson, Michael Carroll, Sruthika R, Sylvester Kaczmarek
+0.40.10 (2026-10-23)
+--------------------
+* Fixes `#1306 <https://github.com/ros2/ros2cli//issues/1306>`_ (`#1317 <https://github.com/ros2/ros2cli//issues/1317>`_) (`#1327 <https://github.com/ros2/ros2cli//issues/1327>`_)
+* Contributors: mergify[bot]
 
-0.42.0 (2026-09-01)
+0.40.9 (2026-09-01)
 -------------------
 
-0.41.1 (2026-07-15)
+0.40.8 (2026-07-15)
 -------------------
+* Merge pull request `#1232 <https://github.com/ros2/ros2cli//issues/1232>`_ from ros2/mergify/bp/lyrical/pr-1227
 * Add unit tests for sub-command tab completers (`#1227 <https://github.com/ros2/ros2cli//issues/1227>`_)
-* Contributors: MzKyle
-
-0.41.0 (2026-05-06)
--------------------
+* Contributors: MzKyle, Skyler Medeiros
 
 0.40.7 (2026-04-30)
 -------------------

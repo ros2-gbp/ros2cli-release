@@ -2,24 +2,19 @@
 Changelog for package ros2service
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.42.1 (2026-10-23)
--------------------
-* Add --count alias to list, find and nodes verbs (`#1312 <https://github.com/ros2/ros2cli//issues/1312>`_)
-* Remove unused main args from test fixtures (`#1299 <https://github.com/ros2/ros2cli//issues/1299>`_)
-* Use the SPDX identifier Apache-2.0 in license declarations (`#1297 <https://github.com/ros2/ros2cli//issues/1297>`_)
-* Contributors: Danil Belov, Elan Hasson, Michael Carroll
+0.40.10 (2026-10-23)
+--------------------
 
-0.42.0 (2026-09-01)
+0.40.9 (2026-09-01)
 -------------------
 
-0.41.1 (2026-07-15)
+0.40.8 (2026-07-15)
 -------------------
+* Merge pull request `#1246 <https://github.com/ros2/ros2cli//issues/1246>`_ from ros2/mergify/bp/lyrical/pr-1244
 * Remove fzf interactive selection for services (`#1244 <https://github.com/ros2/ros2cli//issues/1244>`_)
+* Merge pull request `#1232 <https://github.com/ros2/ros2cli//issues/1232>`_ from ros2/mergify/bp/lyrical/pr-1227
 * Add unit tests for sub-command tab completers (`#1227 <https://github.com/ros2/ros2cli//issues/1227>`_)
-* Contributors: MzKyle, Tony Najjar
-
-0.41.0 (2026-05-06)
--------------------
+* Contributors: MzKyle, Skyler Medeiros, Tony Najjar
 
 0.40.7 (2026-04-30)
 -------------------

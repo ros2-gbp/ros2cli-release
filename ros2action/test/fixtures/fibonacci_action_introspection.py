@@ -118,9 +118,9 @@ class FibonacciActionClient(Node):
         super().destroy_node()
 
 
-def main():
+def main(args=None):
     try:
-        with rclpy.init():
+        with rclpy.init(args=args):
             action_server_node = FibonacciActionServer()
             action_client_node = FibonacciActionClient()
 

@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.42.1',
+    version='0.40.10',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],
@@ -43,7 +43,7 @@ setup(
     long_description="""\
 The framework provides a single command line script which can be extended with
 commands and verbs.""",
-    license='Apache-2.0',
+    license='Apache License, Version 2.0',
     entry_points={
         'ros2cli.command': [
             'daemon = ros2cli.command.daemon:DaemonCommand',

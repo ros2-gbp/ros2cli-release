@@ -40,9 +40,7 @@ class SetVerb(VerbExtension):
             '--include-hidden-nodes', action='store_true',
             help='Consider hidden nodes as well')
         parser.add_argument(
-            'transition',
-            help='The lifecycle transition. Use `ros2 lifecycle list NODE_NAME` '
-                 'to see transitions available from the current state')
+            'transition', help='The lifecycle transition')
         parser.add_argument(
             '--timeout', metavar='N', type=float,
             help='Maximum time to wait for response in seconds '
