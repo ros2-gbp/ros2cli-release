@@ -70,7 +70,7 @@ class WatchVerb(VerbExtension):
 
     def add_arguments(self, parser, cli_name):
         parser.add_argument(
-            '--level',
+            '--level', '--log-level',
             type=str,
             choices=LOG_LEVELS.keys(),
             help='Show only logs at or above the specified severity level')
@@ -79,7 +79,7 @@ class WatchVerb(VerbExtension):
             type=str,
             help='Filter logs by logger name')
         parser.add_argument(
-            '--regex',
+            '--regex', '--filter',
             type=str,
             help='Filter log messages matching the specified regular expression pattern. '
                  'e.g. "topic.*(/\\w+)"')
