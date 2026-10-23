@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-
 import rclpy
 from rclpy.action import ActionServer
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import qos_profile_system_default
 
@@ -55,21 +54,13 @@ class ComplexNode(Node):
         return Fibonacci.Result()
 
 
-def main(args=None):
-    rclpy.init(args=args)
-
-    node = ComplexNode()
-
+def main():
     try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
+        with rclpy.init():
+            node = ComplexNode()
+            rclpy.spin(node)
+    except (KeyboardInterrupt, ExternalShutdownException):
         print('node stopped cleanly')
-    except BaseException:
-        print('exception in node:', file=sys.stderr)
-        raise
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
 
 
 if __name__ == '__main__':

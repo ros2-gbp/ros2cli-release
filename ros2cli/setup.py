@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ros2cli',
-    version='0.32.13',
+    version='0.42.1',
     packages=find_packages(exclude=['test']),
     extras_require={
         'completion': ['argcomplete'],
@@ -21,9 +21,11 @@ setup(
         ]),
         ('share/ros2cli/environment', [
             'completion/ros2-argcomplete.bash',
-            'completion/ros2-argcomplete.zsh'
+            'completion/ros2-argcomplete.fish',
+            'completion/ros2-argcomplete.zsh',
         ]),
     ],
+    package_data={'': ['py.typed']},
     zip_safe=False,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
@@ -41,7 +43,7 @@ setup(
     long_description="""\
 The framework provides a single command line script which can be extended with
 commands and verbs.""",
-    license='Apache License, Version 2.0',
+    license='Apache-2.0',
     entry_points={
         'ros2cli.command': [
             'daemon = ros2cli.command.daemon:DaemonCommand',

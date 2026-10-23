@@ -2,13 +2,13 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ros2cli_test_interfaces</name>
-  <version>0.32.13</version>
+  <version>0.42.1</version>
   <description>A package containing interface definitions for testing ros2cli.</description>
 
   <maintainer email="audrow@openrobotics.org">Audrow Nash</maintainer>
   <maintainer email="geoff@openrobotics.org">Geoffrey Biggs</maintainer>
 
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
 
   <author email="aditya.pande@openrobotics.org">Aditya Pande</author>
   <author email="audrow@osrfoundation.org">Audrow Nash</author>

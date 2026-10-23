@@ -5,13 +5,14 @@ package_name = 'ros2action'
 
 setup(
     name=package_name,
-    version='0.32.13',
+    version='0.42.1',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
     ],
+    package_data={'': ['py.typed']},
     install_requires=['ros2cli'],
     zip_safe=True,
     author='Jacob Perron',
@@ -29,7 +30,7 @@ setup(
     description='The action command for ROS 2 command line tools.',
     long_description="""\
 The package provides the action command for the ROS 2 command line tools.""",
-    license='Apache License, Version 2.0',
+    license='Apache-2.0',
     extras_require={
         'test': [
             'pytest',
@@ -47,6 +48,8 @@ The package provides the action command for the ROS 2 command line tools.""",
             'list = ros2action.verb.list:ListVerb',
             'send_goal = ros2action.verb.send_goal:SendGoalVerb',
             'type = ros2action.verb.type:TypeVerb',
+            'find = ros2action.verb.find:FindVerb',
+            'echo = ros2action.verb.echo:EchoVerb',
         ],
     }
 )

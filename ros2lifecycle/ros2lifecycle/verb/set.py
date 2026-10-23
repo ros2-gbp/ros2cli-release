@@ -40,7 +40,13 @@ class SetVerb(VerbExtension):
             '--include-hidden-nodes', action='store_true',
             help='Consider hidden nodes as well')
         parser.add_argument(
-            'transition', help='The lifecycle transition')
+            'transition',
+            help='The lifecycle transition. Use `ros2 lifecycle list NODE_NAME` '
+                 'to see transitions available from the current state')
+        parser.add_argument(
+            '--timeout', metavar='N', type=float,
+            help='Maximum time to wait for response in seconds '
+                 '(default: waits indefinitely)')
 
     def main(self, *, args):  # noqa: D102
         with NodeStrategy(args) as node:
@@ -53,7 +59,7 @@ class SetVerb(VerbExtension):
 
         with DirectNode(args) as node:
             transitions = call_get_available_transitions(
-                node=node, states={node_name: None})
+                node=node, states={node_name: None}, timeout=args.timeout)
             transitions = transitions[node_name]
             if isinstance(transitions, Exception):
                 return 'Exception while calling service of node ' \
@@ -75,7 +81,7 @@ class SetVerb(VerbExtension):
                             for t in transitions)
 
             results = call_change_states(
-                node=node, transitions={node_name: transition})
+                node=node, transitions={node_name: transition}, timeout=args.timeout)
             result = results[node_name]
 
             # output response
