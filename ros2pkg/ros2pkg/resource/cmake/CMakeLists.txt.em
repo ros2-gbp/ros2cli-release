@@ -26,10 +26,10 @@ find_package(@dep REQUIRED)
 
 add_library(@(cpp_library_name) SHARED src/@(cpp_library_name).cpp)
 add_library(@(project_name)::@(cpp_library_name) ALIAS @(cpp_library_name))
-target_compile_features(@(cpp_library_name) PUBLIC c_std_17 cxx_std_20)  # Require C17 and C++20
+target_compile_features(@(cpp_library_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(@(cpp_library_name) PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+  $<INSTALL_INTERFACE:include>
 @[  if dependencies]@
 @[    for dep in dependencies]@
   PUBLIC ${@(dep)_INCLUDE_DIRS}
@@ -50,12 +50,14 @@ target_compile_definitions(@(cpp_library_name) PRIVATE "@(project_name.upper())_
 
 install(
   DIRECTORY include/
-  DESTINATION include/${PROJECT_NAME}
+  DESTINATION include
 )
 install(
   TARGETS @(cpp_library_name)
   EXPORT export_@(project_name)
-)
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 @[end if]@
 @[if cpp_node_name]@
 
@@ -72,7 +74,7 @@ target_include_directories(@(cpp_node_name) PUBLIC
 @[  if cpp_library_name]@
 target_link_libraries(@(cpp_node_name) @(cpp_library_name))
 @[  else]@
-target_compile_features(@(cpp_node_name) PUBLIC c_std_17 cxx_std_20)  # Require C17 and C++20
+target_compile_features(@(cpp_node_name) PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 @[    if dependencies]@
 target_link_libraries(@(cpp_node_name)
 @[      for dep in dependencies]@

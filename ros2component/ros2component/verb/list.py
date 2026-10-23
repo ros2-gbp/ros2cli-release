@@ -36,10 +36,6 @@ class ListVerb(VerbExtension):
         parser.add_argument(
             '--containers-only', action='store_true',
             help='List found containers nodes only')
-        parser.add_argument(
-            '--timeout', metavar='N', type=float, default=5.0,
-            help='Maximum time to wait for listing components in seconds '
-                 '(default: %(default)s)')
 
     def main(self, *, args):
         with NodeStrategy(args) as node:
@@ -51,8 +47,7 @@ class ListVerb(VerbExtension):
                     return "Unable to find container node '" + args.container_node_name + "'"
                 if not args.containers_only:
                     ok, outcome = get_components_in_container(
-                        node=node, remote_container_node_name=args.container_node_name,
-                        timeout=args.timeout
+                        node=node, remote_container_node_name=args.container_node_name
                     )
                     if not ok:
                         return f'{outcome} when listing components in {args.container_node_name}'
@@ -61,12 +56,9 @@ class ListVerb(VerbExtension):
                             f'{component.uid}  {component.name}' for component in outcome
                         ], sep='\n')
             else:
-                results = get_components_in_containers(
-                    node=node, remote_containers_node_names=[
-                        n.full_name for n in container_node_names
-                    ],
-                    timeout=args.timeout
-                )
+                results = get_components_in_containers(node=node, remote_containers_node_names=[
+                    n.full_name for n in container_node_names
+                ])
                 for container_node_name, (ok, outcome) in results.items():
                     print(container_node_name)
                     if not args.containers_only:

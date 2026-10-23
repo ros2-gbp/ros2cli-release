@@ -384,7 +384,7 @@ class TestVerbLoad(unittest.TestCase):
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code == launch_testing.asserts.EXIT_OK
 
-            # Dump and check that wildcard parameters were overridden if in node namespace
+            # Dump and check that wildcard parameters were overriden if in node namespace
             with self.launch_param_dump_command(
                 arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
             ) as param_dump_command:
@@ -397,7 +397,7 @@ class TestVerbLoad(unittest.TestCase):
                 params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
             except yaml.YAMLError as e:
                 self.fail(f'Failed to parse YAML output: {e}')
-            assert params['str_param'] == 'Override'  # Overridden
+            assert params['str_param'] == 'Override'  # Overriden
             assert params['int_param'] == 12345  # Wildcard namespace
 
             # Concatenate wildcard + some overlays with namespace and base node name
@@ -410,7 +410,7 @@ class TestVerbLoad(unittest.TestCase):
                 assert param_load_command.wait_for_shutdown(timeout=TEST_TIMEOUT)
             assert param_load_command.exit_code == launch_testing.asserts.EXIT_OK
 
-            # Dump and check that wildcard parameters were overridden if in node namespace
+            # Dump and check that wildcard parameters were overriden if in node namespace
             with self.launch_param_dump_command(
                 arguments=[f'{TEST_NAMESPACE}/{TEST_NODE}']
             ) as param_dump_command:
@@ -423,5 +423,5 @@ class TestVerbLoad(unittest.TestCase):
                 params = loaded_params[f'{TEST_NAMESPACE}/{TEST_NODE}']['ros__parameters']
             except yaml.YAMLError as e:
                 self.fail(f'Failed to parse YAML output: {e}')
-            assert params['str_param'] == 'Override'  # Overridden
+            assert params['str_param'] == 'Override'  # Overriden
             assert params['int_param'] == 12345  # Wildcard namespace
