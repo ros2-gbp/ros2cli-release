@@ -1,3 +1,42 @@
+## ros2cli (rolling) - 0.42.1-1
+
+The packages in the `ros2cli` repository were released into the `rolling` distro by running `/usr/bin/bloom-release --rosdistro rolling --track rolling ros2cli` on `Fri, 23 Oct 2026 11:08:54 -0000`
+
+These packages were released:
+- `ros2action`
+- `ros2cli`
+- `ros2cli_test_interfaces`
+- `ros2component`
+- `ros2doctor`
+- `ros2interface`
+- `ros2lifecycle`
+- `ros2lifecycle_test_fixtures`
+- `ros2log`
+- `ros2multicast`
+- `ros2node`
+- `ros2param`
+- `ros2pkg`
+- `ros2run`
+- `ros2service`
+- `ros2topic`
+
+Version of package(s) in repository `ros2cli`:
+
+- upstream repository: https://github.com/ros2/ros2cli
+- release repository: https://github.com/ros2-gbp/ros2cli-release.git
+- rosdistro version: `0.42.0-1`
+- old version: `0.42.0-1`
+- new version: `0.42.1-1`
+
+Versions of tools used:
+
+- bloom version: `0.14.4`
+- catkin_pkg version: `1.1.1`
+- rosdep version: `0.27.0`
+- rosdistro version: `1.1.0`
+- vcstools version: `0.1.42`
+
+
 ## ros2cli (jazzy) - 0.32.13-1
 
 The packages in the `ros2cli` repository were released into the `jazzy` distro by running `/home/marcogg/.local/venvs/bloom/bin/bloom-release --track jazzy --rosdistro jazzy ros2cli` on `Tue, 06 Oct 2026 03:00:34 -0000`
