@@ -16,6 +16,7 @@ import argparse
 import sys
 
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import qos_profile_system_default
 from rclpy.utilities import remove_ros_args
@@ -45,24 +46,16 @@ def parse_arguments(args=None):
     return parser.parse_args(args=remove_ros_args(args))
 
 
-def main(args=None):
-    parsed_args = parse_arguments(args=args)
-
-    rclpy.init(args=args)
-
-    node = RepeaterNode(message_type=parsed_args.message_type)
-
+def main():
     try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
+        parsed_args = parse_arguments(args=sys.argv[1:])
+
+        with rclpy.init():
+            node = RepeaterNode(message_type=parsed_args.message_type)
+            rclpy.spin(node)
+    except (KeyboardInterrupt, ExternalShutdownException):
         print('repeater stopped cleanly')
-    except BaseException:
-        print('exception in repeater:', file=sys.stderr)
-        raise
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    main(args=sys.argv[1:])
+    main()

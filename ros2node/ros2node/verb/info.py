@@ -14,6 +14,11 @@
 
 import sys
 
+from ros2cli.color import blue
+from ros2cli.color import bold
+from ros2cli.color import cyan
+from ros2cli.color import green
+from ros2cli.helpers import interactive_select
 from ros2cli.node.strategy import add_arguments
 from ros2cli.node.strategy import NodeStrategy
 from ros2node.api import get_action_client_info
@@ -29,7 +34,11 @@ from ros2node.verb import VerbExtension
 
 
 def print_names_and_types(names_and_types):
-    print(*[2 * '  ' + s.name + ': ' + ', '.join(s.types) for s in names_and_types], sep='\n')
+    lines = [
+        2 * '  ' + s.name + ': ' + bold(blue(', '.join(s.types)))
+        for s in names_and_types
+    ]
+    print(*lines, sep='\n')
 
 
 class InfoVerb(VerbExtension):
@@ -38,8 +47,9 @@ class InfoVerb(VerbExtension):
     def add_arguments(self, parser, cli_name):
         add_arguments(parser)
         argument = parser.add_argument(
-            'node_name',
-            help='Node name to request information')
+            'node_name', nargs='?',
+            help='Fully qualified node name to request information. '
+                 'If not provided, an interactive selection will be shown.')
         argument.completer = NodeNameCompleter()
         parser.add_argument(
             '--include-hidden', action='store_true',
@@ -47,6 +57,24 @@ class InfoVerb(VerbExtension):
 
     def main(self, *, args):
         with NodeStrategy(args) as node:
+            # If no node name provided, launch interactive selection
+            if args.node_name is None:
+                node_names = get_node_names(node=node, include_hidden_nodes=args.include_hidden)
+                node_name_list = [n.full_name for n in node_names]
+
+                # Check if there are any nodes before attempting selection
+                if not node_name_list:
+                    return 'No nodes available to select from.'
+
+                selected_node = interactive_select(
+                    node_name_list,
+                    prompt='Select node for info:')
+
+                if selected_node is None:
+                    return None
+
+                args.node_name = selected_node
+
             node_names = get_node_names(node=node, include_hidden_nodes=args.include_hidden)
             count = [n.full_name for n in node_names].count(args.node_name)
             if count > 1:
@@ -55,30 +83,30 @@ class InfoVerb(VerbExtension):
                         num_nodes=count, node_name=args.node_name),
                     file=sys.stderr)
             if count > 0:
-                print(args.node_name)
+                print(bold(cyan(args.node_name)))
                 subscribers = get_subscriber_info(
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Subscribers:')
+                print(green('  Subscribers:'))
                 print_names_and_types(subscribers)
                 publishers = get_publisher_info(
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Publishers:')
+                print(green('  Publishers:'))
                 print_names_and_types(publishers)
                 service_servers = get_service_server_info(
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Service Servers:')
+                print(green('  Service Servers:'))
                 print_names_and_types(service_servers)
                 service_clients = get_service_client_info(
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Service Clients:')
+                print(green('  Service Clients:'))
                 print_names_and_types(service_clients)
                 actions_servers = get_action_server_info(
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Action Servers:')
+                print(green('  Action Servers:'))
                 print_names_and_types(actions_servers)
                 actions_clients = get_action_client_info(
                     node=node, remote_node_name=args.node_name, include_hidden=args.include_hidden)
-                print('  Action Clients:')
+                print(green('  Action Clients:'))
                 print_names_and_types(actions_clients)
             else:
                 return "Unable to find node '" + args.node_name + "'"
